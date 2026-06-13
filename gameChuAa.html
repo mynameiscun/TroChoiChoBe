@@ -284,14 +284,14 @@ function showGameEnd(isPass, totalScore) {
 
     if (isPass) {
         $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
-        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/36 sao ở trò chơi Chữ Cái a, A.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/52 sao ở trò chơi Chữ Cái a, A.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
         SoundFX.playWin(); 
         $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="replayAll()">🔄 Chơi lại từ đầu</button>`);
         $buttons.append(`<button class="btn btn-success btn-cute" style="transform: scale(1.15); font-weight: 900; background-color: #ff4757; padding: 15px 30px;" onclick="nextGame()">➡️ Qua màn tiếp theo</button>`);
         window.speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Chữ Cái a, A!`);
     } else {
         $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
-        $('#game-end-message').text(`Bé mới đạt ${totalScore}/36 sao. Cần đạt tối thiểu 25 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/52 sao. Cần đạt tối thiểu 25 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
         SoundFX.playLose();
         window.gameState.replayQueue = [];
         for (let i = 1; i <= 5; i++) {
@@ -1010,9 +1010,9 @@ window.LEVEL_MODULES = {
 
             return {
                 score: score, 
-                tieuDe: score === 10 ? "Cảm ơn bé đã giúp bạn cá!" : "Bạn cá đã về được hồ!",
-                icon: score === 10 ? "🏆" : "🐠",
-                message: `Bé đã nối được đường về bể và nhận được ${score}/10 sao.`        
+                tieuDe: score === 24 ? "Cảm ơn bé đã giúp bạn cá!" : "Bạn cá đã về được hồ!",
+                icon: score === 24 ? "🏆" : "🐠",
+                message: `Bé đã nối được đường về bể và nhận được ${score}/24 sao.`        
             };
         }
     }
@@ -1053,64 +1053,77 @@ $(document).ready(function() {
     });
 
     $('#btn-submit').off('click').on('click', function() {
-        let result = window.LEVEL_MODULES[window.gameState.level].check();
-        let roundMaxScore = window.MAX_SCORES[window.gameState.level] || 5;
+    let result = window.LEVEL_MODULES[window.gameState.level].check();
+    let roundMaxScore = window.MAX_SCORES[window.gameState.level] || 5;
+    let totalLevels = Object.keys(window.LEVEL_MODULES).length; // Tự động lấy tổng số vòng
 
-        let proceed = function() {
+    let proceed = function() {
             window.stopAllMedia();
+            // Ghi điểm vòng hiện tại
             window.gameState.roundScores[window.gameState.level] = roundMaxScore > 0 ? result.score : 0;
             
-            let currentTotalScore = 0; let roundsPlayed = 0;
+            // Tính toán tổng
+            let currentTotalScore = 0; 
+            let roundsPlayed = Object.keys(window.gameState.roundScores).length; // Đếm số vòng đã chấm điểm
             for(let i = 1; i <= 5; i++) {
-                if(window.gameState.roundScores[i] !== undefined) { currentTotalScore += window.gameState.roundScores[i]; roundsPlayed++; }
+                if(window.gameState.roundScores[i] !== undefined) { 
+                    currentTotalScore += window.gameState.roundScores[i]; 
+                }
             }
-            window.gameState.score = currentTotalScore; window.updateUI();
+            window.gameState.score = currentTotalScore; 
+            window.updateUI();
 
+            // LOGIC KIỂM TRA ĐIỀU KIỆN KẾT THÚC
+            // Ưu tiên 1: Làm lại vòng sai (nếu còn)
             if (window.gameState.replayQueue && window.gameState.replayQueue.length > 0) {
                 window.gameState.level = window.gameState.replayQueue.shift();
-                window.saveData(); window.loadLevelStructure(window.gameState.level);
+                window.saveData(); 
+                window.loadLevelStructure(window.gameState.level);
                 if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
             }
-            else if (roundsPlayed === 5) { // 5 vòng (1 đến 5)
-                window.showGameEnd(currentTotalScore >= PASS_SCORE, currentTotalScore);
+            // Ưu tiên 2: Nếu đã đạt vòng 5 (vòng cuối) -> Hiện màn kết thúc
+            else if (window.gameState.level >= 5) {
+                window.showGameEnd(currentTotalScore >= 25, currentTotalScore);
             }
+            // Ưu tiên 3: Chuyển vòng bình thường
             else {
                 window.gameState.level++;
-                window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
+                window.saveData(); 
+                window.loadLevelStructure(window.gameState.level); 
+                window.updateNavButtons();
                 if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
             }
         };
 
-        if (roundMaxScore === 0) { proceed(); return; }
+    if (roundMaxScore === 0) { proceed(); return; }
 
-        $('#grading-overlay').css('display', 'flex');
+    $('#grading-overlay').css('display', 'flex');
 
-        window.preloadedFeedbackAudio = null;
-        let textToRead = window.cleanTextForTTS(result.message);
-        fetch("https://api.fpt.ai/hmi/tts/v5", {
-            method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead
-        }).then(res => res.json()).then(data => {
-            if (data && data.async) {
-                let noCacheUrl = data.async + (data.async.includes('?') ? '&' : '?') + 't=' + Date.now();
-                let audio = new Audio(noCacheUrl);
-                audio.oncanplaythrough = () => { window.preloadedFeedbackAudio = audio; };
-                audio.load();
-            }
-        });
-
-        setTimeout(() => {
-            $('#grading-overlay').hide();
-            let simulatedRoundsPlayed = 0;
-            let tempRoundScores = { ...window.gameState.roundScores }; tempRoundScores[window.gameState.level] = result.score;
-            for(let i = 1; i <= 5; i++) if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
-            
-            if (simulatedRoundsPlayed === 5 && (!window.gameState.replayQueue || window.gameState.replayQueue.length === 0)) {
-                proceed();
-            } else {
-                window.showNotification(result.tieuDe, result.message, result.icon, result.score, roundMaxScore, proceed);
-            }
-        }, 2000);
+    // Tải trước phản hồi
+    window.preloadedFeedbackAudio = null;
+    let textToRead = cleanTextForTTS(result.message);
+    fetch("https://api.fpt.ai/hmi/tts/v5", {
+        method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead
+    }).then(res => res.json()).then(data => {
+        if (data && data.async) {
+            let noCacheUrl = data.async + (data.async.includes('?') ? '&' : '?') + 't=' + Date.now();
+            let audio = new Audio(noCacheUrl);
+            audio.oncanplaythrough = () => { window.preloadedFeedbackAudio = audio; };
+            audio.load();
+        }
     });
+
+    setTimeout(() => {
+        $('#grading-overlay').hide();
+        let roundsPlayed = Object.keys(window.gameState.roundScores).length + 1; // Số vòng sau khi nộp bài
+        
+        if (roundsPlayed > totalLevels && (!window.gameState.replayQueue || window.gameState.replayQueue.length === 0)) {
+            proceed();
+        } else {
+            window.showNotification(result.tieuDe, result.message, result.icon, result.score, roundMaxScore, proceed);
+        }
+    }, 2000);
+});
 
     $('#btn-reset').click(function() {
         $('#btn-close-alert, #btn-lam-lai').hide(); 
