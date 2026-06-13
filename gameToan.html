@@ -68,9 +68,7 @@
                 </div>
                 <button id="btn-submit" class="btn btn-success cute-btn px-4 py-2" style="font-size: 1.3rem; transform: scale(1.1);">✅ Chấm điểm!</button>
                 <div class="d-flex gap-2">
-                    <button id="btn-skip-test" class="btn btn-outline-dark" style="border-radius: 50px; padding: 8px 20px; font-weight: bold; border-width: 2px;">
-                ⏭️ Skip
-            </button>
+
                     <button id="btn-replay-round" class="btn btn-outline-warning" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🔄 Làm lại vòng</button>
                     <button id="btn-reset" class="btn btn-outline-danger" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🗑️ Xóa tiến trình</button>
                 </div>
@@ -114,7 +112,7 @@
 // BIẾN TOÀN CỤC CỦA GAME 1
 // =========================================================================
 window.gameState = { level: 1, score: 0, roundScores: {}, replayQueue: [] };
-window.MAX_SCORES = { 1:5, 2:5, 3:7, 4:5, 5:6 }; // Tối đa 28 điểm
+window.MAX_SCORES = { 1:5, 2:5, 3:5, 4:5, 5:5 }; // Tối đa 58 điểm
 let l1_userConnections = [];
 
 // =========================================================================
@@ -290,13 +288,13 @@ function showGameEnd(isPass, totalScore) {
 
     if (isPass) {
         $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
-        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/28 sao ở trò chơi Toán Học.\nChúc mừng bé!`);
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/25 sao ở trò chơi Toán Học.\nChúc mừng bé!`);
         SoundFX.playWin(); 
         $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="replayAll()">🔄 Chơi lại từ đầu</button>`);
         speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Toán Học!`);
     } else {
         $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
-        $('#game-end-message').text(`Bé mới đạt ${totalScore}/28 sao. Cần đạt tối thiểu 20 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/25 sao. Cần đạt tối thiểu 20 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
         SoundFX.playLose();
         window.gameState.replayQueue = [];
         for (let i = 1; i <= 5; i++) {
@@ -695,179 +693,142 @@ window.LEVEL_MODULES = {
         }
     },
     5: {
-        instruction: "Bé hãy quẹt tay khoanh vùng các cây, rồi kéo số thả vào vòng tròn nhé!",
-        render: function($container) {
-            $container.append(`
-                <h3 class="mb-2 fw-bold text-center" style="color: #2ed573;">✨ Vòng 5: Rừng Cây Nối Số</h3>
-                <div class="d-flex align-items-center justify-content-center mb-4">
-                    <h5 class="text-secondary mb-0">Quẹt tay khoanh vùng các cây, sau đó kéo số thả vào nhé!</h5>
-                    <button class="btn-speaker" data-text="Bé hãy quẹt ngón tay khoanh vùng các cây lại với nhau thành một nhóm, rồi kéo con số tương ứng thả vào nhé!" title="Nghe lại hướng dẫn">🔊</button>
-                </div>
+    instruction: "Bé hãy quẹt tay khoanh vùng các cây, rồi kéo số thả vào vòng tròn nhé!",
+    render: function($container) {
+        $container.append(`
+            <h3 class="mb-4 fw-bold text-center" style="color: #2ed573;">✨ Vòng 5: Rừng Cây Nối Số</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0">Bé hãy quẹt tay khoanh vùng các cây lại thành một nhóm, sau đó kéo con số tương ứng thả vào nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy quẹt ngón tay khoanh vùng các cây lại với nhau thành một nhóm, rồi kéo con số tương ứng thả vào nhé!" title="Nghe lại hướng dẫn">🔊</button>
+            </div>
+            
+            <div id="l5-forest-wrapper"><canvas id="l5-canvas"></canvas></div>
 
-                <div id="l5-forest-wrapper"><canvas id="l5-canvas"></canvas></div>
+            <div id="l5-numbers" class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                <div class="l5-drag-num" data-val="1">1</div>
+                <div class="l5-drag-num" data-val="2">2</div>
+                <div class="l5-drag-num" data-val="3">3</div>
+                <div class="l5-drag-num" data-val="4">4</div>
+                <div class="l5-drag-num" data-val="5">5</div>
+            </div>
+        `);
 
-                <div id="l5-numbers" class="d-flex flex-wrap justify-content-center gap-3 mt-4">
-                    <div class="l5-drag-num" data-val="1">1</div><div class="l5-drag-num" data-val="2">2</div><div class="l5-drag-num" data-val="3">3</div>
-                    <div class="l5-drag-num" data-val="4">4</div><div class="l5-drag-num" data-val="5">5</div><div class="l5-drag-num" data-val="6">6</div>
-                </div>
-            `);
+        $(".l5-drag-num").draggable({ revert: "invalid", helper: "clone", zIndex: 1000 });
 
-            $(".l5-drag-num").draggable({ revert: "invalid", helper: "clone", zIndex: 1000 });
+        setTimeout(() => { 
+            let canvas = document.getElementById("l5-canvas");
+            if(!canvas) return;
+            let ctx = canvas.getContext("2d");
+            let wrapper = $("#l5-forest-wrapper");
+            canvas.width = wrapper.width(); canvas.height = wrapper.height();
 
-            setTimeout(() => { 
-                let canvas = document.getElementById("l5-canvas");
-                if(!canvas) return;
-                let ctx = canvas.getContext("2d");
-                let wrapper = $("#l5-forest-wrapper");
-                canvas.width = wrapper.width(); canvas.height = wrapper.height();
+            let trees = []; let allPaths = []; let waitingPath = []; let currentPath = [];
+            let isDrawing = false; let mouseX = 0, mouseY = 0;
 
-                let trees = []; let allPaths = []; let waitingPath = []; let currentPath = [];
-                let isDrawing = false; let mouseX = 0, mouseY = 0;
+            let cols = 7, rows = 3; let cellW = canvas.width / cols; let cellH = canvas.height / rows;
+            for (let i = 0; i < 21; i++) {
+                let col = i % cols; let row = Math.floor(i / cols);
+                let x = col * cellW + cellW / 2 + (Math.random() * 20 - 10);
+                let y = row * cellH + cellH / 2 + (Math.random() * 20 - 10);
+                trees.push({ x: x, y: y, id: i, isLocked: false });
+                wrapper.append(`<div class="l5-tree-node" style="left: ${x}px; top: ${y}px;"><img src="../IMG/cau5.png"></div>`);
+            }
 
-                let cols = 7, rows = 3; let cellW = canvas.width / cols; let cellH = canvas.height / rows;
-                for (let i = 0; i < 21; i++) {
-                    let col = i % cols; let row = Math.floor(i / cols);
-                    let x = col * cellW + cellW / 2 + (Math.random() * 20 - 10);
-                    let y = row * cellH + cellH / 2 + (Math.random() * 20 - 10);
-                    trees.push({ x: x, y: y, id: i, isLocked: false });
-                    wrapper.append(`<div class="l5-tree-node" style="left: ${x}px; top: ${y}px;"><img src="IMG/cau5.png"></div>`);
-                }
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
 
-                function draw() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
-
-                    allPaths.forEach(p => {
-                        ctx.strokeStyle = '#2ed573'; ctx.fillStyle = 'rgba(46, 213, 115, 0.2)';
-                        ctx.beginPath();
-                        for (let i = 0; i < p.path.length; i++) { let tree = trees[p.path[i]]; if (i === 0) ctx.moveTo(tree.x, tree.y); else ctx.lineTo(tree.x, tree.y); }
-                        if (p.path.length > 1) ctx.closePath(); ctx.fill(); ctx.stroke();
-                    });
-
-                    if (waitingPath.length > 0) {
-                        ctx.strokeStyle = '#ff9ff3'; ctx.fillStyle = 'rgba(255, 159, 243, 0.2)';
-                        ctx.beginPath();
-                        for (let i = 0; i < waitingPath.length; i++) { let tree = trees[waitingPath[i]]; if (i === 0) ctx.moveTo(tree.x, tree.y); else ctx.lineTo(tree.x, tree.y); }
-                        if (waitingPath.length > 1) ctx.closePath(); ctx.fill(); ctx.stroke();
-                    }
-
-                    if (currentPath.length > 0) {
-                        ctx.strokeStyle = '#ff9ff3'; ctx.beginPath();
-                        for (let i = 0; i < currentPath.length; i++) { let tree = trees[currentPath[i]]; if (i === 0) ctx.moveTo(tree.x, tree.y); else ctx.lineTo(tree.x, tree.y); }
-                        if (isDrawing) ctx.lineTo(mouseX, mouseY); ctx.stroke();
-                    }
-                }
-
-                function getPos(e) {
-                    let evt = e.originalEvent; let rect = canvas.getBoundingClientRect();
-                    if (evt.touches && evt.touches.length > 0) return { x: evt.touches[0].clientX - rect.left, y: evt.touches[0].clientY - rect.top };
-                    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-                }
-
-                function findNearTree(x, y) {
-                    for (let i = 0; i < trees.length; i++) {
-                        if (trees[i].isLocked) continue;
-                        if (Math.sqrt(Math.pow(trees[i].x - x, 2) + Math.pow(trees[i].y - y, 2)) < 35) return i; 
-                    }
-                    return -1;
-                }
-
-                $(canvas).on("mousedown touchstart", function(e) {
-                    e.preventDefault();
-                    if (waitingPath.length > 0) { waitingPath = []; $(".l5-drop-zone").not(".locked").remove(); draw(); }
-                    let pos = getPos(e); let treeIdx = findNearTree(pos.x, pos.y);
-                    if (treeIdx !== -1) { isDrawing = true; currentPath = [treeIdx]; mouseX = pos.x; mouseY = pos.y; draw(); }
+                allPaths.forEach(p => {
+                    ctx.strokeStyle = '#2ed573'; ctx.fillStyle = 'rgba(46, 213, 115, 0.2)';
+                    ctx.beginPath();
+                    for (let i = 0; i < p.path.length; i++) { let tree = trees[p.path[i]]; if (i === 0) ctx.moveTo(tree.x, tree.y); else ctx.lineTo(tree.x, tree.y); }
+                    if (p.path.length > 1) ctx.closePath(); ctx.fill(); ctx.stroke();
                 });
 
-                $(canvas).on("mousemove touchmove", function(e) {
-                    if (!isDrawing) return; e.preventDefault(); let pos = getPos(e); mouseX = pos.x; mouseY = pos.y;
-                    let treeIdx = findNearTree(mouseX, mouseY);
-                    if (treeIdx !== -1 && !currentPath.includes(treeIdx)) currentPath.push(treeIdx);
-                    draw();
-                });
+                if (waitingPath.length > 0) {
+                    ctx.strokeStyle = '#ff9ff3'; ctx.fillStyle = 'rgba(255, 159, 243, 0.2)';
+                    ctx.beginPath();
+                    for (let i = 0; i < waitingPath.length; i++) { let tree = trees[waitingPath[i]]; if (i === 0) ctx.moveTo(tree.x, tree.y); else ctx.lineTo(tree.x, tree.y); }
+                    if (waitingPath.length > 1) ctx.closePath(); ctx.fill(); ctx.stroke();
+                }
 
-                $(canvas).on("mouseup touchend", function(e) {
-                    if (!isDrawing) return; isDrawing = false;
-                    if (currentPath.length > 0) {
-                        waitingPath = [...currentPath]; currentPath = []; draw();
-                        let sumX = 0, sumY = 0; waitingPath.forEach(idx => { sumX += trees[idx].x; sumY += trees[idx].y; });
-                        let cx = sumX / waitingPath.length; let cy = sumY / waitingPath.length;
+                if (currentPath.length > 0) {
+                    ctx.strokeStyle = '#ff9ff3'; ctx.beginPath();
+                    for (let i = 0; i < currentPath.length; i++) { let tree = trees[currentPath[i]]; if (i === 0) ctx.moveTo(tree.x, tree.y); else ctx.lineTo(tree.x, tree.y); }
+                    if (isDrawing) ctx.lineTo(mouseX, mouseY); ctx.stroke();
+                }
+            }
 
-                        let $dropZone = $(`<div class="l5-drop-zone" data-count="${waitingPath.length}"></div>`);
-                        $dropZone.css({ left: cx + 'px', top: cy + 'px' }); wrapper.append($dropZone);
+            function getPos(e) {
+                let evt = e.originalEvent; let rect = canvas.getBoundingClientRect();
+                if (evt.touches && evt.touches.length > 0) return { x: evt.touches[0].clientX - rect.left, y: evt.touches[0].clientY - rect.top };
+                return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            }
 
-                        $dropZone.droppable({
-                            accept: ".l5-drag-num",
-                            drop: function(event, ui) {
-                                let num = parseInt(ui.draggable.data("val")); let count = $(this).data("count");
-                                if (num === count) {
-                                    ui.draggable.appendTo(wrapper).css({ position: 'absolute', top: cy - 30 + 'px', left: cx - 30 + 'px', zIndex: 20 });
-                                    ui.draggable.draggable("disable"); $(this).droppable("disable").addClass("locked");
-                                    waitingPath.forEach(tIdx => { trees[tIdx].isLocked = true; $(".l5-tree-node").eq(tIdx).addClass("locked-tree"); });
-                                    allPaths.push({ path: [...waitingPath] }); waitingPath = []; draw();
-                                } else {
-                                    $(this).remove(); waitingPath = []; draw();
-                                }
+            function findNearTree(x, y) {
+                for (let i = 0; i < trees.length; i++) {
+                    if (trees[i].isLocked) continue;
+                    if (Math.sqrt(Math.pow(trees[i].x - x, 2) + Math.pow(trees[i].y - y, 2)) < 35) return i; 
+                }
+                return -1;
+            }
+
+            $(canvas).on("mousedown touchstart", function(e) {
+                e.preventDefault();
+                if (waitingPath.length > 0) { waitingPath = []; $(".l5-drop-zone").not(".locked").remove(); draw(); }
+                let pos = getPos(e); let treeIdx = findNearTree(pos.x, pos.y);
+                if (treeIdx !== -1) { isDrawing = true; currentPath = [treeIdx]; mouseX = pos.x; mouseY = pos.y; draw(); }
+            });
+
+            $(canvas).on("mousemove touchmove", function(e) {
+                if (!isDrawing) return; e.preventDefault(); let pos = getPos(e); mouseX = pos.x; mouseY = pos.y;
+                let treeIdx = findNearTree(mouseX, mouseY);
+                if (treeIdx !== -1 && !currentPath.includes(treeIdx)) currentPath.push(treeIdx);
+                draw();
+            });
+
+            $(canvas).on("mouseup touchend", function(e) {
+                if (!isDrawing) return; isDrawing = false;
+                if (currentPath.length > 0) {
+                    waitingPath = [...currentPath]; currentPath = []; draw();
+                    let sumX = 0, sumY = 0; waitingPath.forEach(idx => { sumX += trees[idx].x; sumY += trees[idx].y; });
+                    let cx = sumX / waitingPath.length; let cy = sumY / waitingPath.length;
+
+                    let $dropZone = $(`<div class="l5-drop-zone" data-count="${waitingPath.length}"></div>`);
+                    $dropZone.css({ left: cx + 'px', top: cy + 'px' }); wrapper.append($dropZone);
+
+                    $dropZone.droppable({
+                        accept: ".l5-drag-num",
+                        drop: function(event, ui) {
+                            let num = parseInt(ui.draggable.data("val")); let count = $(this).data("count");
+                            if (num === count) {
+                                ui.draggable.appendTo(wrapper).css({ position: 'absolute', top: cy - 30 + 'px', left: cx - 30 + 'px', zIndex: 20 });
+                                ui.draggable.draggable("disable"); $(this).droppable("disable").addClass("locked");
+                                waitingPath.forEach(tIdx => { trees[tIdx].isLocked = true; $(".l5-tree-node").eq(tIdx).addClass("locked-tree"); });
+                                allPaths.push({ path: [...waitingPath] }); waitingPath = []; draw();
+                            } else {
+                                $(this).remove(); waitingPath = []; draw();
                             }
-                        });
-                    }
-                });
-            }, 100);
-        },
-        check: function() {
-            let soCauDung = $(".l5-drop-zone.locked").length; 
-            return { 
-                score: soCauDung * 1, 
-                tieuDe: soCauDung === 6 ? "Tuyệt Vời Quá Bé Ơi!" : "Cố Lên Nào Bé Yêu!", 
-                icon: soCauDung === 6 ? "🌟" : "🍀", 
-                message: `Bé đã gom đúng ${soCauDung}/6 cụm cây!\nCộng dồn thêm ${soCauDung * 1} điểm nhé!` 
-            };
-        }
+                        }
+                    });
+                }
+            });
+        }, 100);
+    },
+    check: function() {
+        let soCauDung = $(".l5-drop-zone.locked").length; 
+        return { 
+            score: soCauDung * 1, 
+            tieuDe: soCauDung === 5 ? "Tuyệt Vời Quá Bé Ơi!" : "Cố Lên Nào Bé Yêu!", 
+            icon: soCauDung === 5 ? "🌟" : "🍀", 
+            message: `Bé đã gom đúng ${soCauDung}/5 nhóm cây!\nCộng dồn thêm ${soCauDung * 1} điểm nhé!` 
+        };
     }
+},
 };
 
 $(document).ready(function() {
-    // === NÚT SKIP (DÀNH CHO DEV TEST) TỐI ƯU CHO GAME ĐỘC LẬP ===
-    $('#btn-skip-test').off('click').on('click', function() {
-        if(typeof window.stopAllMedia === 'function') window.stopAllMedia();
-        
-        // 1. Tự động lấy danh sách các vòng có trong game hiện tại (Dùng để thay thế getGameContext)
-        let availableLevels = Object.keys(window.LEVEL_MODULES).map(Number).sort((a, b) => a - b);
-        let currentIndex = availableLevels.indexOf(window.gameState.level);
-
-        // 2. Nếu chưa phải vòng cuối cùng của file này
-        if (currentIndex !== -1 && currentIndex < availableLevels.length - 1) {
-            
-            // Cộng full điểm ảo cho vòng này để qua bài suôn sẻ
-            let maxPoint = window.MAX_SCORES[window.gameState.level] || 5;
-            window.gameState.roundScores[window.gameState.level] = maxPoint;
-            
-            // Tính toán lại tổng điểm hiển thị trên góc phải
-            let total = 0;
-            for(let key in window.gameState.roundScores) {
-                total += window.gameState.roundScores[key];
-            }
-            window.gameState.score = total;
-            if(typeof window.updateUI === 'function') window.updateUI();
-
-            // Nhảy sang vòng kế tiếp
-            window.gameState.level = availableLevels[currentIndex + 1];
-            if(typeof window.saveData === 'function') window.saveData();
-            
-            // Ẩn vòng cũ, load vòng mới
-            $('.level-wrapper').hide();
-            if(typeof window.loadLevelStructure === 'function') window.loadLevelStructure(window.gameState.level);
-            if(typeof window.updateNavButtons === 'function') window.updateNavButtons();
-            
-            // Tự động đọc đề vòng mới
-            if(window.LEVEL_MODULES[window.gameState.level] && typeof window.speakInstruction === 'function') {
-                window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
-            }
-        } else {
-            // Đã là vòng cuối cùng, tự động kích hoạt nút Chấm Điểm (màu xanh) để kết thúc game luôn
-            $('#btn-submit').click();
-        }
-    });
+    
     // 1. TỪ WELCOME SCREEN -> RA MÀN HÌNH INTRO
     $('#btn-to-start-screen').click(function() {
         $('#welcome-screen').fadeOut(500, function() {

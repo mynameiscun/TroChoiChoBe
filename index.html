@@ -1206,6 +1206,9 @@
     <div class="card-footer bg-white border-0 p-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div class="d-flex gap-2">
+                         <button id="btn-skip-test" class="btn btn-outline-dark" style="border-radius: 50px; padding: 8px 20px; font-weight: bold; border-width: 2px;">
+                ⏭️ Skip
+            </button>
                     <button id="btn-prev" class="btn btn-secondary nav-btn">⬅️ Quay lại</button>
                     <button id="btn-next" class="btn btn-primary nav-btn disabled"> Tiếp theo ➡️</button>
                 </div>
@@ -1413,18 +1416,47 @@ const MAX_SCORES = {
     1:5, 2:5, 3:7, 4:5, 5:6, 6:6, 7:4, 8:6, 9:4, 10:6, 11:5, 12:0, 13:10, 14:8, 15:8, 16:10, 17:5, 18:4, 19:5, 20:6, 21:8, 22:12, 23:10, 24:9, 25:6, 26:24, 27:6, 
     28:1, 29:1, 30:1, 31:1, 32:1, 33:1, 34:1 
 };
-$('#btn-skip-test').click(function() {
-    gameState.level++; // Tăng level ngay lập tức
-    saveData();        // Lưu tiến trình
-    loadLevelStructure(gameState.level); // Load nội dung level mới
-    updateNavButtons(); // Kiểm tra nút Next
-    updateUI();         // Cập nhật lại số vòng trên UI
-    
-    // Đọc hướng dẫn của level mới (nếu có)
-    if(LEVEL_MODULES[gameState.level]) {
-        speakInstruction(LEVEL_MODULES[gameState.level].instruction);
-    }
-});
+// === NÚT SKIP (DÀNH CHO DEV TEST) TỐI ƯU CHO GAME ĐỘC LẬP ===
+    $('#btn-skip-test').off('click').on('click', function() {
+        if(typeof window.stopAllMedia === 'function') window.stopAllMedia();
+        
+        // 1. Tự động lấy danh sách các vòng có trong game hiện tại (Dùng để thay thế getGameContext)
+        let availableLevels = Object.keys(window.LEVEL_MODULES).map(Number).sort((a, b) => a - b);
+        let currentIndex = availableLevels.indexOf(window.gameState.level);
+
+        // 2. Nếu chưa phải vòng cuối cùng của file này
+        if (currentIndex !== -1 && currentIndex < availableLevels.length - 1) {
+            
+            // Cộng full điểm ảo cho vòng này để qua bài suôn sẻ
+            let maxPoint = window.MAX_SCORES[window.gameState.level] || 5;
+            window.gameState.roundScores[window.gameState.level] = maxPoint;
+            
+            // Tính toán lại tổng điểm hiển thị trên góc phải
+            let total = 0;
+            for(let key in window.gameState.roundScores) {
+                total += window.gameState.roundScores[key];
+            }
+            window.gameState.score = total;
+            if(typeof window.updateUI === 'function') window.updateUI();
+
+            // Nhảy sang vòng kế tiếp
+            window.gameState.level = availableLevels[currentIndex + 1];
+            if(typeof window.saveData === 'function') window.saveData();
+            
+            // Ẩn vòng cũ, load vòng mới
+            $('.level-wrapper').hide();
+            if(typeof window.loadLevelStructure === 'function') window.loadLevelStructure(window.gameState.level);
+            if(typeof window.updateNavButtons === 'function') window.updateNavButtons();
+            
+            // Tự động đọc đề vòng mới
+            if(window.LEVEL_MODULES[window.gameState.level] && typeof window.speakInstruction === 'function') {
+                window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+        } else {
+            // Đã là vòng cuối cùng, tự động kích hoạt nút Chấm Điểm (màu xanh) để kết thúc game luôn
+            $('#btn-submit').click();
+        }
+    });
     // =========================================================================
     // CẤU HÌNH API FPT.AI (TEXT TO SPEECH)
     // =========================================================================
