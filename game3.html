@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thế Giới Bé Ngoan - Game 3</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="style.css">
+ 
+</head>
+<body>
+
+<div id="audio-loading-overlay">
+    <img src="IMG/thay_u_tron.png" width="120" class="teacher-bounce mb-3">
+    <h3 class="fw-bold" style="color: #0984e3;">Thầy Ú Tròn đang đọc đề...</h3>
+</div>
+
+<audio id="bg-music" src="AUDIO/game.mp3"></audio>
+
+<div id="welcome-screen">
+    <h1 class="bounce-animation" style="color: #880E4F; font-weight: 900; font-size: 3.5rem; text-shadow: 2px 2px 0px #fff; margin-bottom: 25px;">
+        TRƯỜNG MẦM NON 6
+    </h1>
+    <h2 class="bounce-animation" style="color: #5D4037; font-weight: 700; margin-bottom: 10px; font-size: 1.8rem; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+        Giáo viên: Bùi Thị Thúy Nga
+    </h2>
+    <h3 class="bounce-animation" style="color: #5D4037; font-weight: 700; margin-bottom: 40px; font-size: 1.5rem; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+        Lứa tuổi: 4 - 5 tuổi
+    </h3>
+    <button id="btn-to-start-screen" class="btn-start" style="background-color: #E91E63; color: #fff; border: none; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);">
+        Khám phá ➡️
+    </button>
+</div>
+
+<div id="game3-intro-screen">
+    <div class="bounce-animation">
+        <img src="IMG/icon_chu.png" alt="Game 3 Icon" width="120" style="margin-bottom: 20px;">
+    </div>
+    <h1 class="game-title bounce-animation" style="text-shadow: 4px 4px 0px #00b894;">Trò Chơi<br>Chữ Cái a, A 🔤</h1>
+    <h3 class="text-white mb-5" style="font-weight: 700; text-shadow: 2px 2px 0px rgba(0,0,0,0.1);">Bé cùng học chữ cái với thầy Ú Tròn nhé!</h3>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <button id="btn-start-game3" class="btn-start" style="background-color: #55efc4; color: #fff; border-color: #fff;">Bắt Đầu! 🚀</button>
+    </div>
+</div>
+
+<div id="main-game" class="container mt-5" style="display: none;">
+    <div class="card cute-card">
+        <div class="card-header cute-header text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0 fw-bold bg-warning text-dark px-4 py-2" style="border-radius: 20px;">
+                ⭐ Điểm: <span id="current-score">0</span>
+            </h3>
+        </div>
+        
+        <div class="card-body p-4 d-flex flex-column" style="min-height: 500px;">
+            <div id="game-container" class="flex-grow-1"></div>
+        </div>
+
+        <div class="card-footer bg-white border-0 p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex gap-2">
+                    <button id="btn-prev" class="btn btn-secondary nav-btn disabled">⬅️ Quay lại</button>
+                    <button id="btn-next" class="btn btn-primary nav-btn disabled"> Tiếp theo ➡️</button>
+                </div>
+                <button id="btn-submit" class="btn btn-success cute-btn px-4 py-2" style="font-size: 1.3rem; transform: scale(1.1);">✅ Chấm điểm!</button>
+                <div class="d-flex gap-2">
+                    <button id="btn-replay-round" class="btn btn-outline-warning" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🔄 Làm lại vòng</button>
+                    <button id="btn-reset" class="btn btn-outline-danger" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🗑️ Xóa tiến trình</button>
+                </div>
+            </div>
+        </div>  
+    </div>
+</div>
+
+<div id="custom-alert-overlay" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+        <h3 id="custom-alert-title" style="color: #ff4757; font-weight: 900;"></h3>
+        <p id="custom-alert-message" style="font-size: 18px; color: #555; white-space: pre-line;"></p>
+        <div class="d-flex justify-content-center gap-2">
+            <button id="btn-lam-lai" class="btn btn-warning btn-cute">Làm lại vòng</button>
+            <button id="btn-close-alert" class="btn btn-cute">Tiếp tục!</button>
+            <button id="btn-confirm-reset" class="btn btn-success btn-cute" style="display:none;">Chắc chắn</button>
+            <button id="btn-cancel-reset" class="btn btn-secondary btn-cute" style="display:none;">Hủy bỏ</button>
+        </div>
+    </div>
+</div>
+
+<div id="game-end-overlay" class="custom-alert-overlay">
+    <div class="custom-alert-box" style="max-width: 550px;">
+        <h1 id="game-end-title" class="fw-bold mb-3" style="font-size: 2.5rem;"></h1>
+        <p id="game-end-message" class="fs-5 mb-4" style="color: #555; white-space: pre-line;"></p>
+        <div id="game-end-buttons" class="d-flex justify-content-center align-items-center gap-3 flex-wrap"></div>
+    </div>
+</div>
+
+<div id="grading-overlay">
+    <img src="IMG/thay_u_tron_diem.png" width="150" class="teacher-bounce">
+    <h2 class="mt-4 fw-bold" style="color: #6c5ce7;">Thầy Ú Tròn đang chấm điểm...</h2>
+</div>
+
+<div id="app-logo">
+    <a href="#welcome-screen"><img src="IMG/logo.jpg" alt="Logo"></a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
+<script>
+// =========================================================================
+// BIẾN TOÀN CỤC CỦA GAME 3 (CHỮ CÁI A, A - Vòng 12 -> 16)
+// =========================================================================
+window.gameState = { level: 1, score: 0, roundScores: {}, replayQueue: [] };
+window.MAX_SCORES = { 1:2, 2:10, 3:8, 4:8, 5:10 }; // Tối đa 38 điểm
+// const PASS_SCORE = 25; 
+
+// =========================================================================
+// HỆ THỐNG HIỆU ỨNG ÂM THANH MẶC ĐỊNH
+// =========================================================================
+const SoundFX = {
+    ctx: null,
+    init: function() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); },
+    playClick: function() {
+        try { this.init(); let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + 0.05); } catch(e) {}
+    },
+    playWin: function() {
+        try { this.init(); [440, 554, 659, 880].forEach((freq, i) => { let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'sine'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1); gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + i * 0.1 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.1 + 0.5);
+        osc.start(this.ctx.currentTime + i * 0.1); osc.stop(this.ctx.currentTime + i * 0.1 + 0.5); }); } catch(e) {}
+    },
+    playLose: function() {
+        try { this.init(); let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.4, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + 0.5); } catch(e) {}
+    }
+};
+
+let lastClickTime = 0;
+$(document).on('mousedown touchstart', 'button, .btn, canvas, input, .l15-option-img, .maze-cell', function() {
+    let now = Date.now(); if (now - lastClickTime > 100) { SoundFX.playClick(); lastClickTime = now; }
+});
+
+function stopAllMedia() {
+    $('audio:not(#bg-music), video').each(function() { this.pause(); this.currentTime = 0; });
+    if (window.currentAudio) window.currentAudio.pause();
+    $('.btn-speaker').removeClass('playing');
+}
+
+// =========================================================================
+// API FPT - ĐỌC ÂM THANH & SMART LOADER (ĐÃ FIX KẸT)
+// =========================================================================
+const FPT_API_KEY = '372DQFfUtnFcELppozNYtYlcCRfy9Jmr'; 
+window.currentAudio = null; window.audioLoaderTimer = null; window.preloadedFeedbackAudio = null;
+
+// Hàm bắt buộc tắt Loader
+window.forceHideAudioLoader = function() {
+    if (window.audioLoaderTimer) { clearTimeout(window.audioLoaderTimer); window.audioLoaderTimer = null; }
+    $('#audio-loading-overlay').hide();
+};
+
+function cleanTextForTTS(text) { return String(text || "").replace(/[🌈🎉⭐❤️💖🔊✨🧸🚀🍎🍌🍇🍭🎈🌟🎯🧮🔄✅🍀🌸👑🎠]/g, "").replace(/\s+/g, " ").trim(); }
+
+// HÀM ĐỌC TEXT
+window.speakInstruction = function(vanBan, btnElement = null, callback = null, useLoader = false) {
+    const textToRead = cleanTextForTTS(vanBan);
+    if (!textToRead) { if(callback) callback(); return; }
+    if (btnElement) $(btnElement).addClass('playing');
+
+    if (useLoader) {
+        window.forceHideAudioLoader(); 
+        // 400ms sau chưa load xong API mới hiện khung (để tránh chớp nháy màn hình)
+        window.audioLoaderTimer = setTimeout(() => { $('#audio-loading-overlay').css('display', 'flex'); }, 400); 
+    }
+
+    let bgMusic = document.getElementById('bg-music');
+    if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+
+    fetch("https://api.fpt.ai/hmi/tts/v5", { method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead })
+    .then(res => res.json()).then(data => {
+        window.forceHideAudioLoader();
+        if (data && data.async) checkAndPlayAudio(data.async, 0, btnElement, callback);
+        else if(callback) callback();
+    }).catch(e => { window.forceHideAudioLoader(); if(callback) callback(); });
+}
+
+// HÀM BẬT FILE MP3 VÀ BẢO ĐẢM TẮT KHUNG
+function checkAndPlayAudio(url, retry, btnElement, callback) {
+    if(retry > 15) { 
+        if(btnElement) $(btnElement).removeClass('playing');
+        window.forceHideAudioLoader(); let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; if(callback) callback(); return;
+    }
+    
+    // FIX LỖI TẠO URL LÀM API FPT LỖI 404 KHIẾN LOA TỊT NGÒI
+    let noCacheUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(); 
+    let audio = new Audio(noCacheUrl);
+    
+    const onAudioReady = () => { window.forceHideAudioLoader(); };
+    audio.addEventListener('loadeddata', onAudioReady); 
+    audio.addEventListener('canplay', onAudioReady);
+    audio.addEventListener('playing', onAudioReady);
+    audio.addEventListener('timeupdate', () => { if (audio.currentTime > 0.1) onAudioReady(); });
+
+    audio.oncanplaythrough = function() {
+        onAudioReady(); window.currentAudio = audio;
+        let playPromise = audio.play();
+        if (playPromise !== undefined) playPromise.catch(e => { onAudioReady(); });
+    };
+
+    audio.onended = function() {
+        if(btnElement) $(btnElement).removeClass('playing');
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; 
+        if(callback) callback();
+    };
+    audio.onerror = () => setTimeout(() => checkAndPlayAudio(url, retry + 1, btnElement, callback), 1000);
+    audio.load();
+}
+
+// Gắn sự kiện cho nút loa tròn
+$(document).on('click', '.btn-speaker', function() { window.speakInstruction($(this).attr('data-text'), this); });
+
+// =========================================================================
+// CÁC HÀM XỬ LÝ GIAO DIỆN HỆ THỐNG
+// =========================================================================
+function saveData() { localStorage.setItem('game3Progress', JSON.stringify(window.gameState)); }
+function updateUI() { $('#current-level').text(window.gameState.level); $('#current-score').text(window.gameState.score); }
+
+function updateNavButtons() {
+    if (window.gameState.roundScores[window.gameState.level] !== undefined) $('#btn-next').removeClass('disabled').css('cursor', 'pointer');
+    else $('#btn-next').addClass('disabled').css('cursor', 'not-allowed');
+
+    if (window.gameState.level === 1) $('#btn-prev').addClass('disabled').css('cursor', 'not-allowed');
+    else $('#btn-prev').removeClass('disabled').css('cursor', 'pointer');
+}
+
+function showNotification(title, message, icon, score, total, callback) {
+    $('#btn-confirm-reset, #btn-cancel-reset').hide();
+    $('#custom-alert-title').prev('img').remove();
+    
+    let isGood = (score > total / 2) || (score === total && total > 0) || total === 0;
+    let gifUrl = isGood ? 'IMG/thay_u_tron_vui.png' : ((score === total/2) ? 'IMG/thay_u_tron_binh_thuong.png' : 'IMG/thay_u_tron_buon.png');
+    $('#custom-alert-title').before(`<img src="${gifUrl}" width="80" class="mb-2 teacher-bounce">`);
+    
+    $('#custom-alert-title').text(title); $('#custom-alert-message').text(message); 
+    
+    if (isGood) SoundFX.playWin(); else SoundFX.playLose();
+    
+    let isPass = (total === 0) || (score >= total * 0.6);
+    if (!isPass) { $('#btn-close-alert').hide(); $('#btn-lam-lai').show(); } 
+    else if (score < total && total > 0) { $('#btn-close-alert').show(); $('#btn-lam-lai').show(); } 
+    else { $('#btn-close-alert').show(); $('#btn-lam-lai').hide(); }
+
+    $('#custom-alert-overlay').css('display', 'flex');
+
+    if (window.preloadedFeedbackAudio) {
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+        window.currentAudio = window.preloadedFeedbackAudio;
+        window.currentAudio.play().catch(e => {});
+        window.currentAudio.onended = function() { if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; };
+        window.preloadedFeedbackAudio = null;
+    } else { window.speakInstruction(message); }
+
+    $('#btn-close-alert').off('click').on('click', function() {
+        if (window.currentAudio) { window.currentAudio.pause(); window.currentAudio = null; }
+        $('#custom-alert-overlay').hide();
+        if (typeof callback === 'function') callback();
+    });
+}
+
+function showGameEnd(isPass, totalScore) {
+    $('#game-end-overlay').css('display', 'flex');
+    let $buttons = $('#game-end-buttons'); $buttons.empty();
+
+    if (isPass) {
+        $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/36 sao ở trò chơi Chữ Cái a, A.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
+        SoundFX.playWin(); 
+        $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="replayAll()">🔄 Chơi lại từ đầu</button>`);
+        $buttons.append(`<button class="btn btn-success btn-cute" style="transform: scale(1.15); font-weight: 900; background-color: #ff4757; padding: 15px 30px;" onclick="nextGame()">➡️ Qua màn tiếp theo</button>`);
+        window.speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Chữ Cái a, A!`);
+    } else {
+        $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/36 sao. Cần đạt tối thiểu 25 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        SoundFX.playLose();
+        window.gameState.replayQueue = [];
+        for (let i = 1; i <= 5; i++) {
+            if (window.gameState.roundScores[i] !== undefined && window.gameState.roundScores[i] < window.MAX_SCORES[i]) {
+                window.gameState.replayQueue.push(i);
+            }
+        }
+        $buttons.append(`<button class="btn btn-warning btn-cute" style="transform: scale(1.1); font-weight: 900;" onclick="startReplay()">🔄 Chơi lại các vòng sai</button>`);
+        window.speakInstruction("Bé cần cố gắng thêm một chút nữa nhé! Hãy ấn nút để làm lại các vòng sai.");
+    }
+}
+
+window.loadLevelStructure = function(level) {
+    let $mainContainer = $('#game-container');
+    $mainContainer.children('.level-wrapper').hide();
+    $('#btn-submit').show();
+
+    if (window.LEVEL_MODULES[level]) {
+        let $levelWrapper = $(`#level-wrapper-${level}`);
+        if ($levelWrapper.length === 0) {
+            $levelWrapper = $(`<div id="level-wrapper-${level}" class="level-wrapper"></div>`);
+            $levelWrapper.append(`<div class="text-center mb-4"><img src="IMG/thay_u_tron.png" width="100" class="teacher-bounce"></div>`);
+            $mainContainer.append($levelWrapper); 
+            window.LEVEL_MODULES[level].render($levelWrapper);
+        }
+        $levelWrapper.show();
+        updateNavButtons();
+    } else {
+        let finishText = "Chúc Mừng Bé! Bé đã xuất sắc hoàn thành tất cả các màn chơi!";
+        let $finishWrapper = $('#finish-wrapper');
+        if ($finishWrapper.length === 0) {
+            $finishWrapper = $(`<div id="finish-wrapper" class="level-wrapper"></div>`);
+            $finishWrapper.html(`
+                <div class="text-center bounce-animation mt-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3113/3113054.png" width="130" class="mb-4">
+                    <h1 class="fw-bold" style="color: #ff6b81; font-size: 3.5rem;">Chúc Mừng Bé! 🏆</h1>
+                    <h2 id="final-score-display" class="mt-4 p-3 bg-warning d-inline-block" style="border-radius: 20px; color:#fff; font-weight:900;">Tổng điểm đạt được: ${window.gameState.score} ⭐</h2>
+                </div>
+            `);
+            $mainContainer.append($finishWrapper);
+        } else { $('#final-score-display').text(`Tổng điểm đạt được: ${window.gameState.score} ⭐`); }
+        $finishWrapper.show(); $('#btn-submit').hide(); window.speakInstruction(finishText, null);
+    }
+};
+
+window.replayAll = function() {
+    $('#game-end-overlay').hide();
+    window.gameState.level = 1; 
+    for(let i = 1; i <= 5; i++) {
+        delete window.gameState.roundScores[i]; 
+        $(`#level-wrapper-${i}`).remove(); 
+    }
+    window.gameState.replayQueue = []; window.gameState.score = 0; saveData(); updateUI(); window.loadLevelStructure(1);
+    window.speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
+};
+
+window.startReplay = function() {
+    $('#game-end-overlay').hide();
+    window.gameState.level = window.gameState.replayQueue.shift(); 
+    saveData();
+    $(`#level-wrapper-${window.gameState.level}`).remove(); 
+    window.loadLevelStructure(window.gameState.level);
+    window.speakInstruction("Chúng ta cùng làm lại vòng " + window.gameState.level + " nhé!", null, null, true);
+};
+
+window.nextGame = function() {
+    window.location.href = "game4.html"; // Chuyển sang Game 4
+};
+
+
+// =========================================================================
+// DỮ LIỆU CÁC VÒNG CỦA GAME 3 (VÒNG 1 -> 5)
+// =========================================================================
+window.LEVEL_MODULES = {
+    1: {
+    instruction: "Bé hãy tìm chiếc áo có chữ A hoa và chiếc quần có chữ a thường rồi kéo vào khung nhé!",
+    render: function($container) {
+        // CẤU HÌNH DỮ LIỆU: 8 Item (2 Đúng, 6 Nhử)
+        let items = [
+            { id: 1, type: 'target_A', img: 'IMG/ao_A.png' }, 
+            { id: 2, type: 'target_a', img: 'IMG/quan_a.png' }, 
+            { id: 3, type: 'fake', img: 'IMG/ao (1).png' }, 
+            { id: 4, type: 'fake', img: 'IMG/quan (1).png' }, 
+            { id: 5, type: 'fake', img: 'IMG/ao (2).png' }, 
+            { id: 6, type: 'fake', img: 'IMG/quan (2).png' }, 
+            { id: 7, type: 'fake', img: 'IMG/ao (3).png' }, 
+            { id: 8, type: 'fake', img: 'IMG/quan (3).png' }  
+        ];
+
+        // Xáo trộn ngẫu nhiên 8 item
+        items.sort(() => Math.random() - 0.5);
+
+        $container.append(`
+            <h3 class="mb-4 fw-bold text-center" style="color: #00b894;">✨ Vòng 1: Tìm Quần Áo Chữ a, A</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0" id="l12-instruction">Kéo Áo chữ <b>A</b> và Quần chữ <b>a</b> vào đúng khung nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy tìm chiếc áo có chữ A hoa và chiếc quần có chữ a thường, rồi kéo vào đúng khung tương ứng nhé!" title="Nghe lại">🔊</button>
+            </div>
+            
+            <div class="d-flex justify-content-center gap-4 my-4">
+                <div class="l12-drop-box d-flex flex-column align-items-center">
+                    <h5 class="fw-bold" style="color: #a29bfe;">Áo chữ A</h5>
+                    <div class="l12-drop-zone" data-accept="target_A" style="border-color: #a29bfe;"></div>
+                </div>
+                
+                <div class="l12-drop-box d-flex flex-column align-items-center">
+                    <h5 class="fw-bold" style="color: #fab1a0;">Quần chữ a</h5>
+                    <div class="l12-drop-zone" data-accept="target_a" style="border-color: #fab1a0;"></div>
+                </div>
+            </div>
+
+            <div id="l12-tray" class="d-flex flex-wrap justify-content-center gap-3 mt-4" style="min-height: 150px; border: 4px dashed #ffeaa7; border-radius: 20px; background-color: #fff9fa; padding: 20px;">
+                ${items.map(item => `
+                    <div class="l12-drag-item" data-type="${item.type}">
+                        <img src="${item.img}" alt="Clothes">
+                    </div>
+                `).join('')}
+            </div>
+
+            <style>
+                .l12-drop-zone {
+                    width: 130px; height: 130px;
+                    border: 4px dashed; border-radius: 20px;
+                    background-color: #fff;
+                    display: flex; align-items: center; justify-content: center;
+                    transition: 0.3s; overflow: hidden;
+                }
+                .l12-drag-item {
+                    width: 90px; height: 90px;
+                    background-color: #fff;
+                    border: 3px solid #ddd; border-radius: 15px;
+                    display: flex; align-items: center; justify-content: center;
+                    cursor: grab; overflow: hidden; touch-action: none;
+                    transition: transform 0.2s;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                }
+                .l12-drag-item img {
+                    width: 80%; height: 80%; object-fit: contain; pointer-events: none;
+                }
+                .l12-drag-item:active { cursor: grabbing; }
+                .l12-drag-item.locked { border-color: #2ed573; box-shadow: 0 0 10px #2ed573; cursor: default; }
+                
+                /* Khi chui vào khung, item sẽ nở to ra cho vừa khít */
+                .l12-drop-zone .l12-drag-item {
+                    width: 100% !important; height: 100% !important; 
+                    border: none; box-shadow: none; border-radius: 16px;
+                }
+            </style>
+        `);
+
+        // KÍCH HOẠT DRAG
+        $(".l12-drag-item").draggable({
+            revert: "invalid", // Thả trượt sẽ bay về chỗ cũ
+            zIndex: 9999,
+            start: function(event, ui) {
+                if ($(this).hasClass('locked')) return false; // Khóa rồi cấm kéo
+            }
+        });
+
+        // KÍCH HOẠT DROP VÀO KHUNG
+        $(".l12-drop-zone").droppable({
+            accept: function(draggable) {
+                if (!draggable.hasClass("l12-drag-item")) return false;
+                // Chỉ nhận nếu KHUNG ĐANG TRỐNG
+                if ($(this).children('.l12-drag-item').length > 0) return false; 
+                return true;
+            },
+            drop: function(event, ui) {
+                let draggedType = ui.draggable.data("type");
+                let acceptType = $(this).data("accept");
+
+                // Hút vật phẩm vào khung và ép top/left = 0 để nó nằm căn giữa hoàn hảo
+                setTimeout(() => {
+                    ui.draggable.appendTo(this).css({
+                        position: 'relative', top: '0px', left: '0px'
+                    });
+                }, 10);
+
+                if (draggedType === acceptType) {
+                    // ĐÚNG LOẠI -> Khóa lại
+                    ui.draggable.draggable("disable");
+                    ui.draggable.addClass('locked');
+                    window.SoundFX.playWin(); // Âm thanh ting ting
+                } else {
+                    // SAI LOẠI -> Không khóa (bé kéo đi sửa được)
+                    ui.draggable.removeClass('locked');
+                }
+            }
+        });
+
+        // KÍCH HOẠT DROP VỀ KHAY ĐỂ BÉ SỬA LỖI
+        $("#l12-tray").droppable({
+            accept: ".l12-drag-item",
+            drop: function(event, ui) {
+                if(ui.draggable.hasClass('locked')) return false; 
+                
+                // Trả về khay thì kích thước quay lại 90x90
+                setTimeout(() => {
+                    ui.draggable.appendTo(this).css({
+                        position: 'relative', top: '0px', left: '0px', width: '90px', height: '90px'
+                    });
+                }, 10);
+            }
+        });
+    },
+    check: function() {
+        let correctCount = $(".l12-drag-item.ui-draggable-disabled").length;
+        let totalItems = 2; // Chỉ có 2 đáp án đúng là Áo A và Quần a
+
+        return { 
+            score: correctCount, // Trả về số điểm đạt được (tối đa 2)
+            tieuDe: correctCount === totalItems ? "Xuất Sắc Bé Ơi!" : "Chưa hoàn thành!", 
+            icon: correctCount === totalItems ? "🎉" : "🎈", 
+            message: correctCount === totalItems 
+                ? "Bé đã tìm đúng chiếc áo và quần rồi.\nNhận ngay 2 điểm ngọt ngào nhé!" 
+                : "Trong khung đang chứa đồ bị sai kìa, bé hãy kéo ra và tìm đúng đồ nhé!" 
+        };
+    }
+},
+    2: {
+        instruction: "Bé hãy tìm và khoanh tròn các chữ cái a và A nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #0984e3;">🌊 Vòng 2: Săn Chữ Dưới Đại Dương</h3>
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <h5 class="text-secondary mb-0">Bé hãy tìm và khoanh tròn 10 chữ cái <b style="color:#ff4757">a, A</b> nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy tìm và khoanh tròn các chữ cái a và A nhé!" title="Nghe lại">🔊</button>
+                </div>
+
+                <div id="l13-sea-wrapper">
+                    <img src="IMG/chua.png" class="l13-bg-img">
+                    <canvas id="l13-canvas"></canvas>
+                </div>
+                <p class="text-center mt-3 text-muted">Bé có thể nhấn vào vòng tròn để xóa nếu khoanh nhầm nhé!</p>
+            `);
+
+            setTimeout(() => {
+                const canvas = document.getElementById('l13-canvas');
+                if(!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const wrapper = $('#l13-sea-wrapper');
+                
+                $(window).off('resize.l13');
+
+                function resizeCanvas() {
+                    canvas.width = wrapper.width();
+                    canvas.height = wrapper.height();
+                    redraw(); 
+                }
+
+                const targets = [
+                    { x: 26, y: 5.1, type: 'correct' }, { x: 77.8, y: 65.9, type: 'correct' }, 
+                    { x: 69.3, y: 23.4, type: 'correct' }, { x: 93, y: 29, type: 'correct' }, 
+                    { x: 21, y: 46, type: 'correct' }, { x: 42.7, y: 60.8, type: 'correct' }, 
+                    { x: 89.6, y: 4.4, type: 'correct' }, { x: 60.2, y: 87, type: 'correct' }, 
+                    { x: 13.5, y: 80.1, type: 'correct' }, { x: 45.9, y: 77.6, type: 'correct' }, 
+                    { x: 59.4, y: 3, type: 'wrong' }, { x: 80.4, y: 45.4, type: 'wrong' }, { x: 14.2, y: 64.3, type: 'wrong' }
+                ];
+
+                let drawnCircles = []; 
+                let isDrawing = false;
+                let isClick = true; 
+                let startPos = null;
+                let points = [];
+
+                wrapper.data('drawnCircles', drawnCircles);
+
+                function redraw() {
+                    if (!ctx) return;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+                    drawnCircles.forEach((circle) => {
+                        ctx.beginPath();
+                        let absX = (circle.pctX * canvas.width) / 100;
+                        let absY = (circle.pctY * canvas.height) / 100;
+                        let radius = canvas.width * 0.05; 
+                        ctx.arc(absX, absY, radius, 0, Math.PI * 2);
+                        ctx.stroke();
+                    });
+
+                    if (isDrawing && points.length > 1) {
+                        ctx.strokeStyle = '#feca57';
+                        ctx.beginPath();
+                        ctx.moveTo(points[0].x, points[1].y);
+                        points.forEach(p => ctx.lineTo(p.x, p.y));
+                        ctx.stroke();
+                    }
+                }
+
+                $(window).on('resize.l13', function() {
+                    if ($('#l13-canvas').length > 0) resizeCanvas();
+                    else $(window).off('resize.l13'); 
+                });
+                resizeCanvas();
+
+                function getMousePos(e) {
+                    let rect = canvas.getBoundingClientRect();
+                    let evt = e.originalEvent;
+                    let clientX = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientX : evt.clientX;
+                    let clientY = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientY : evt.clientY;
+                    return { x: clientX - rect.left, y: clientY - rect.top };
+                }
+
+                $(canvas).on('mousedown touchstart', function(e) {
+                    e.preventDefault();
+                    isDrawing = true; isClick = true; 
+                    points = []; startPos = getMousePos(e); points.push(startPos);
+                });
+
+                $(canvas).on('mousemove touchmove', function(e) {
+                    if (!isDrawing) return; e.preventDefault(); 
+                    let currentPos = getMousePos(e); points.push(currentPos);
+                    if (Math.abs(currentPos.x - startPos.x) > 5 || Math.abs(currentPos.y - startPos.y) > 5) { isClick = false; }
+                    redraw();
+                });
+
+                $(canvas).on('mouseup touchend', function(e) {
+                    if (!isDrawing) return; isDrawing = false;
+                    if (!isClick && points.length > 5) {
+                        let sumX = 0, sumY = 0;
+                        points.forEach(p => { sumX += p.x; sumY += p.y; });
+                        let centerX = sumX / points.length; let centerY = sumY / points.length;
+
+                        let foundTarget = null;
+                        targets.forEach(t => {
+                            let tx = (t.x * canvas.width) / 100; let ty = (t.y * canvas.height) / 100;
+                            let dist = Math.sqrt(Math.pow(centerX - tx, 2) + Math.pow(centerY - ty, 2));
+                            let hitbox = canvas.width * 0.08; 
+                            if (dist < hitbox) foundTarget = t;
+                        });
+
+                        if (foundTarget) {
+                            let exists = drawnCircles.find(c => c.target === foundTarget);
+                            if (!exists) {
+                                drawnCircles.push({
+                                    pctX: foundTarget.x, pctY: foundTarget.y, 
+                                    isCorrect: foundTarget.type === 'correct', target: foundTarget
+                                });
+                                if (foundTarget.type === 'correct');
+                                else
+                                wrapper.data('drawnCircles', drawnCircles);
+                            }
+                        }
+                    } 
+                    else if (isClick) {
+                        let pos = startPos;
+                        drawnCircles = drawnCircles.filter(c => {
+                            let absX = (c.pctX * canvas.width) / 100; let absY = (c.pctY * canvas.height) / 100;
+                            let radius = canvas.width * 0.05;
+                            let dist = Math.sqrt(Math.pow(pos.x - absX, 2) + Math.pow(pos.y - absY, 2));
+                            return dist > radius; 
+                        });
+                        wrapper.data('drawnCircles', drawnCircles);
+                    }
+                    points = []; redraw();
+                });
+            }, 500);
+        },
+        check: function() {
+            let circles = $('#l13-sea-wrapper').data('drawnCircles') || [];
+            let correctCount = circles.filter(c => c.isCorrect).length;
+            let wrongCount = circles.filter(c => !c.isCorrect).length;
+
+            let finalScore = correctCount - wrongCount;
+            if (finalScore < 0) finalScore = 0;
+
+            return { 
+                score: finalScore,
+                tieuDe: finalScore >= 8 ? "Thợ săn chữ tài ba!" : "Bé cố gắng thêm nhé!",
+                icon: finalScore >= 8 ? "👑" : "🐚",
+                message: `Bé đã tìm được ${correctCount}/10 chữ a, A.\nSố điểm nhận được là: ${finalScore} sao!`
+            };
+        }
+    },
+    3: {
+        instruction: "Bé hãy nối các hình ảnh đúng vào tâm ở giữa nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-2 fw-bold text-center" style="color: #6c5ce7;">✨ Vòng 3: Nối Chữ Thông Minh</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0">Nối các chữ vào hình giữa nhé! Chạm vào chữ đã nối để xóa nét.</h5>
+                    <button class="btn-speaker" data-text="Bé hãy kéo các hình chữ ở xung quanh nối vào đúng hình tâm ở giữa nhé! Nếu nối nhầm, bé hãy chạm vào chữ đó để xóa nét." title="Nghe lại">🔊</button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 col-12 mb-5">
+                        <h4 class="text-center mb-3 fw-bold" style="color: #ff6b81;">Bài 1: Tìm chữ A hoa</h4>
+                        <div class="radial-wrapper" id="radial-wrapper-A">
+                            <canvas id="canvas-A" class="radial-canvas"></canvas>
+                            <div class="radial-center" id="center-A"><img src="IMG/Ant.png" alt="A" ></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-12 mb-5">
+                        <h4 class="text-center mb-3 fw-bold" style="color: #1dd1a1;">Bài 2: Tìm chữ a thường</h4>
+                        <div class="radial-wrapper" id="radial-wrapper-a">
+                            <canvas id="canvas-a" class="radial-canvas"></canvas>
+                            <div class="radial-center" id="center-a"><img src="IMG/apple.png" alt="a"></div>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            this.connections_A = [];
+            this.connections_a = [];
+
+            const initRadial = (wrapperId, canvasId, centerId, itemPrefix, stateArray) => {
+                const $wrapper = $(`#${wrapperId}`);
+                const canvas = document.getElementById(canvasId);
+                if(!canvas) return;
+                const ctx = canvas.getContext('2d');
+                
+                const radius = 120; const centerX = 160; const centerY = 160;
+                canvas.width = 320; canvas.height = 320;
+
+                let fileGroup = (itemPrefix === 'A') ? '1' : '2'; 
+
+                for (let i = 1; i <= 12; i++) {
+                    let angle = (i * 30 - 90) * (Math.PI / 180);
+                    let x = centerX + radius * Math.cos(angle);
+                    let y = centerY + radius * Math.sin(angle);
+                    
+                    $wrapper.append(`
+                        <div class="radial-node" id="node-${itemPrefix}-${i}" data-id="${i}" style="left: ${x}px; top: ${y}px;">
+                            <img src="IMG/14_${fileGroup} (${i}).png" alt="opt">
+                        </div>
+                    `);
+                }
+
+                let isDrawing = false; let startNodeId = null; let currentMouse = { x: 0, y: 0 };
+
+                function drawLines() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = '#ff9ff3';
+
+                    stateArray.forEach(nodeId => {
+                        let $node = $(`#node-${itemPrefix}-${nodeId}`);
+                        let nx = parseFloat($node.css('left')); let ny = parseFloat($node.css('top'));
+                        ctx.beginPath(); ctx.moveTo(nx, ny); ctx.lineTo(centerX, centerY); ctx.stroke();
+                    });
+
+                    if (isDrawing && startNodeId !== null) {
+                        let $node = $(`#node-${itemPrefix}-${startNodeId}`);
+                        let nx = parseFloat($node.css('left')); let ny = parseFloat($node.css('top'));
+                        ctx.strokeStyle = 'rgba(255, 159, 243, 0.6)';
+                        ctx.beginPath(); ctx.moveTo(nx, ny); ctx.lineTo(currentMouse.x, currentMouse.y); ctx.stroke();
+                    }
+                }
+
+                function getMousePos(e) {
+                    let rect = canvas.getBoundingClientRect(); let evt = e.originalEvent;
+                    let cx = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientX : evt.clientX;
+                    let cy = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientY : evt.clientY;
+                    return { x: cx - rect.left, y: cy - rect.top };
+                }
+
+                $wrapper.find('.radial-node').on('mousedown touchstart', function(e) {
+                    e.preventDefault();
+                    let nodeId = $(this).data('id');
+                    
+                    if (stateArray.includes(nodeId)) {
+                        stateArray.splice(stateArray.indexOf(nodeId), 1);
+                        $(this).removeClass('connected'); drawLines(); return;
+                    }
+                    isDrawing = true; startNodeId = nodeId; currentMouse = getMousePos(e);
+                });
+
+                $(document).on(`mousemove.${wrapperId} touchmove.${wrapperId}`, function(e) {
+                    if (!isDrawing) return; currentMouse = getMousePos(e); drawLines();
+                });
+
+                $(document).on(`mouseup.${wrapperId} touchend.${wrapperId}`, function(e) {
+                    if (!isDrawing) return; isDrawing = false;
+                    let dist = Math.sqrt(Math.pow(currentMouse.x - centerX, 2) + Math.pow(currentMouse.y - centerY, 2));
+                    if (dist < 50) { 
+                        if (!stateArray.includes(startNodeId)) {
+                            stateArray.push(startNodeId);
+                            $(`#node-${itemPrefix}-${startNodeId}`).addClass('connected');
+                            window.SoundFX.playWin(); 
+                        }
+                    }
+                    startNodeId = null; drawLines();
+                });
+                drawLines(); 
+            };
+            initRadial('radial-wrapper-A', 'canvas-A', 'center-A', 'A', this.connections_A);
+            initRadial('radial-wrapper-a', 'canvas-a', 'center-a', 'a', this.connections_a);
+        },
+        check: function() {
+            $(document).off('mousemove.radial-wrapper-A touchmove.radial-wrapper-A mouseup.radial-wrapper-A touchend.radial-wrapper-A');
+            $(document).off('mousemove.radial-wrapper-a touchmove.radial-wrapper-a mouseup.radial-wrapper-a touchend.radial-wrapper-a');
+
+            const dapAn_A = [1, 4, 8, 10]; 
+            const dapAn_a = [4, 7, 10, 12]; 
+
+            let user_A = this.connections_A || [];
+            let user_a = this.connections_a || [];
+
+            function tinhDiem(userArr, dapAnArr) {
+                let diem = 0;
+                userArr.forEach(id => { if (dapAnArr.includes(id)) diem++; else diem--; });
+                return diem > 0 ? diem : 0;
+            }
+
+            let scoreA = tinhDiem(user_A, dapAn_A);
+            let score_a = tinhDiem(user_a, dapAn_a);
+            let tongDiem = scoreA + score_a;
+            let maxDiem = dapAn_A.length + dapAn_a.length; 
+
+            return { 
+                score: tongDiem, 
+                tieuDe: tongDiem === maxDiem ? "Tuyệt đỉnh!" : "Bé cố lên nhé!", 
+                icon: tongDiem === maxDiem ? "🌟" : "🎈", 
+                message: `Bé đã nối đúng được ${tongDiem}/${maxDiem} hình!\nTiếp tục phát huy nhé!` 
+            };
+        }
+    },
+    4: {
+        instruction: "Bé nhìn chữ cái bên trái và chọn các chữ giống nhau trên hàng nhé!",
+        render: function($container) {
+            const questions = [
+                { qId: 1, target: 'IMG/15_target_1.png', options: [2, 1, 5, 4, 6, 3].map(i => `IMG/15_1_${i}.png`) },
+                { qId: 2, target: 'IMG/15_target_2.png', options: [4, 2, 6, 5, 1, 3].map(i => `IMG/15_2_${i}.png`) },
+                { qId: 3, target: 'IMG/15_target_3.png', options: [4, 2, 1, 5, 3, 6].map(i => `IMG/15_3_${i}.png`) },
+                { qId: 4, target: 'IMG/15_target_4.png', options: [1, 2, 3, 4, 5, 6].map(i => `IMG/15_4_${i}.png`) }
+            ];
+
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #ff9f43;">✨ Vòng 4: Tìm Các Chữ Cái Giống Nhau</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0">Nhìn chữ cái bên trái và chọn các chữ giống nhau trên hàng.</h5>
+                    <button class="btn-speaker" data-text="Bé hãy nhìn chữ cái bên trái, sau đó tìm và bấm chọn tất cả các chữ giống nó nằm trên cùng một hàng nhé!" title="Nghe lại">🔊</button>
+                </div>
+                
+                <div class="mx-auto" style="max-width: 850px;">
+                    ${questions.map((q) => `
+                        <div class="l2-question-box d-flex flex-wrap flex-md-nowrap align-items-center py-3 px-3" data-q="${q.qId}" style="border-radius: 20px; margin-bottom: 20px;">
+                            
+                            <div class="text-center mb-3 mb-md-0 l15-target-box">
+                                <img src="${q.target}" style="max-height: 70px; max-width: 100%;">
+                            </div>
+                            
+                            <div class="d-flex flex-wrap justify-content-center gap-2 flex-grow-1">
+                                ${q.options.map((optImg, optIdx) => `
+                                    <label>
+                                        <input type="checkbox" name="l15_q${q.qId}" value="${optIdx + 1}" class="l15-check-input">
+                                        <div class="l15-option-img">
+                                            <img src="${optImg}">
+                                        </div>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <p class="text-center mt-3 text-danger fw-bold">⚠️ Chú ý: Mỗi hàng có 2 chữ đúng. Bé có thể bấm lại vào ô để bỏ chọn nếu lỡ bấm nhầm nhé!</p>
+            `);
+        },
+        check: function() {
+            const dapAnChuan = { 1: ["1", "5"], 2: ["3", "5"], 3: ["2", "4"], 4: ["2", "6"] };
+            let totalScore = 0;
+
+            for(let i = 1; i <= 4; i++) {
+                let selected = [];
+                $(`input[name="l15_q${i}"]:checked`).each(function() { selected.push($(this).val()); });
+                
+                let rowScore = 0; let rowCorrectAnswers = dapAnChuan[i];
+                selected.forEach(val => { if (rowCorrectAnswers.includes(val)) { rowScore++; } else { rowScore--; } });
+                if (rowScore < 0) rowScore = 0; 
+                totalScore += rowScore;
+
+                let $row = $(`.l2-question-box[data-q="${i}"]`);
+                let isPerfect = (selected.length === rowCorrectAnswers.length) && selected.every(val => rowCorrectAnswers.includes(val));
+                
+                if (isPerfect) $row.css("border-color", "#2ed573"); 
+                else $row.css("border-color", "#ff4757"); 
+            }
+
+            return {
+                score: totalScore,
+                tieuDe: totalScore === 8 ? "Mắt Tinh Quá Bé Ơi!" : "Hãy chú ý hơn nhé!",
+                icon: totalScore === 8 ? "👑" : "👀",
+                message: `Bé đã tìm được các chữ cái và ghi được ${totalScore}/8 điểm.\nCộng dồn vào bảng điểm ngay thôi!`
+            };
+        }
+    },
+    5: {
+        instruction: "Bé hãy giúp bạn cá tìm được hồ nước bằng cách nối đường chữ a, A trong mê cung nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #0984e3;">🐟 Vòng 5: Giúp Cá Về Bờ</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0">Bé hãy nối các chữ a, A để vẽ đường cho cá nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy giúp bạn cá tìm được hồ nước bằng cách nối các chữ a thường và A hoa liền kề nhau để tạo thành đường đi trong mê cung nhé! Bé có thể chạm vào ô đã nối để xóa nét vẽ." title="Nghe lại">🔊</button>
+                </div>
+
+                <div id="maze-wrapper">
+                    <div id="maze-grid"></div>
+                    <canvas id="maze-canvas"></canvas>
+                </div>
+                <p class="text-center mt-3 fw-bold text-danger">⚠️ Mẹo: Vẽ sai thì vuốt ngược lại để xóa, hoặc chạm trực tiếp vào ô sai nhé!</p>
+            `);
+
+            const layout = [
+                "S S * * * * *",
+                "S S W w w w *",
+                "w w W * * * *",
+                "w w W * w w w",
+                "* * * * w w w",
+                "* w w W w w w",
+                "* w w W W w w",
+                "* w * * * E E",
+                "* * * w W E E"
+            ];
+            const wrongLetters = ['b', 'c', 'd', 'e', 'k', 'o', 'l', 'i', 'r', 'v', 's', 't'];
+            function getWrong() { return wrongLetters[Math.floor(Math.random() * wrongLetters.length)]; }
+            function getCorrect() { return 'a'; }
+
+            let $grid = $('#maze-grid');
+            $grid.append(`<div style="grid-column: 1 / 3; grid-row: 1 / 3; background: #fff; border-radius: 12px; display:flex; align-items:center; justify-content:center; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);"><img src="IMG/16_start.png" style="max-width:85%; max-height:85%; object-fit: contain;"></div>`);
+            $grid.append(`<div style="grid-column: 6 / 8; grid-row: 8 / 10; background: #fff; border-radius: 12px; display:flex; align-items:center; justify-content:center; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);"><img src="IMG/16_end.png" style="max-width:85%; max-height:85%; object-fit: contain;"></div>`);
+
+            for(let r=0; r<9; r++) {
+                let cols = layout[r].split(' ');
+                for(let c=0; c<7; c++) {
+                    if (cols[c] === 'S' || cols[c] === 'E') continue; 
+                    let isCorrect = cols[c] === '*';
+                    let letter = isCorrect ? getCorrect() : getWrong();
+                    $grid.append(`<div class="maze-cell" data-r="${r}" data-c="${c}" data-correct="${isCorrect}" style="display:flex; align-items:center; justify-content:center; font-size: 1.6rem; font-weight: 900; background: #fff; border-radius: 10px; cursor: pointer; user-select: none; color: #2d3436; box-shadow: 0 4px 0 #b2bec3; transition: 0.15s; grid-column: ${c+1}; grid-row: ${r+1}; aspect-ratio: 1/1;">${letter}</div>`);
+                }
+            }
+
+            const canvas = document.getElementById('maze-canvas');
+            const ctx = canvas.getContext('2d');
+            let path = []; let isDragging = false;
+            $('#maze-wrapper').data('path', path);
+
+            function resizeCanvas() {
+                if(!canvas) return;
+                canvas.width = $grid.width(); canvas.height = $grid.height();
+                redrawMaze();
+            }
+
+            setTimeout(resizeCanvas, 300);
+            $(window).off('resize.l16').on('resize.l16', function() { if ($('#maze-canvas').length > 0) resizeCanvas(); else $(window).off('resize.l16'); });
+
+            function redrawMaze() {
+                if(!ctx) return;
+                $('.maze-cell').css({ 'background': '#fff', 'color': '#2d3436', 'box-shadow': '0 4px 0 #b2bec3', 'transform': 'translateY(0)' });
+                path.forEach(p => {
+                    $(`.maze-cell[data-r="${p.r}"][data-c="${p.c}"]`).css({ 'background': '#ffeaa7', 'color': '#d35400', 'box-shadow': '0 0px 0 #fdcb6e', 'transform': 'translateY(4px)' });
+                });
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (path.length > 1) {
+                    ctx.beginPath(); ctx.strokeStyle = '#fdcb6e'; ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                    path.forEach((p, i) => {
+                        let $cell = $(`.maze-cell[data-r="${p.r}"][data-c="${p.c}"]`);
+                        let pos = $cell.position(); let cx = pos.left + $cell.outerWidth() / 2; let cy = pos.top + $cell.outerHeight() / 2;
+                        if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
+                    });
+                    ctx.stroke();
+                }
+            }
+
+            function isAdjacent(p1, r, c) { return Math.abs(p1.r - r) + Math.abs(p1.c - c) === 1; }
+
+            $('.maze-cell').on('mousedown touchstart', function(e) {
+                e.preventDefault();
+                let r = $(this).data('r'); let c = $(this).data('c'); let isCorrect = $(this).data('correct');
+                let index = path.findIndex(p => p.r === r && p.c === c);
+                if (index !== -1) { path = path.slice(0, index + 1); isDragging = true; } 
+                else {
+                    if (path.length === 0 || isAdjacent(path[path.length-1], r, c)) {
+                        path.push({r, c, isCorrect}); isDragging = true;
+                    }
+                }
+                $('#maze-wrapper').data('path', path); redrawMaze();
+            });
+
+            $(document).on('mousemove.l16 touchmove.l16', function(e) {
+                if (!isDragging) return; e.preventDefault(); 
+                let touch = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
+                let elem = document.elementFromPoint(touch.clientX, touch.clientY);
+                let $cell = $(elem).closest('.maze-cell');
+                
+                if ($cell.length > 0) {
+                    let r = $cell.data('r'); let c = $cell.data('c'); let isCorrect = $cell.data('correct');
+                    let last = path[path.length-1];
+                    if (last.r === r && last.c === c) return; 
+                    if (path.length > 1 && path[path.length-2].r === r && path[path.length-2].c === c) {
+                        path.pop(); $('#maze-wrapper').data('path', path); redrawMaze(); return;
+                    }
+                    if (isAdjacent(last, r, c) && !path.find(p => p.r === r && p.c === c)) {
+                        path.push({r, c, isCorrect}); $('#maze-wrapper').data('path', path); redrawMaze();
+                    }
+                }
+            });
+
+            $(document).on('mouseup.l16 touchend.l16', function() { isDragging = false; });
+        },
+        check: function() {
+            $(document).off('mousemove.l16 touchmove.l16 mouseup.l16 touchend.l16');
+            let path = $('#maze-wrapper').data('path') || [];
+            let correctCount = path.filter(p => p.isCorrect).length;
+            let wrongCount = path.filter(p => !p.isCorrect).length;
+            
+            let score = correctCount - wrongCount;
+            if (score < 0) score = 0; 
+
+            path.forEach(p => {
+                let $cell = $(`.maze-cell[data-r="${p.r}"][data-c="${p.c}"]`);
+                if (p.isCorrect) $cell.css({ 'background': '#55efc4', 'color': '#00b894', 'box-shadow': '0 0px 0 #00b894', 'transform': 'translateY(4px)' });
+                else $cell.css({ 'background': '#fab1a0', 'color': '#d63031', 'box-shadow': '0 0px 0 #d63031', 'transform': 'translateY(4px)' });
+            });
+
+            return {
+                score: score, 
+                tieuDe: score === 10 ? "Cảm ơn bé đã giúp bạn cá!" : "Bạn cá đã về được hồ!",
+                icon: score === 10 ? "🏆" : "🐠",
+                message: `Bé đã nối được đường về bể và nhận được ${score}/10 sao.`        
+            };
+        }
+    }
+};
+
+$(document).ready(function() {
+     
+    // 1. TỪ WELCOME SCREEN -> RA MÀN HÌNH INTRO GAME 3
+    $('#btn-to-start-screen').click(function() {
+        $('#welcome-screen').fadeOut(500, function() {
+            $('#game3-intro-screen').css('display', 'flex').hide().fadeIn(500);
+        });
+    });
+
+    // 2. TỪ MÀN HÌNH INTRO -> VÀO GAME 3 (Vòng 12)
+    $('#btn-start-game3').click(function() {
+        let bgMusic = document.getElementById('bg-music');
+        if(bgMusic) { bgMusic.loop = true; bgMusic.volume = 0.5; bgMusic.play().catch(e => {}); }
+
+        $('#game3-intro-screen').fadeOut(500, function() {
+            $('#main-game').fadeIn(500);
+            window.gameState.level = 1;
+            window.loadLevelStructure(1);
+            if(window.LEVEL_MODULES[1]) window.speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
+        });
+    });
+
+    // CÁC HÀM XỬ LÝ NÚT BẤM (Kế thừa từ Logic System)
+    $('#btn-lam-lai').off('click').on('click', function() {
+        $('#custom-alert-overlay').hide();
+        $(`#level-wrapper-${window.gameState.level}`).remove(); 
+        window.loadLevelStructure(window.gameState.level); 
+    });
+
+    $('#btn-replay-round').off('click').on('click', function() {
+        $(`#level-wrapper-${window.gameState.level}`).remove(); 
+        window.loadLevelStructure(window.gameState.level);
+    });
+
+    $('#btn-submit').off('click').on('click', function() {
+        let result = window.LEVEL_MODULES[window.gameState.level].check();
+        let roundMaxScore = window.MAX_SCORES[window.gameState.level] || 5;
+
+        let proceed = function() {
+            window.stopAllMedia();
+            window.gameState.roundScores[window.gameState.level] = roundMaxScore > 0 ? result.score : 0;
+            
+            let currentTotalScore = 0; let roundsPlayed = 0;
+            for(let i = 1; i <= 5; i++) {
+                if(window.gameState.roundScores[i] !== undefined) { currentTotalScore += window.gameState.roundScores[i]; roundsPlayed++; }
+            }
+            window.gameState.score = currentTotalScore; window.updateUI();
+
+            if (window.gameState.replayQueue && window.gameState.replayQueue.length > 0) {
+                window.gameState.level = window.gameState.replayQueue.shift();
+                window.saveData(); window.loadLevelStructure(window.gameState.level);
+                if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+            else if (roundsPlayed === 5) { // 5 vòng (1 đến 5)
+                window.showGameEnd(currentTotalScore >= PASS_SCORE, currentTotalScore);
+            }
+            else {
+                window.gameState.level++;
+                window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
+                if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+        };
+
+        if (roundMaxScore === 0) { proceed(); return; }
+
+        $('#grading-overlay').css('display', 'flex');
+
+        window.preloadedFeedbackAudio = null;
+        let textToRead = window.cleanTextForTTS(result.message);
+        fetch("https://api.fpt.ai/hmi/tts/v5", {
+            method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead
+        }).then(res => res.json()).then(data => {
+            if (data && data.async) {
+                let noCacheUrl = data.async + (data.async.includes('?') ? '&' : '?') + 't=' + Date.now();
+                let audio = new Audio(noCacheUrl);
+                audio.oncanplaythrough = () => { window.preloadedFeedbackAudio = audio; };
+                audio.load();
+            }
+        });
+
+        setTimeout(() => {
+            $('#grading-overlay').hide();
+            let simulatedRoundsPlayed = 0;
+            let tempRoundScores = { ...window.gameState.roundScores }; tempRoundScores[window.gameState.level] = result.score;
+            for(let i = 1; i <= 5; i++) if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
+            
+            if (simulatedRoundsPlayed === 5 && (!window.gameState.replayQueue || window.gameState.replayQueue.length === 0)) {
+                proceed();
+            } else {
+                window.showNotification(result.tieuDe, result.message, result.icon, result.score, roundMaxScore, proceed);
+            }
+        }, 2000);
+    });
+
+    $('#btn-reset').click(function() {
+        $('#btn-close-alert, #btn-lam-lai').hide(); 
+        $('#btn-confirm-reset, #btn-cancel-reset').show(); 
+        $('#custom-alert-title').text("Xóa Tiến Trình 🔄");
+        $('#custom-alert-message').text("Bé có chắc chắn muốn xóa hết điểm và chơi lại từ đầu không?");
+        $('#custom-alert-icon').text("🎠");
+        $('#custom-alert-overlay').css('display', 'flex');
+    });
+
+    $('#btn-confirm-reset').off('click').on('click', function() {
+        for(let i = 1; i <= 5; i++) {
+            delete window.gameState.roundScores[i];
+            $(`#level-wrapper-${i}`).remove();
+        }
+        window.gameState.level = 1; window.gameState.score = 0; window.gameState.replayQueue = [];
+        window.updateUI(); $('#custom-alert-overlay').hide(); window.loadLevelStructure(1);
+    });
+
+    $('#btn-cancel-reset').off('click').on('click', function() { $('#custom-alert-overlay').hide(); });
+
+    $('#btn-next').off('click').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        window.stopAllMedia(); window.gameState.level++; window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
+        if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+    });
+
+    $('#btn-prev').off('click').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        if (window.gameState.level > 1) {
+            window.stopAllMedia(); window.gameState.level--; window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
+            if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+        }
+    });
+});
+</script>
+</body>
+</html>

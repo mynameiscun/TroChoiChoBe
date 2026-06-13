@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Game 2 - Tìm Bóng Bạn Nhỏ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+<div id="app-logo">
+    <a href="#welcome-screen"><img src="IMG/logo.jpg" alt="Logo"></a>
+</div>
+<div id="audio-loading-overlay">
+    <img src="IMG/thay_u_tron.png" width="120" class="teacher-bounce mb-3">
+    <h3 class="fw-bold" style="color: #0984e3;">Thầy Ú Tròn đang đọc đề...</h3>
+</div>
+<audio id="bg-music" src="AUDIO/game.mp3"></audio>
+<div id="welcome-screen">
+    <h1 class="bounce-animation" style="color: #880E4F; font-weight: 900; font-size: 3.5rem; text-shadow: 2px 2px 0px #fff; margin-bottom: 25px;">
+        TRƯỜNG MẦM NON 6
+    </h1>
+    <h2 class="bounce-animation" style="color: #5D4037; font-weight: 700; margin-bottom: 10px; font-size: 1.8rem; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+        Giáo viên: Bùi Thị Thúy Nga
+    </h2>
+    <h3 class="bounce-animation" style="color: #5D4037; font-weight: 700; margin-bottom: 40px; font-size: 1.5rem; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+        Lứa tuổi: 4 - 5 tuổi
+    </h3>
+    <button id="btn-to-start-screen" class="btn-start" style="background-color: #E91E63; color: #fff; border: none; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);">
+        Khám phá ➡️
+    </button>
+</div>
+
+<div id="game2-intro-screen">
+    <div class="bounce-animation">
+        <img src="IMG/icon_bong.png" alt="Game 2 Icon" width="300" style="margin-bottom: 20px;">
+    </div>
+    <h1 class="game-title bounce-animation" style="text-shadow: 4px 4px 0px #ff6b81;">Trò Chơi<br>Tìm Bóng 🔍</h1>
+    <h3 class="text-white mb-5" style="font-weight: 700;">Bé hãy tìm bóng đúng cho các bạn nhỏ nhé!</h3>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <button id="btn-start-game2" class="btn-start" style="background-color: #a29bfe; color: #fff; border-color: #fff;">Bắt Đầu! 🚀</button>
+    </div>
+</div>
+
+<div id="main-game" class="container mt-5" style="display: none;">
+    <div class="card cute-card">
+        <div class="card-header cute-header text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0 fw-bold bg-warning text-dark px-4 py-2" style="border-radius: 20px;">
+                ⭐ Điểm: <span id="current-score">0</span>
+            </h3>
+        </div>
+        
+        <div class="card-body p-4 d-flex flex-column" style="min-height: 500px;">
+            <div id="game-container" class="flex-grow-1"></div>
+        </div>
+
+        <div class="card-footer bg-white border-0 p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex gap-2">
+                    <button id="btn-prev" class="btn btn-secondary nav-btn disabled">⬅️ Quay lại</button>
+                    <button id="btn-next" class="btn btn-primary nav-btn disabled"> Tiếp theo ➡️</button>
+                </div>
+                <button id="btn-submit" class="btn btn-success cute-btn px-4 py-2" style="font-size: 1.3rem; transform: scale(1.1);">✅ Chấm điểm!</button>
+                <div class="d-flex gap-2">
+                    <button id="btn-replay-round" class="btn btn-outline-warning" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🔄 Làm lại vòng</button>
+                    <button id="btn-reset" class="btn btn-outline-danger" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🗑️ Xóa tiến trình</button>
+                </div>
+            </div>
+        </div>  
+    </div>
+</div>
+
+<div id="custom-alert-overlay" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+        <h3 id="custom-alert-title" style="color: #ff4757; font-weight: 900;"></h3>
+        <p id="custom-alert-message" style="font-size: 18px; color: #555; white-space: pre-line;"></p>
+        <div class="d-flex justify-content-center gap-2">
+            <button id="btn-lam-lai" class="btn btn-warning btn-cute">Làm lại vòng</button>
+            <button id="btn-close-alert" class="btn btn-cute">Tiếp tục!</button>
+            <button id="btn-confirm-reset" class="btn btn-success btn-cute" style="display:none;">Chắc chắn</button>
+            <button id="btn-cancel-reset" class="btn btn-secondary btn-cute" style="display:none;">Hủy bỏ</button>
+        </div>
+    </div>
+</div>
+
+<div id="game-end-overlay" class="custom-alert-overlay">
+    <div class="custom-alert-box" style="max-width: 550px;">
+        <h1 id="game-end-title" class="fw-bold mb-3" style="font-size: 2.5rem;"></h1>
+        <p id="game-end-message" class="fs-5 mb-4" style="color: #555; white-space: pre-line;"></p>
+        <div id="game-end-buttons" class="d-flex justify-content-center align-items-center gap-3 flex-wrap"></div>
+    </div>
+</div>
+
+<div id="grading-overlay">
+    <img src="IMG/thay_u_tron_diem.png" width="150" class="teacher-bounce">
+    <h2 class="mt-4 fw-bold" style="color: #6c5ce7;">Thầy Ú Tròn đang chấm điểm...</h2>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
+<script>
+// =========================================================================
+// BIẾN TOÀN CỤC CỦA GAME 2 (TÌM BÓNG - Vòng 1 -> 6)
+// =========================================================================
+window.gameState = { level: 1, score: 0, roundScores: {}, replayQueue: [] };
+window.MAX_SCORES = { 1:6, 2:4, 3:6, 4:4, 5:6, 6:5 }; // Tối đa 31 điểm
+const PASS_SCORE = 25;
+let g2_l2_connections = [];
+
+// =========================================================================
+// HỆ THỐNG HIỆU ỨNG ÂM THANH MẶC ĐỊNH
+// =========================================================================
+const SoundFX = {
+    ctx: null,
+    init: function() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); },
+    playClick: function() {
+        try { this.init(); let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + 0.05); } catch(e) {}
+    },
+    playWin: function() {
+        try { this.init(); [440, 554, 659, 880].forEach((freq, i) => { let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'sine'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1); gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + i * 0.1 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.1 + 0.5);
+        osc.start(this.ctx.currentTime + i * 0.1); osc.stop(this.ctx.currentTime + i * 0.1 + 0.5); }); } catch(e) {}
+    },
+    playLose: function() {
+        try { this.init(); let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.4, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + 0.5); } catch(e) {}
+    }
+};
+
+let lastClickTime = 0;
+$(document).on('mousedown touchstart', 'button, .btn, canvas, input, .l2-option-box, .g2-img-option, .option-item, .drag-fruit, .puzzle-piece, .animal-drag', function() {
+    let now = Date.now(); if (now - lastClickTime > 100) { SoundFX.playClick(); lastClickTime = now; }
+});
+
+function stopAllMedia() {
+    $('audio:not(#bg-music), video').each(function() { this.pause(); this.currentTime = 0; });
+    if (window.currentAudio) window.currentAudio.pause();
+    $('.btn-speaker').removeClass('playing');
+}
+
+// =========================================================================
+// API FPT - ĐỌC ÂM THANH CÓ SMART LOADER
+// =========================================================================
+const FPT_API_KEY = '372DQFfUtnFcELppozNYtYlcCRfy9Jmr'; 
+window.currentAudio = null; window.audioLoaderTimer = null; window.preloadedFeedbackAudio = null;
+
+window.forceHideAudioLoader = function() {
+    if (window.audioLoaderTimer) { clearTimeout(window.audioLoaderTimer); window.audioLoaderTimer = null; }
+    $('#audio-loading-overlay').hide();
+};
+
+function cleanTextForTTS(text) { return String(text || "").replace(/[🌈🎉⭐❤️💖🔊✨🧸🚀🍎🍌🍇🍭🎈🌟🎯🧮🔄✅🍀🌸👑🎠]/g, "").replace(/\s+/g, " ").trim(); }
+
+function speakInstruction(vanBan, btnElement = null, callback = null, useLoader = false) {
+    const textToRead = cleanTextForTTS(vanBan);
+    if (!textToRead) { if(callback) callback(); return; }
+    if (btnElement) $(btnElement).addClass('playing');
+
+    if (useLoader) {
+        window.forceHideAudioLoader(); 
+        window.audioLoaderTimer = setTimeout(() => { $('#audio-loading-overlay').css('display', 'flex'); }, 400); 
+    }
+
+    let bgMusic = document.getElementById('bg-music');
+    if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+
+    fetch("https://api.fpt.ai/hmi/tts/v5", { method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead })
+    .then(res => res.json()).then(data => {
+        window.forceHideAudioLoader();
+        if (data && data.async) checkAndPlayAudio(data.async, 0, btnElement, callback);
+        else if(callback) callback();
+    }).catch(e => { window.forceHideAudioLoader(); if(callback) callback(); });
+}
+
+function checkAndPlayAudio(url, retry, btnElement, callback) {
+    if(retry > 15) { 
+        if(btnElement) $(btnElement).removeClass('playing');
+        window.forceHideAudioLoader(); let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; if(callback) callback(); return;
+    }
+    
+    // FIX LỖI TẠO URL LÀM API FPT LỖI 404 KHIẾN LOA TỊT NGÒI
+    let noCacheUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(); 
+    let audio = new Audio(noCacheUrl);
+    
+    const onAudioReady = () => { window.forceHideAudioLoader(); };
+    audio.addEventListener('loadeddata', onAudioReady); audio.addEventListener('canplay', onAudioReady);
+    audio.addEventListener('playing', onAudioReady);
+    audio.addEventListener('timeupdate', () => { if (audio.currentTime > 0.1) onAudioReady(); });
+
+    audio.oncanplaythrough = function() {
+        onAudioReady(); window.currentAudio = audio;
+        let playPromise = audio.play();
+        if (playPromise !== undefined) playPromise.catch(e => { onAudioReady(); });
+    };
+
+    audio.onended = function() {
+        if(btnElement) $(btnElement).removeClass('playing');
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; 
+        if(callback) callback();
+    };
+    audio.onerror = () => setTimeout(() => checkAndPlayAudio(url, retry + 1, btnElement, callback), 1000);
+    audio.load();
+}
+
+$(document).on('click', '.btn-speaker', function() { speakInstruction($(this).attr('data-text'), this); });
+
+// =========================================================================
+// CÁC HÀM XỬ LÝ GIAO DIỆN HỆ THỐNG
+// =========================================================================
+function saveData() { localStorage.setItem('game2Progress', JSON.stringify(window.gameState)); }
+function updateUI() { $('#current-level').text(window.gameState.level); $('#current-score').text(window.gameState.score); }
+
+function updateNavButtons() {
+    if (window.gameState.roundScores[window.gameState.level] !== undefined) $('#btn-next').removeClass('disabled').css('cursor', 'pointer');
+    else $('#btn-next').addClass('disabled').css('cursor', 'not-allowed');
+
+    if (window.gameState.level === 1) $('#btn-prev').addClass('disabled').css('cursor', 'not-allowed');
+    else $('#btn-prev').removeClass('disabled').css('cursor', 'pointer');
+}
+
+function showNotification(title, message, icon, score, total, callback) {
+    $('#btn-confirm-reset, #btn-cancel-reset').hide();
+    $('#custom-alert-title').prev('img').remove();
+    
+    let isGood = (score > total / 2) || (score === total && total > 0) || total === 0;
+    let gifUrl = isGood ? 'IMG/thay_u_tron_vui.png' : ((score === total/2) ? 'IMG/thay_u_tron_binh_thuong.png' : 'IMG/thay_u_tron_buon.png');
+    $('#custom-alert-title').before(`<img src="${gifUrl}" width="80" class="mb-2 teacher-bounce">`);
+    
+    $('#custom-alert-title').text(title); $('#custom-alert-message').text(message); 
+    
+    if (isGood) SoundFX.playWin(); else SoundFX.playLose();
+    
+    let isPass = (score >= total * 0.6);
+    if (!isPass) { $('#btn-close-alert').hide(); $('#btn-lam-lai').show(); } 
+    else if (score < total) { $('#btn-close-alert').show(); $('#btn-lam-lai').show(); } 
+    else { $('#btn-close-alert').show(); $('#btn-lam-lai').hide(); }
+
+    $('#custom-alert-overlay').css('display', 'flex');
+
+    if (window.preloadedFeedbackAudio) {
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+        window.currentAudio = window.preloadedFeedbackAudio;
+        window.currentAudio.play().catch(e => {});
+        window.currentAudio.onended = function() { if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; };
+        window.preloadedFeedbackAudio = null;
+    } else { speakInstruction(message); }
+
+    $('#btn-close-alert').off('click').on('click', function() {
+        if (window.currentAudio) { window.currentAudio.pause(); window.currentAudio = null; }
+        $('#custom-alert-overlay').hide();
+        if (typeof callback === 'function') callback();
+    });
+}
+
+function showGameEnd(isPass, totalScore) {
+    $('#game-end-overlay').css('display', 'flex');
+    let $buttons = $('#game-end-buttons'); $buttons.empty();
+
+    if (isPass) {
+        $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/31 sao ở trò chơi Tìm Bóng.\nChúc mừng bé!`);
+        SoundFX.playWin(); 
+        $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="replayAll()">🔄 Chơi lại từ đầu</button>`);
+        speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Tìm Bóng!`);
+    } else {
+        $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/31 sao. Cần đạt tối thiểu 25 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        SoundFX.playLose();
+        window.gameState.replayQueue = [];
+        for (let i = 1; i <= 6; i++) {
+            if (window.gameState.roundScores[i] !== undefined && window.gameState.roundScores[i] < window.MAX_SCORES[i]) {
+                window.gameState.replayQueue.push(i);
+            }
+        }
+        $buttons.append(`<button class="btn btn-warning btn-cute" style="transform: scale(1.1); font-weight: 900;" onclick="startReplay()">🔄 Chơi lại các vòng sai</button>`);
+        speakInstruction("Bé cần cố gắng thêm một chút nữa nhé! Hãy ấn nút để làm lại các vòng sai.");
+    }
+}
+
+window.loadLevelStructure = function(level) {
+    let $mainContainer = $('#game-container');
+    $mainContainer.children('.level-wrapper').hide();
+    $('#btn-submit').show();
+
+    if (window.LEVEL_MODULES[level]) {
+        let $levelWrapper = $(`#level-wrapper-${level}`);
+        if ($levelWrapper.length === 0) {
+            $levelWrapper = $(`<div id="level-wrapper-${level}" class="level-wrapper"></div>`);
+            $levelWrapper.append(`<div class="text-center mb-4"><img src="IMG/thay_u_tron.png" width="100" class="teacher-bounce"></div>`);
+            $mainContainer.append($levelWrapper); 
+            window.LEVEL_MODULES[level].render($levelWrapper);
+        }
+        $levelWrapper.show();
+        updateNavButtons();
+    } else {
+        let finishText = "Chúc Mừng Bé! Bé đã xuất sắc hoàn thành tất cả các màn chơi!";
+        let $finishWrapper = $('#finish-wrapper');
+        if ($finishWrapper.length === 0) {
+            $finishWrapper = $(`<div id="finish-wrapper" class="level-wrapper"></div>`);
+            $finishWrapper.html(`
+                <div class="text-center bounce-animation mt-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3113/3113054.png" width="130" class="mb-4">
+                    <h1 class="fw-bold" style="color: #ff6b81; font-size: 3.5rem;">Chúc Mừng Bé! 🏆</h1>
+                    <h2 id="final-score-display" class="mt-4 p-3 bg-warning d-inline-block" style="border-radius: 20px; color:#fff; font-weight:900;">Tổng điểm đạt được: ${window.gameState.score} ⭐</h2>
+                </div>
+            `);
+            $mainContainer.append($finishWrapper);
+        } else { $('#final-score-display').text(`Tổng điểm đạt được: ${window.gameState.score} ⭐`); }
+        $finishWrapper.show(); $('#btn-submit').hide(); speakInstruction(finishText, null);
+    }
+};
+
+window.replayAll = function() {
+    $('#game-end-overlay').hide();
+    window.gameState.level = 1; 
+    for(let i = 1; i <= 6; i++) {
+        delete window.gameState.roundScores[i]; 
+        $(`#level-wrapper-${i}`).remove(); 
+    }
+    window.gameState.replayQueue = []; window.gameState.score = 0; saveData(); updateUI(); window.loadLevelStructure(1);
+    speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
+};
+
+window.startReplay = function() {
+    $('#game-end-overlay').hide();
+    window.gameState.level = window.gameState.replayQueue.shift(); 
+    saveData();
+    $(`#level-wrapper-${window.gameState.level}`).remove(); 
+    window.loadLevelStructure(window.gameState.level);
+    speakInstruction("Chúng ta cùng làm lại vòng " + window.gameState.level + " nhé!", null, null, true);
+};
+
+
+// =========================================================================
+// DỮ LIỆU CÁC VÒNG CỦA GAME 2 (VÒNG 1 -> 6)
+// =========================================================================
+window.LEVEL_MODULES = {
+    1: {
+        instruction: "Bé hãy nhìn kỹ con vật và chọn đúng cái bóng của nó nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-2 fw-bold text-center" style="color: #ff9f43;">✨ Vòng 1: Tìm Bóng Con Vật</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0">Quan sát và chọn đúng bóng cho các bạn nhỏ nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy quan sát và bấm chọn đúng cái bóng của từng bạn động vật nhé!" title="Nghe lại">🔊</button>
+                </div>
+                
+                <div class="row mx-auto" style="max-width: 800px;">
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="l2-question-box flex-column">
+                            <div class="mb-3"><img src="IMG/6 (1).png" alt="Con vật 1" style="height: 90px;"></div>
+                            <div class="d-flex gap-2 justify-content-center w-100">
+                                <label><input type="radio" name="g2_q1" value="1" class="l2-option-input"><div class="g2-img-option"><img src="IMG/gavang.png"></div></label>
+                                <label><input type="radio" name="g2_q1" value="2" class="l2-option-input"><div class="g2-img-option"><img src="IMG/ga.png"></div></label>
+                                <label><input type="radio" name="g2_q1" value="3" class="l2-option-input"><div class="g2-img-option"><img src="IMG/vit.png"></div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="l2-question-box flex-column" style="border-color: #74b9ff; box-shadow: 0 4px 0px #0984e3;">
+                            <div class="mb-3"><img src="IMG/6 (2).png" alt="Con vật 2" style="height: 90px;"></div>
+                            <div class="d-flex gap-2 justify-content-center w-100">
+                                <label><input type="radio" name="g2_q2" value="1" class="l2-option-input"><div class="g2-img-option"><img src="IMG/ga.png"></div></label>
+                                <label><input type="radio" name="g2_q2" value="2" class="l2-option-input"><div class="g2-img-option"><img src="IMG/heo.png"></div></label>
+                                <label><input type="radio" name="g2_q2" value="3" class="l2-option-input"><div class="g2-img-option"><img src="IMG/gavang.png"></div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="l2-question-box flex-column" style="border-color: #a29bfe; box-shadow: 0 4px 0px #6c5ce7;">
+                            <div class="mb-3"><img src="IMG/6 (3).png" alt="Con vật 3" style="height: 90px;"></div>
+                            <div class="d-flex gap-2 justify-content-center w-100">
+                                <label><input type="radio" name="g2_q3" value="1" class="l2-option-input"><div class="g2-img-option"><img src="IMG/ngua.png"></div></label>
+                                <label><input type="radio" name="g2_q3" value="2" class="l2-option-input"><div class="g2-img-option"><img src="IMG/bo.png"></div></label>
+                                <label><input type="radio" name="g2_q3" value="3" class="l2-option-input"><div class="g2-img-option"><img src="IMG/heo.png"></div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="l2-question-box flex-column" style="border-color: #55efc4; box-shadow: 0 4px 0px #00b894;">
+                            <div class="mb-3"><img src="IMG/6 (4).png" alt="Con vật 4" style="height: 90px;"></div>
+                            <div class="d-flex gap-2 justify-content-center w-100">
+                                <label><input type="radio" name="g2_q4" value="1" class="l2-option-input"><div class="g2-img-option"><img src="IMG/ngua.png"></div></label>
+                                <label><input type="radio" name="g2_q4" value="2" class="l2-option-input"><div class="g2-img-option"><img src="IMG/vit.png"></div></label>
+                                <label><input type="radio" name="g2_q4" value="3" class="l2-option-input"><div class="g2-img-option"><img src="IMG/bo.png"></div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="l2-question-box flex-column" style="border-color: #fab1a0; box-shadow: 0 4px 0px #e17055;">
+                            <div class="mb-3"><img src="IMG/6 (5).png" alt="Con vật 5" style="height: 90px;"></div>
+                            <div class="d-flex gap-2 justify-content-center w-100">
+                                <label><input type="radio" name="g2_q5" value="1" class="l2-option-input"><div class="g2-img-option"><img src="IMG/gavang.png"></div></label>
+                                <label><input type="radio" name="g2_q5" value="2" class="l2-option-input"><div class="g2-img-option"><img src="IMG/ga.png"></div></label>
+                                <label><input type="radio" name="g2_q5" value="3" class="l2-option-input"><div class="g2-img-option"><img src="IMG/vit.png"></div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="l2-question-box flex-column" style="border-color: #fd79a8; box-shadow: 0 4px 0px #e84393;">
+                            <div class="mb-3"><img src="IMG/6 (6).png" alt="Con vật 6" style="height: 90px;"></div>
+                            <div class="d-flex gap-2 justify-content-center w-100">
+                                <label><input type="radio" name="g2_q6" value="1" class="l2-option-input"><div class="g2-img-option"><img src="IMG/heo.png"></div></label>
+                                <label><input type="radio" name="g2_q6" value="2" class="l2-option-input"><div class="g2-img-option"><img src="IMG/bo.png"></div></label>
+                                <label><input type="radio" name="g2_q6" value="3" class="l2-option-input"><div class="g2-img-option"><img src="IMG/ngua.png"></div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            `);
+        },
+        check: function() {
+            const dapAnChuan = ["3", "3", "2", "1", "2", "1"]; 
+            let soCauDung = 0;
+            for(let i = 1; i <= 6; i++) {
+                let userSelect = $(`input[name="g2_q${i}"]:checked`).val();
+                if (userSelect === dapAnChuan[i-1]) soCauDung++;
+            }
+            return {
+                score: soCauDung * 1,
+                tieuDe: soCauDung === 6 ? "Tuyệt Đỉnh Quan Sát!" : "Mắt Tinh Quá Bé Ơi!",
+                icon: soCauDung === 6 ? "👑" : "🎈",
+                message: `Bé chọn đúng ${soCauDung}/6 câu.\nNhận ngay ${soCauDung} sao nhé!`
+            };
+        }
+    },
+    2: {
+        instruction: "Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!",
+        render: function($container) {
+            g2_l2_connections = []; 
+            $container.append(`
+                <h3 class="mb-2 fw-bold text-center" style="color: #ff4757;">✨ Vòng 2: Nối Bóng Bạn Nhỏ</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0">Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!</h5>
+                    <button class="btn-speaker" data-text="Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!" title="Nghe lại">🔊</button>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center g2-l2-container">
+                    <div class="d-flex flex-column justify-content-between" style="height: 400px; width: 140px;">
+                        <div class="l1-row-item"><img src="IMG/Layer 1.png"></div>
+                        <div class="l1-row-item"><img src="IMG/Layer 2.png"></div>
+                        <div class="l1-row-item"><img src="IMG/Layer 3.png"></div>
+                        <div class="l1-row-item"><img src="IMG/Layer 4.png"></div>
+                    </div>
+                    
+                    <canvas id="g2-l2-canvas" width="260" height="400" class="draw-canvas"></canvas>
+                    
+                    <div class="d-flex flex-column justify-content-between" style="height: 400px; width: 140px;">
+                        <div class="l1-row-item"><img src="IMG/Layer 5.png"></div>
+                        <div class="l1-row-item"><img src="IMG/Layer 6.png"></div>
+                        <div class="l1-row-item"><img src="IMG/Layer 7.png"></div>
+                        <div class="l1-row-item"><img src="IMG/Layer 8.png"></div>
+                    </div>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                const canvas = document.getElementById('g2-l2-canvas');
+                if(!canvas) return;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width; canvas.height = rect.height;
+                const ctx = canvas.getContext('2d');
+                
+                const canvasOffsetTop = $(canvas).offset().top;
+                const yPositions = [];
+                $('.g2-l2-container .d-flex.flex-column:first-child .l1-row-item').each(function() {
+                    let itemCenterY = $(this).offset().top + ($(this).outerHeight() / 2);
+                    yPositions.push(itemCenterY - canvasOffsetTop);
+                });
+                
+                const leftX = 15; const rightX = canvas.width - 15;
+                let isDrawing = false, activeStartIdx = null, currentMouseX = 0, currentMouseY = 0;
+
+                function redrawCanvas() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    yPositions.forEach((y) => {
+                        ctx.fillStyle = '#2ed573'; ctx.beginPath(); ctx.arc(leftX, y, 10, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = '#ff4757'; ctx.beginPath(); ctx.arc(rightX, y, 10, 0, Math.PI * 2); ctx.fill();
+                    });
+                    ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = '#ff6b81';
+                    
+                    g2_l2_connections.forEach(conn => {
+                        ctx.beginPath(); ctx.moveTo(leftX, yPositions[conn.from]); ctx.lineTo(rightX, yPositions[conn.to]); ctx.stroke();
+                    });
+                    
+                    if (isDrawing && activeStartIdx !== null) {
+                        ctx.strokeStyle = 'rgba(255, 107, 129, 0.6)';
+                        ctx.beginPath(); ctx.moveTo(leftX, yPositions[activeStartIdx]); ctx.lineTo(currentMouseX, currentMouseY); ctx.stroke();
+                    }
+                }
+
+                redrawCanvas();
+
+                $(canvas).on('mousedown touchstart', function(e) { e.preventDefault();
+                    let mouseX = e.offsetX || (e.touches ? e.touches[0].pageX - $(canvas).offset().left : 0);
+                    let mouseY = e.offsetY || (e.touches ? e.touches[0].pageY - $(canvas).offset().top : 0);
+                    yPositions.forEach((y, idx) => { if (Math.sqrt(Math.pow(mouseX - leftX, 2) + Math.pow(mouseY - y, 2)) < 25) { isDrawing = true; activeStartIdx = idx; } });
+                });
+
+                $(canvas).on('mousemove touchmove', function(e) {
+                    if (!isDrawing) return; e.preventDefault();
+                    currentMouseX = e.offsetX || (e.touches ? e.touches[0].pageX - $(canvas).offset().left : 0);
+                    currentMouseY = e.offsetY || (e.touches ? e.touches[0].pageY - $(canvas).offset().top : 0);
+                    redrawCanvas();
+                });
+
+                $(canvas).on('mouseup touchend', function(e) {
+                    if (!isDrawing) return; isDrawing = false;
+                    yPositions.forEach((y, idx) => {
+                        if (Math.sqrt(Math.pow(currentMouseX - rightX, 2) + Math.pow(currentMouseY - y, 2)) < 25) {
+                            g2_l2_connections = g2_l2_connections.filter(c => c.from !== activeStartIdx);
+                            g2_l2_connections.push({ from: activeStartIdx, to: idx });
+                        }
+                    });
+                    activeStartIdx = null; redrawCanvas();
+                });
+            }, 300);
+        },
+        check: function() {
+            const dapAnDung = { 0: 2, 1: 0, 2: 3, 3: 1 };
+            let soCauDung = 0;
+            g2_l2_connections.forEach(conn => { if (dapAnDung[conn.from] === conn.to) soCauDung++; });
+            return {
+                score: soCauDung * 1,
+                tieuDe: soCauDung === 4 ? "Kéo Cáp Siêu Đỉnh!" : "Cố Lên Nào!",
+                icon: soCauDung === 4 ? "🌟" : "🍀",
+                message: `Bé đã nối chính xác được ${soCauDung}/4 cặp hình.\nNhận ngay thêm ${soCauDung} sao!`
+            };
+        }
+    },
+    3: {
+        instruction: "Bé hãy kéo con vật vào đúng cái bóng của nó nhé!",
+        render: function($container) {
+            const matchMap = { 1: 8, 2: 10, 3: 12, 4: 7, 5: 9, 6: 11 };
+            $container.append(`
+            <h3 class="mb-3 fw-bold text-center" style="color: #00b894;">✨ Vòng 3: Nối Bóng Bạn Nhỏ</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0 text-center">Bé hãy kéo con vật vào đúng cái bóng của nó nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy kéo con vật vào đúng cái bóng của nó nhé!" title="Nghe lại">🔊</button>
+            </div>
+                <div class="g2-grid-3x3 mb-5 m-0 mx-auto" id="animal-pool">
+                    ${[1,2,3,4,5,6].map(i => `
+                        <div class="animal-drag" data-val="${i}">
+                            <img src="IMG/8 (${i}).png" alt="Con vật ${i}">
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="g2-grid-3x3 m-0 mx-auto" id="shadow-pool">
+                    ${[8,10,12,7,9,11].map(i => `
+                        <div class="shadow-drop" data-val="${i}">
+                            <img src="IMG/8 (${i}).png" class="shadow-img" alt="Bóng">
+                        </div>
+                    `).join('')}
+                </div>
+            `);
+
+            $(".animal-drag").draggable({ revert: "invalid", helper: "clone", zIndex: 999 });
+
+            $(".shadow-drop").droppable({
+                accept: ".animal-drag",
+                drop: function(event, ui) {
+                    if ($(this).children('.animal-drag').length > 0) return false;
+                    ui.draggable.appendTo(this).css({ position: 'relative', top: 0, left: 0, width: '100%' });
+                    let dragVal = ui.draggable.data("val");
+                    let dropVal = $(this).data("val");
+                    if (matchMap[dragVal] == dropVal) {
+                        ui.draggable.draggable("disable");
+                        ui.draggable.css("cursor", "default");
+                    }
+                }
+            });
+        },
+        check: function() {
+            let soCauDung = 0;
+            const matchMap = { 1: 8, 2: 10, 3: 12, 4: 7, 5: 9, 6: 11 };
+            $(".shadow-drop").each(function() {
+                let animal = $(this).children('.animal-drag');
+                if (animal.length > 0) {
+                    let dragVal = animal.data("val");
+                    let dropVal = $(this).data("val");
+                    if (matchMap[dragVal] == dropVal) {
+                        soCauDung++;
+                        $(this).css("border-color", "#2ed573");
+                    } else {
+                        $(this).css("border-color", "#ff4757");
+                    }
+                }
+            });
+
+            return { 
+                score: soCauDung, 
+                tieuDe: soCauDung === 6 ? "Tuyệt quá!" : "Cố lên nhé!", 
+                icon: soCauDung === 6 ? "🌟" : "🍀", 
+                message: `Bé đã tìm đúng ${soCauDung}/6 chiếc bóng!` 
+            };
+        }
+    },
+    4: {
+        instruction: "Bé hãy nhìn hình bên trái và bấm chọn hình đúng ở bên phải nhé!",
+        render: function($container) {
+            const questions = [
+                { id: 1, target: 'IMG/91 (1).png', options: ['IMG/91 (2).png', 'IMG/91 (3).png', 'IMG/91 (4).png', 'IMG/91 (5).png'] },
+                { id: 2, target: 'IMG/91 (6).png', options: ['IMG/91 (7).png', 'IMG/91 (8).png', 'IMG/91 (9).png', 'IMG/91 (10).png'] },
+                { id: 3, target: 'IMG/91 (11).png', options: ['IMG/91 (12).png', 'IMG/91 (13).png', 'IMG/91 (14).png', 'IMG/91 (15).png'] },
+                { id: 4, target: 'IMG/91 (16).png', options: ['IMG/91 (17).png', 'IMG/91 (18).png', 'IMG/91 (19).png', 'IMG/91 (20).png'] }
+            ];
+
+            $container.append(`
+                <h3 class="mb-2 fw-bold text-center" style="color: #0984e3;">✨ Vòng 4: Chọn Hình Đúng</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0 text-center">Bé hãy nhìn hình bên trái và bấm chọn hình đúng ở bên phải nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy nhìn hình bên trái và bấm chọn hình đúng ở bên phải nhé!" title="Nghe lại">🔊</button>
+            </div>
+                <div class="mx-auto" style="max-width: 750px;">
+                    ${questions.map((q, qIdx) => `
+                        <div class="l2-question-box align-items-center py-3 px-4" data-q="${qIdx + 1}" style="border-radius: 20px; margin-bottom: 20px;">
+                            <div class="text-center" style="width: 120px;">
+                                <img src="${q.target}" style="max-height: 80px; max-width: 100%;">
+                            </div>
+                            
+                            <div class="l2-options-col m-0 flex-grow-1 justify-content-end gap-3">
+                                ${q.options.map((optImg, optIdx) => `
+                                    <label>
+                                        <input type="radio" name="g2_v9_q${qIdx + 1}" value="${optIdx + 1}" class="l2-option-input">
+                                        <div class="g2-img-option" style="width: 75px; height: 75px;">
+                                            <img src="${optImg}" style="width: 100%; height: 100%; object-fit: contain;">
+                                        </div>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `);
+        },
+        check: function() {
+            const dapAnChuan = ["2", "2", "4", "3"]; 
+            let soCauDung = 0;
+            for(let i = 1; i <= 4; i++) {
+                let userSelect = $(`input[name="g2_v9_q${i}"]:checked`).val();
+                let $row = $(`.l2-question-box[data-q="${i}"]`);
+                if (userSelect === dapAnChuan[i-1]) {
+                    soCauDung++;
+                    $row.css("border-color", "#2ed573");
+                } else {
+                    $row.css("border-color", "#ff4757");
+                }
+            }
+
+            return {
+                score: soCauDung, 
+                tieuDe: soCauDung === 4 ? "Mắt Tinh Quá Bé Ơi!" : "Làm Tốt Lắm Bé!",
+                icon: soCauDung === 4 ? "👑" : "🎈",
+                message: `Bé đã chọn chính xác được ${soCauDung}/4 câu.\nCộng dồn vào bảng điểm thêm ${soCauDung} sao nhé!`
+            };
+        }
+    },
+    5: { 
+        instruction: "Bé hãy kéo các con vật vào đúng bóng của chúng trên bức tranh nhé!",
+        render: function($container) {
+            const matchMap = { 1: 3, 2: 4, 3: 1, 4: 6, 5: 2, 6: 5 }; 
+            $container.append(`
+                <h3 class="mb-4 fw-bold text-center" style="color: #6c5ce7;">🧩 Vòng 5: Tìm Bóng Bạn Nhỏ</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+        <h5 class="text-secondary mb-0 text-center">Bé hãy kéo các con vật vào đúng bóng của chúng trên bức tranh nhé!</h5>
+        <button class="btn-speaker" data-text="Bé hãy kéo các con vật vào đúng bóng của chúng trên bức tranh nhé!" title="Nghe lại">🔊</button>
+    </div>
+                <div class="puzzle-container mb-4" style="position: relative; max-width: 800px; margin: 0 auto;">
+                    <img src="IMG/10.png" class="puzzle-bg" style="width: 100%; height: auto; display: block;">
+                    <div class="puzzle-slot" data-val="1" style="position: absolute; top: 20%; left: 24%; width: 19%; height: 27%;"></div>    
+                    <div class="puzzle-slot" data-val="2" style="position: absolute; top: 46.5%; left: 23.5%; width: 36%; height: 38%;"></div>
+                    <div class="puzzle-slot" data-val="3" style="position: absolute; top: 66.5%; left: 2%; width: 22%; height: 36%;"></div>  
+                    <div class="puzzle-slot" data-val="4" style="position: absolute; top: 21.5%; left: 56%; width: 22%; height: 59%;"></div>  
+                    <div class="puzzle-slot" data-val="5" style="position: absolute; top: 72%; left: 46%; width: 17%; height: 31%;"></div> 
+                    <div class="puzzle-slot" data-val="6" style="position: absolute; top: 62%; left: 76%; width: 23%; height: 40%;"></div>    
+                </div> 
+
+                <div id="puzzle-tray" class="d-flex justify-content-center gap-3 mt-4 flex-wrap" style="min-height: 120px; border: 3px dashed #74b9ff; border-radius: 20px; padding: 15px; background: #f8f9fa;">
+                    ${[1, 2, 3, 4, 5, 6].map(i => `
+                        <div class="puzzle-piece" data-val="${i}" style="width: 100px; height: 100px; cursor: grab; z-index: 10;">
+                            <img src="IMG/10 (${i}).png" alt="Con vật ${i}" style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
+                    `).join('')}
+                </div>
+            `);
+
+            $(".puzzle-piece").draggable({ revert: "invalid", helper: "clone", zIndex: 999 });
+
+            $(".puzzle-slot").droppable({
+                accept: ".puzzle-piece",
+                drop: function(event, ui) {
+                    if ($(this).children('.puzzle-piece').not(ui.draggable).length > 0) return false;
+                    ui.draggable.appendTo(this).css({ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' });
+                    $(this).addClass("filled");
+
+                    let pieceVal = ui.draggable.data("val");
+                    let slotVal = $(this).data("val");
+
+                    if (matchMap[pieceVal] == slotVal) {
+                        ui.draggable.draggable("disable");
+                        ui.draggable.css("cursor", "default");
+                    } 
+                }
+            });
+
+            $("#puzzle-tray").droppable({
+                accept: ".puzzle-piece",
+                drop: function(event, ui) {
+                    ui.draggable.appendTo(this).css({ position: 'relative', top: 'auto', left: 'auto', width: '', height: '' });
+                    $(".puzzle-slot").each(function() {
+                        if ($(this).children('.puzzle-piece').length === 0) $(this).removeClass("filled");
+                    });
+                }
+            });
+        },
+        check: function() {
+            const matchMap = { 1: 3, 2: 4, 3: 1, 4: 6, 5: 2, 6: 5 }; 
+            let score = 0;
+            $(".puzzle-slot").each(function() {
+                let slotVal = $(this).data("val");
+                let placedPiece = $(this).children('.puzzle-piece');
+                if (placedPiece.length > 0) {
+                    let pieceVal = placedPiece.data("val");
+                    if (matchMap[pieceVal] == slotVal) {
+                        score++;
+                        $(this).css({ "box-shadow": "inset 0 0 20px #2ed573", "border": "none" });
+                    } else {
+                        $(this).css({ "box-shadow": "inset 0 0 20px #ff4757", "border": "none" });
+                    }
+                }
+            });
+            return { score: score, tieuDe: score === 6 ? "Tuyệt vời!" : "Cố lên nhé!", icon: "🧩", message: `Bé đã xếp đúng ${score}/6 mảnh!` };
+        }
+    },
+    6: {
+        instruction: "Bé hãy chọn hình đúng nhất nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-4 fw-bold text-center" style="color: #0984e3;">✨ Vòng 6: Thử Thách Thông Minh</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+        <h5 class="text-secondary mb-0">Bé hãy chọn 1 hình đúng nhất với bức tranh nhé!</h5>
+        <button class="btn-speaker" data-text="Bé hãy chọn hình đúng nhất nhé!" title="Nghe lại">🔊</button>
+    </div>
+                
+                <div class="row align-items-center" style="max-width: 800px; margin: 0 auto;">
+                    <div class="col-12 col-md-6 mb-4 mb-md-0">
+                        <div class="g2-grid-3x3 mx-auto">
+                            ${[1,2,3,4,5,6,7,8,9].map(i => `
+                                <label class="option-item" onclick="selectG2(this)">
+                                    <img src="IMG/11 (${i}).png">
+                                    <input type="radio" name="l11" value="${i}" style="display: none;">
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 text-center">
+                        <div style="border: 4px dashed #a29bfe; border-radius: 25px; padding: 20px; background: #fff;">
+                            <img src="IMG/11.png" style="width: 100%; max-width: 250px; border-radius: 20px;">
+                        </div>
+                    </div>
+                </div>
+            `);
+            window.selectG2 = function(el) {
+                $('.option-item').removeClass('selected');
+                $(el).addClass('selected');
+                $('.option-item').css('border-color', '#ddd');
+                $(el).css('border-color', '#ff9ff3');
+            };
+        },
+        check: function() {
+            let isCorrect = $('input[name="l11"]:checked').val() == "1";
+            if(isCorrect) {
+                $('.option-item.selected').css('border-color', '#2ed573');
+            } else {
+                $('.option-item.selected').css('border-color', '#ff4757');
+            }
+
+            return { 
+                score: isCorrect ? 5 : 0, 
+                tieuDe: isCorrect ? "Tuyệt vời!" : "Chưa đúng rồi!", 
+                icon: isCorrect ? "👑" : "😢", 
+                message: isCorrect ? "Bé đã hoàn thành xuất sắc!" : "Bé làm lại câu này nhé!" 
+            };
+        }
+    }
+};
+
+$(document).ready(function() {
+    window.g2_l2_connections = [];
+    // 1. TỪ WELCOME SCREEN -> RA MÀN HÌNH INTRO
+    $('#btn-to-start-screen').click(function() {
+        $('#welcome-screen').fadeOut(500, function() {
+            // Đã chuyển thành gọi game2-intro-screen thay vì math-intro
+            $('#game2-intro-screen').css('display', 'flex').hide().fadeIn(500);
+        });
+    });
+
+    // 2. TỪ MÀN HÌNH INTRO -> VÀO GAME 2
+    $('#btn-start-game2').click(function() {
+        let bgMusic = document.getElementById('bg-music');
+        if(bgMusic) { bgMusic.loop = true; bgMusic.volume = 0.5; bgMusic.play().catch(e => {}); }
+
+        $('#game2-intro-screen').fadeOut(500, function() {
+            $('#main-game').fadeIn(500);
+            window.gameState.level = 1;
+            window.loadLevelStructure(1);
+            if(window.LEVEL_MODULES[1]) speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
+        });
+    });
+
+    // CÁC HÀM XỬ LÝ NÚT BẤM
+    $('#btn-lam-lai').off('click').on('click', function() {
+        $('#custom-alert-overlay').hide();
+        $(`#level-wrapper-${window.gameState.level}`).remove(); 
+        window.loadLevelStructure(window.gameState.level); 
+    });
+
+    $('#btn-replay-round').off('click').on('click', function() {
+        $(`#level-wrapper-${window.gameState.level}`).remove(); 
+        window.loadLevelStructure(window.gameState.level);
+    });
+
+    $('#btn-submit').off('click').on('click', function() {
+        let result = window.LEVEL_MODULES[window.gameState.level].check();
+        let roundMaxScore = window.MAX_SCORES[window.gameState.level] || 5;
+
+        let proceed = function() {
+            stopAllMedia();
+            window.gameState.roundScores[window.gameState.level] = roundMaxScore > 0 ? result.score : 0;
+            
+            let currentTotalScore = 0; let roundsPlayed = 0;
+            for(let i = 1; i <= 6; i++) {
+                if(window.gameState.roundScores[i] !== undefined) { currentTotalScore += window.gameState.roundScores[i]; roundsPlayed++; }
+            }
+            window.gameState.score = currentTotalScore; window.updateUI();
+
+            if (window.gameState.replayQueue && window.gameState.replayQueue.length > 0) {
+                window.gameState.level = window.gameState.replayQueue.shift();
+                saveData(); window.loadLevelStructure(window.gameState.level);
+                if(window.LEVEL_MODULES[window.gameState.level]) speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+            else if (roundsPlayed === 6) { // 6 vòng (1 đến 6) đã chơi xong
+                window.showGameEnd(currentTotalScore >= PASS_SCORE, currentTotalScore);            }
+            else {
+                window.gameState.level++;
+                saveData(); window.loadLevelStructure(window.gameState.level); updateNavButtons();
+                if(window.LEVEL_MODULES[window.gameState.level]) speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+        };
+
+        if (roundMaxScore === 0) { proceed(); return; }
+
+        $('#grading-overlay').css('display', 'flex');
+
+        window.preloadedFeedbackAudio = null;
+        let textToRead = cleanTextForTTS(result.message);
+        fetch("https://api.fpt.ai/hmi/tts/v5", {
+            method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead
+        }).then(res => res.json()).then(data => {
+            if (data && data.async) {
+                let noCacheUrl = data.async + (data.async.includes('?') ? '&' : '?') + 't=' + Date.now();
+                let audio = new Audio(noCacheUrl);
+                audio.oncanplaythrough = () => { window.preloadedFeedbackAudio = audio; };
+                audio.load();
+            }
+        });
+
+        setTimeout(() => {
+            $('#grading-overlay').hide();
+            let simulatedRoundsPlayed = 0;
+            let tempRoundScores = { ...window.gameState.roundScores }; tempRoundScores[window.gameState.level] = result.score;
+            for(let i = 1; i <= 6; i++) if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
+            
+            if (simulatedRoundsPlayed === 6 && (!window.gameState.replayQueue || window.gameState.replayQueue.length === 0)) {
+                proceed();
+            } else {
+                showNotification(result.tieuDe, result.message, result.icon, result.score, roundMaxScore, proceed);
+            }
+        }, 2000);
+    });
+
+    $('#btn-reset').click(function() {
+        $('#btn-close-alert, #btn-lam-lai').hide(); 
+        $('#btn-confirm-reset, #btn-cancel-reset').show(); 
+        $('#custom-alert-title').text("Xóa Tiến Trình 🔄");
+        $('#custom-alert-message').text("Bé có chắc chắn muốn xóa hết điểm và chơi lại từ đầu không?");
+        $('#custom-alert-icon').text("🎠");
+        $('#custom-alert-overlay').css('display', 'flex');
+    });
+
+    $('#btn-confirm-reset').off('click').on('click', function() {
+        for(let i = 1; i <= 6; i++) {
+            delete window.gameState.roundScores[i];
+            $(`#level-wrapper-${i}`).remove();
+        }
+        window.gameState.level = 1; window.gameState.score = 0; window.gameState.replayQueue = [];
+        updateUI(); $('#custom-alert-overlay').hide(); window.loadLevelStructure(1);
+    });
+
+    $('#btn-cancel-reset').off('click').on('click', function() { $('#custom-alert-overlay').hide(); });
+
+    $('#btn-next').off('click').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        stopAllMedia();
+        window.gameState.level++;
+        saveData();
+        window.loadLevelStructure(window.gameState.level);
+        updateNavButtons();
+        if(window.LEVEL_MODULES[window.gameState.level]) speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+    });
+
+    $('#btn-prev').off('click').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        if (window.gameState.level > 1) {
+            stopAllMedia();
+            window.gameState.level--;
+            saveData();
+            window.loadLevelStructure(window.gameState.level);
+            updateNavButtons();
+            if(window.LEVEL_MODULES[window.gameState.level]) speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+        }
+    });
+});
+</script>
+</body>
+</html>

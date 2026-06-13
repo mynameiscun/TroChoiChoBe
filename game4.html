@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thế Giới Bé Ngoan - Game 4</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="audio-loading-overlay">
+    <img src="IMG/thay_u_tron.png" width="120" class="teacher-bounce mb-3">
+    <h3 class="fw-bold" style="color: #0984e3;">Thầy Ú Tròn đang đọc đề...</h3>
+</div>
+
+<audio id="bg-music" loop src="AUDIO/game.mp3"></audio>
+
+<div id="welcome-screen">
+    <h1 class="bounce-animation" style="color: #880E4F; font-weight: 900; font-size: 3.5rem; text-shadow: 2px 2px 0px #fff; margin-bottom: 25px;">
+        TRƯỜNG MẦM NON 6
+    </h1>
+    <h2 class="bounce-animation" style="color: #5D4037; font-weight: 700; margin-bottom: 10px; font-size: 1.8rem; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+        Giáo viên: Bùi Thị Thúy Nga
+    </h2>
+    <h3 class="bounce-animation" style="color: #5D4037; font-weight: 700; margin-bottom: 40px; font-size: 1.5rem; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+        Lứa tuổi: 4 - 5 tuổi
+    </h3>
+    <button id="btn-to-start-screen" class="btn-start" style="background-color: #E91E63; color: #fff; border: none; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);">
+        Khám phá ➡️
+    </button>
+</div>
+
+<div id="game4-intro-screen">
+    <div class="bounce-animation">
+        <img src="IMG/icon_dung_sai.png" alt="Game 4 Icon" width="300" style="margin-bottom: 20px;">
+    </div>
+    <h1 class="game-title bounce-animation" style="text-shadow: 4px 4px 0px #4834d4;">Trò Chơi<br>Hành Vi Đúng Sai ✅</h1>
+    <h3 class="text-white mb-5" style="font-weight: 700; text-shadow: 2px 2px 0px rgba(0,0,0,0.1);">Bé hãy học những hành vi thật ngoan nhé!</h3>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <button id="btn-start-game4" class="btn-start" style="background-color: #686de0; color: #fff; border-color: #fff;">Bắt Đầu! 🚀</button>
+    </div>
+</div>
+
+<div id="main-game" class="container mt-5" style="display: none;">
+    <div class="card cute-card">
+        <div class="card-header cute-header text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0 fw-bold bg-warning text-dark px-4 py-2" style="border-radius: 20px;">
+                ⭐ Điểm: <span id="current-score">0</span>
+            </h3>
+        </div>
+        
+        <div class="card-body p-4 d-flex flex-column" style="min-height: 500px;">
+            <div id="game-container" class="flex-grow-1"></div>
+        </div>
+
+        <div class="card-footer bg-white border-0 p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex gap-2">
+                    <button id="btn-prev" class="btn btn-secondary nav-btn disabled">⬅️ Quay lại</button>
+                    <button id="btn-next" class="btn btn-primary nav-btn disabled"> Tiếp theo ➡️</button>
+                </div>
+                <button id="btn-submit" class="btn btn-success cute-btn px-4 py-2" style="font-size: 1.3rem; transform: scale(1.1);">✅ Chấm điểm!</button>
+                <div class="d-flex gap-2">
+                      <button id="btn-skip-test" class="btn btn-outline-dark" style="border-radius: 50px; padding: 8px 20px; font-weight: bold; border-width: 2px;">
+                ⏭️ Skip
+            </button>
+                    <button id="btn-replay-round" class="btn btn-outline-warning" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🔄 Làm lại vòng</button>
+                    <button id="btn-reset" class="btn btn-outline-danger" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🗑️ Xóa tiến trình</button>
+                </div>
+            </div>
+        </div>  
+    </div>
+</div>
+
+<div id="custom-alert-overlay" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+        <h3 id="custom-alert-title" style="color: #ff4757; font-weight: 900;"></h3>
+        <p id="custom-alert-message" style="font-size: 18px; color: #555; white-space: pre-line;"></p>
+        <div class="d-flex justify-content-center gap-2">
+            <button id="btn-lam-lai" class="btn btn-warning btn-cute">Làm lại vòng</button>
+            <button id="btn-close-alert" class="btn btn-cute">Tiếp tục!</button>
+            <button id="btn-confirm-reset" class="btn btn-success btn-cute" style="display:none;">Chắc chắn</button>
+            <button id="btn-cancel-reset" class="btn btn-secondary btn-cute" style="display:none;">Hủy bỏ</button>
+        </div>
+    </div>
+</div>
+
+<div id="game-end-overlay" class="custom-alert-overlay">
+    <div class="custom-alert-box" style="max-width: 550px;">
+        <h1 id="game-end-title" class="fw-bold mb-3" style="font-size: 2.5rem;"></h1>
+        <p id="game-end-message" class="fs-5 mb-4" style="color: #555; white-space: pre-line;"></p>
+        <div id="game-end-buttons" class="d-flex justify-content-center align-items-center gap-3 flex-wrap"></div>
+    </div>
+</div>
+
+<div id="grading-overlay">
+    <img src="IMG/thay_u_tron_diem.png" width="150" class="teacher-bounce">
+    <h2 class="mt-4 fw-bold" style="color: #6c5ce7;">Thầy Ú Tròn đang chấm điểm...</h2>
+</div>
+
+<div id="app-logo">
+    <a href="#welcome-screen"><img src="IMG/logo.jpg" alt="Logo"></a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
+<script>
+// =========================================================================
+// BIẾN TOÀN CỤC CỦA GAME 4 (Vòng 17 -> 22)
+// =========================================================================
+window.gameState = { level: 17, score: 0, roundScores: {}, replayQueue: [] };
+window.MAX_SCORES = { 17:5, 18:4, 19:5, 20:6, 21:8, 22:12 }; // Tối đa 40 điểm
+const PASS_SCORE = 35; 
+
+// =========================================================================
+// HỆ THỐNG HIỆU ỨNG ÂM THANH MẶC ĐỊNH
+// =========================================================================
+const SoundFX = {
+    ctx: null,
+    init: function() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); },
+    playClick: function() {
+        try { this.init(); let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + 0.05); } catch(e) {}
+    },
+    playWin: function() {
+        try { this.init(); [440, 554, 659, 880].forEach((freq, i) => { let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'sine'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1); gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + i * 0.1 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.1 + 0.5);
+        osc.start(this.ctx.currentTime + i * 0.1); osc.stop(this.ctx.currentTime + i * 0.1 + 0.5); }); } catch(e) {}
+    },
+    playLose: function() {
+        try { this.init(); let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.4, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + 0.5); } catch(e) {}
+    }
+};
+
+let lastClickTime = 0;
+$(document).on('mousedown touchstart', 'button, .btn, canvas, input, .l2-option-box, .l21-option-box, .l22-drag-item', function() {
+    let now = Date.now(); if (now - lastClickTime > 100) { SoundFX.playClick(); lastClickTime = now; }
+});
+
+function stopAllMedia() {
+    $('audio:not(#bg-music), video').each(function() { this.pause(); this.currentTime = 0; });
+    if (window.currentAudio) window.currentAudio.pause();
+    $('.btn-speaker').removeClass('playing');
+}
+
+// =========================================================================
+// API FPT - ĐỌC ÂM THANH & SMART LOADER
+// =========================================================================
+const FPT_API_KEY = '372DQFfUtnFcELppozNYtYlcCRfy9Jmr'; 
+window.currentAudio = null; window.audioLoaderTimer = null; window.preloadedFeedbackAudio = null;
+
+window.forceHideAudioLoader = function() {
+    if (window.audioLoaderTimer) { clearTimeout(window.audioLoaderTimer); window.audioLoaderTimer = null; }
+    $('#audio-loading-overlay').hide();
+};
+
+function cleanTextForTTS(text) { return String(text || "").replace(/[🌈🎉⭐❤️💖🔊✨🧸🚀🍎🍌🍇🍭🎈🌟🎯🧮🔄✅🍀🌸👑🎠]/g, "").replace(/\s+/g, " ").trim(); }
+
+window.speakInstruction = function(vanBan, btnElement = null, callback = null, useLoader = false) {
+    const textToRead = cleanTextForTTS(vanBan);
+    if (!textToRead) { if(callback) callback(); return; }
+    if (btnElement) $(btnElement).addClass('playing');
+
+    if (useLoader) {
+        window.forceHideAudioLoader(); 
+        window.audioLoaderTimer = setTimeout(() => { $('#audio-loading-overlay').css('display', 'flex'); }, 400); 
+    }
+
+    let bgMusic = document.getElementById('bg-music');
+    if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+
+    fetch("https://api.fpt.ai/hmi/tts/v5", { method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead })
+    .then(res => res.json()).then(data => {
+        window.forceHideAudioLoader();
+        if (data && data.async) checkAndPlayAudio(data.async, 0, btnElement, callback);
+        else if(callback) callback();
+    }).catch(e => { window.forceHideAudioLoader(); if(callback) callback(); });
+}
+
+function checkAndPlayAudio(url, retry, btnElement, callback) {
+    if(retry > 15) { 
+        if(btnElement) $(btnElement).removeClass('playing');
+        window.forceHideAudioLoader(); let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; if(callback) callback(); return;
+    }
+    
+    let noCacheUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(); 
+    let audio = new Audio(noCacheUrl);
+    
+    const onAudioReady = () => { window.forceHideAudioLoader(); };
+    audio.addEventListener('loadeddata', onAudioReady); 
+    audio.addEventListener('canplay', onAudioReady);
+    audio.addEventListener('playing', onAudioReady);
+    audio.addEventListener('timeupdate', () => { if (audio.currentTime > 0.1) onAudioReady(); });
+
+    audio.oncanplaythrough = function() {
+        onAudioReady(); window.currentAudio = audio;
+        let playPromise = audio.play();
+        if (playPromise !== undefined) playPromise.catch(e => { onAudioReady(); });
+    };
+
+    audio.onended = function() {
+        if(btnElement) $(btnElement).removeClass('playing');
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; 
+        if(callback) callback();
+    };
+    audio.onerror = () => setTimeout(() => checkAndPlayAudio(url, retry + 1, btnElement, callback), 1000);
+    audio.load();
+}
+
+$(document).on('click', '.btn-speaker', function() { window.speakInstruction($(this).attr('data-text'), this); });
+
+// =========================================================================
+// CÁC HÀM XỬ LÝ GIAO DIỆN HỆ THỐNG
+// =========================================================================
+function saveData() { localStorage.setItem('game4Progress', JSON.stringify(window.gameState)); }
+function updateUI() { $('#current-level').text(window.gameState.level); $('#current-score').text(window.gameState.score); }
+
+function updateNavButtons() {
+    if (window.gameState.roundScores[window.gameState.level] !== undefined) $('#btn-next').removeClass('disabled').css('cursor', 'pointer');
+    else $('#btn-next').addClass('disabled').css('cursor', 'not-allowed');
+
+    if (window.gameState.level === 17) $('#btn-prev').addClass('disabled').css('cursor', 'not-allowed');
+    else $('#btn-prev').removeClass('disabled').css('cursor', 'pointer');
+}
+
+function showNotification(title, message, icon, score, total, callback) {
+    $('#btn-confirm-reset, #btn-cancel-reset').hide();
+    $('#custom-alert-title').prev('img').remove();
+    
+    let isGood = (score > total / 2) || (score === total && total > 0) || total === 0;
+    let gifUrl = isGood ? 'IMG/thay_u_tron_vui.png' : ((score === total/2) ? 'IMG/thay_u_tron_binh_thuong.png' : 'IMG/thay_u_tron_buon.png');
+    $('#custom-alert-title').before(`<img src="${gifUrl}" width="80" class="mb-2 teacher-bounce">`);
+    
+    $('#custom-alert-title').text(title); $('#custom-alert-message').text(message); 
+    
+    if (isGood) SoundFX.playWin(); else SoundFX.playLose();
+    
+    let isPass = (total === 0) || (score >= total * 0.6);
+    if (!isPass) { $('#btn-close-alert').hide(); $('#btn-lam-lai').show(); } 
+    else if (score < total && total > 0) { $('#btn-close-alert').show(); $('#btn-lam-lai').show(); } 
+    else { $('#btn-close-alert').show(); $('#btn-lam-lai').hide(); }
+
+    $('#custom-alert-overlay').css('display', 'flex');
+
+    if (window.preloadedFeedbackAudio) {
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+        window.currentAudio = window.preloadedFeedbackAudio;
+        window.currentAudio.play().catch(e => {});
+        window.currentAudio.onended = function() { if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; };
+        window.preloadedFeedbackAudio = null;
+    } else { window.speakInstruction(message); }
+
+    $('#btn-close-alert').off('click').on('click', function() {
+        if (window.currentAudio) { window.currentAudio.pause(); window.currentAudio = null; }
+        $('#custom-alert-overlay').hide();
+        if (typeof callback === 'function') callback();
+    });
+}
+
+function showGameEnd(isPass, totalScore) {
+    $('#game-end-overlay').css('display', 'flex');
+    let $buttons = $('#game-end-buttons'); $buttons.empty();
+
+    if (isPass) {
+        $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/40 sao ở trò chơi Hành Vi Đúng Sai.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
+        SoundFX.playWin(); 
+        $buttons.append(`<button class="btn btn-secondary btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="window.goHome()">🏠 Về Menu</button>`);
+        $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="window.replayAll()">🔄 Chơi lại trò này</button>`);
+        $buttons.append(`<button class="btn btn-success btn-cute" style="transform: scale(1.15); font-weight: 900; background-color: #ff4757; padding: 15px 30px;" onclick="window.nextGame()">➡️ Qua màn tiếp theo</button>`);
+        window.speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Hành Vi Đúng Sai!`);
+    } else {
+        $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/40 sao. Cần đạt tối thiểu 35 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        SoundFX.playLose();
+        window.gameState.replayQueue = [];
+        for (let i = 17; i <= 22; i++) {
+            if (window.gameState.roundScores[i] !== undefined && window.gameState.roundScores[i] < window.MAX_SCORES[i]) {
+                window.gameState.replayQueue.push(i);
+            }
+        }
+        $buttons.append(`<button class="btn btn-warning btn-cute" style="transform: scale(1.1); font-weight: 900;" onclick="window.startReplay()">🔄 Chơi lại các vòng sai</button>`);
+        window.speakInstruction("Bé cần cố gắng thêm một chút nữa nhé! Hãy ấn nút để làm lại các vòng sai.");
+    }
+}
+
+window.loadLevelStructure = function(level) {
+    let $mainContainer = $('#game-container');
+    $mainContainer.children('.level-wrapper').hide();
+    $('#btn-submit').show();
+
+    if (window.LEVEL_MODULES[level]) {
+        let $levelWrapper = $(`#level-wrapper-${level}`);
+        if ($levelWrapper.length === 0) {
+            $levelWrapper = $(`<div id="level-wrapper-${level}" class="level-wrapper"></div>`);
+            $levelWrapper.append(`<div class="text-center mb-4"><img src="IMG/thay_u_tron.png" width="100" class="teacher-bounce"></div>`);
+            $mainContainer.append($levelWrapper); 
+            window.LEVEL_MODULES[level].render($levelWrapper);
+        }
+        $levelWrapper.show();
+        updateNavButtons();
+    } else {
+        let finishText = "Chúc Mừng Bé! Bé đã xuất sắc hoàn thành tất cả các màn chơi!";
+        let $finishWrapper = $('#finish-wrapper');
+        if ($finishWrapper.length === 0) {
+            $finishWrapper = $(`<div id="finish-wrapper" class="level-wrapper"></div>`);
+            $finishWrapper.html(`
+                <div class="text-center bounce-animation mt-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3113/3113054.png" width="130" class="mb-4">
+                    <h1 class="fw-bold" style="color: #ff6b81; font-size: 3.5rem;">Chúc Mừng Bé! 🏆</h1>
+                    <h2 id="final-score-display" class="mt-4 p-3 bg-warning d-inline-block" style="border-radius: 20px; color:#fff; font-weight:900;">Tổng điểm đạt được: ${window.gameState.score} ⭐</h2>
+                </div>
+            `);
+            $mainContainer.append($finishWrapper);
+        } else { $('#final-score-display').text(`Tổng điểm đạt được: ${window.gameState.score} ⭐`); }
+        $finishWrapper.show(); $('#btn-submit').hide(); window.speakInstruction(finishText, null);
+    }
+};
+
+window.replayAll = function() {
+    $('#game-end-overlay').hide();
+    window.gameState.level = 17; 
+    for(let i = 17; i <= 22; i++) {
+        delete window.gameState.roundScores[i]; 
+        $(`#level-wrapper-${i}`).remove(); 
+    }
+    window.gameState.replayQueue = []; window.gameState.score = 0; saveData(); updateUI(); window.loadLevelStructure(17);
+    window.speakInstruction(window.LEVEL_MODULES[17].instruction, null, null, true);
+};
+
+window.startReplay = function() {
+    $('#game-end-overlay').hide();
+    window.gameState.level = window.gameState.replayQueue.shift(); 
+    saveData();
+    $(`#level-wrapper-${window.gameState.level}`).remove(); 
+    window.loadLevelStructure(window.gameState.level);
+    window.speakInstruction("Chúng ta cùng làm lại vòng " + window.gameState.level + " nhé!", null, null, true);
+};
+
+window.nextGame = function() {
+    window.location.href = "game5.html"; // Chuyển sang Game 5
+};
+window.goHome = function() {
+    window.location.href = "index.html"; 
+};
+
+// =========================================================================
+// DỮ LIỆU CÁC VÒNG CỦA GAME 4 (VÒNG 17 -> 22)
+// =========================================================================
+window.LEVEL_MODULES = {
+    17: {
+        instruction: "Bé hãy xem video sau và chọn xem hành vi trên là đúng hay sai nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #686de0;">✨ Vòng 17: Bé Cùng Quan Sát</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0 text-center">Bé hãy xem video sau và chọn xem hành vi trên là đúng hay sai nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy xem video sau và chọn xem hành vi trên là đúng hay sai nhé!" title="Nghe lại">🔊</button>
+                </div>
+
+                <div class="text-center mb-4">
+                    <video id="l17-video" width="100%" controls playsinline style="max-width: 500px; border-radius: 20px; border: 5px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                        <source src="VIDEO/17.mp4" type="video/mp4">
+                        Trình duyệt của bé không hỗ trợ video này.
+                    </video>
+                </div>
+
+                <div class="d-flex justify-content-center gap-4">
+                    <label>
+                        <input type="radio" name="l17_ans" value="dung" class="l2-option-input">
+                        <div class="l2-option-box" style="width: 120px; color: #2ed573; border-color: #2ed573;">Đúng</div>
+                    </label>
+                    <label>
+                        <input type="radio" name="l17_ans" value="sai" class="l2-option-input">
+                        <div class="l2-option-box" style="width: 120px; color: #ff4757; border-color: #ff4757;">Sai</div>
+                    </label>
+                </div>
+            `);
+
+            let instructorText = "Bé hãy xem video sau và chọn xem hành vi trên là đúng hay sai nhé!";
+            window.speakInstruction(instructorText, null, function() {
+                let video = document.getElementById('l17-video');
+                let bgMusic = document.getElementById('bg-music');
+
+                if(video) {
+                    video.onplay = function() { if(bgMusic) bgMusic.pause(); };
+                    video.onpause = function() { if(bgMusic) bgMusic.play(); };
+
+                    let playPromise = video.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => { console.log("Video autoplay blocked"); });
+                    }
+                    video.onended = function() {
+                        if(bgMusic) bgMusic.play(); 
+                        window.speakInstruction("Bây giờ bé hãy chọn đáp án đúng hoặc sai ở bên dưới nhé!");
+                    };
+                }
+            });
+        },
+        check: function() {
+            let selected = $('input[name="l17_ans"]:checked').val();
+            let isCorrect = (selected === "sai"); // Đáp án là SAI
+            let explanation = "Bé phải biết chia sẻ đồ chơi với bạn nhé!";
+
+            return {
+                score: isCorrect ? 5 : 0,
+                tieuDe: isCorrect ? "Giỏi quá!" : "Bé chú ý nhé!",
+                icon: isCorrect ? "🌟" : "🍀",
+                message: isCorrect ? explanation : "Chưa đúng rồi! " + explanation
+            };
+        }
+    },
+    18: {
+    instruction: "Bé hãy tìm và khoanh tròn các hành vi ĐÚNG trong bức tranh nhé!",
+    render: function($container) {
+        $container.append(`
+            <h3 class="mb-3 fw-bold text-center" style="color: #686de0;">✨ Vòng 18: Hành Vi Của Bé</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0">Bé hãy quan sát và khoanh tròn những hành vi <b>ĐÚNG</b> nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy quan sát bức tranh và khoanh tròn vào những bạn có hành vi ĐÚNG nhé!" title="Nghe lại">🔊</button>
+            </div>
+
+            <div id="l18-draw-wrapper" style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; border: 4px solid #a29bfe; border-radius: 20px; overflow: hidden; touch-action: none; background: #fff;">
+                
+                <img src="IMG/18_bg_pc.png" id="l18-bg-desktop" class="d-none d-md-block" style="width: 100%; height: auto; pointer-events: none; user-select: none;">
+                
+                <img src="IMG/18_bg_mobile.png" id="l18-bg-mobile" class="d-block d-md-none" style="width: 100%; height: auto; pointer-events: none; user-select: none;">
+
+                <canvas id="l18-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: crosshair;"></canvas>
+            </div>
+            <p class="text-center mt-3 text-danger fw-bold">⚠️ Mẹo: Chạm vào vòng đã khoanh để xóa đi nếu bé lỡ khoanh nhầm nhé!</p>
+        `);
+
+        setTimeout(() => {
+            const canvas = document.getElementById('l18-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const wrapper = $('#l18-draw-wrapper');
+            
+            // =========================================================================
+            // 1. TỌA ĐỘ BẢN MÁY TÍNH (Đã áp dụng tọa độ chuẩn của bạn & set r = 10)
+            // =========================================================================
+            const targetsDesktop = [
+                { id: 1, x: 30.8, y: 24.2, r: 10, type: 'good_behavior' },  // Đúng -> Nhầm -> Trừ điểm
+                { id: 2, x: 72.6, y: 25.9, r: 10, type: 'good_behavior' },  // Đúng -> Nhầm -> Trừ điểm
+                { id: 3, x: 31.6, y: 72.2, r: 10, type: 'good_behavior' },  // Đúng -> Nhầm -> Trừ điểm
+                { id: 4, x: 69.6, y: 71.2, r: 10, type: 'wrong_behavior' }  // Sai -> Khoanh ĐÚNG -> Cộng điểm
+            ];
+
+            // =========================================================================
+            // 2. TỌA ĐỘ DÀNH CHO ĐIỆN THOẠI (Bạn chạy tool rồi dán vào đây nhé!)
+            // =========================================================================
+            const targetsMobile = [
+                // DÁN TỌA ĐỘ BẢN MOBILE CỦA BẠN VÀO ĐÂY, VÍ DỤ TẠM THỜI:
+                { id: 1, x: 35.2, y: 15.2, r: 10, type: 'good_behavior' },   
+                { id: 2, x: 69.1, y: 40.4, r: 10, type: 'good_behavior' },   
+                { id: 3, x: 32.5, y: 64.4, r: 10, type: 'good_behavior' },   
+                { id: 4, x: 67.5, y: 85.1, r: 10, type: 'wrong_behavior' }  
+            ];
+
+            let activeTargets = [];
+            let drawnTargets = []; 
+            let isDrawing = false;
+            let isClick = true; 
+            let startPos = null;
+            let points = [];
+
+            wrapper.data('drawnTargets', drawnTargets);
+
+            $(window).off('resize.l18');
+
+            function resizeCanvas() {
+                canvas.width = wrapper.width();
+                canvas.height = wrapper.height();
+
+                // Lô-gic nhận diện màn hình: Dưới 768px thì dùng bộ Mobile, từ 768px trở lên dùng bộ Desktop
+                if (window.innerWidth < 768) {
+                    activeTargets = targetsMobile;
+                } else {
+                    activeTargets = targetsDesktop;
+                }
+
+                redraw(); 
+            }
+
+            function redraw() {
+                if (!ctx) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // VẼ CÁC VÒNG ĐÃ CHỐT
+                drawnTargets.forEach((t) => {
+                    ctx.beginPath();
+                    let absX = (t.target.x * canvas.width) / 100;
+                    let absY = (t.target.y * canvas.height) / 100;
+                    let baseRadius = (t.target.r * canvas.width) / 100; 
+                    let radius = baseRadius * 1.4;
+
+                    if (t.target.type === 'wrong_behavior') {
+                        ctx.strokeStyle = '#2ed573';
+                        ctx.fillStyle = 'rgba(46, 213, 115, 0.2)';
+                    } else {
+                        ctx.strokeStyle = '#2ed573';
+                        ctx.fillStyle = 'rgba(46, 213, 115, 0.2)';
+                    }
+
+                    ctx.lineWidth = 5;
+                    ctx.arc(absX, absY, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+
+                // VẼ NÉT ĐANG QUẸT THEO TAY 
+                if (isDrawing && points.length > 1) {
+                    ctx.strokeStyle = '#feca57';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(points[0].x, points[1].y);
+                    points.forEach(p => ctx.lineTo(p.x, p.y));
+                    ctx.stroke();
+                }
+            }
+
+            $(window).on('resize.l18', function() {
+                if ($('#l18-canvas').length > 0) resizeCanvas();
+                else $(window).off('resize.l18'); 
+            });
+            resizeCanvas();
+
+            function getMousePos(e) {
+                let rect = canvas.getBoundingClientRect();
+                let evt = e.originalEvent;
+                let clientX = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientX : evt.clientX;
+                let clientY = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientY : evt.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            $(canvas).on('mousedown touchstart', function(e) {
+                e.preventDefault();
+                isDrawing = true; isClick = true; 
+                points = []; startPos = getMousePos(e); points.push(startPos);
+            });
+
+            $(canvas).on('mousemove touchmove', function(e) {
+                if (!isDrawing) return; e.preventDefault(); 
+                let currentPos = getMousePos(e); points.push(currentPos);
+                
+                if (Math.abs(currentPos.x - startPos.x) > 5 || Math.abs(currentPos.y - startPos.y) > 5) { isClick = false; }
+                redraw();
+            });
+
+            $(canvas).on('mouseup touchend', function(e) {
+                if (!isDrawing) return; isDrawing = false;
+                
+                if (!isClick && points.length > 5) {
+                    let sumX = 0, sumY = 0;
+                    points.forEach(p => { sumX += p.x; sumY += p.y; });
+                    let centerX = sumX / points.length; 
+                    let centerY = sumY / points.length;
+
+                    let foundTarget = null;
+                    // SỬ DỤNG ACTIVE TARGETS TƯƠNG ỨNG VỚI MÀN HÌNH HIỆN TẠI
+                    activeTargets.forEach(t => {
+                        let tx = (t.x * canvas.width) / 100; 
+                        let ty = (t.y * canvas.height) / 100;
+                        let dist = Math.sqrt(Math.pow(centerX - tx, 2) + Math.pow(centerY - ty, 2));
+                        
+                        let hitbox = ((t.r * canvas.width) / 100) * 1.5; 
+                        if (dist < hitbox) foundTarget = t;
+                    });
+
+                    if (foundTarget) {
+                        let exists = drawnTargets.find(c => c.target.id === foundTarget.id);
+                        if (!exists) {
+                            drawnTargets.push({ target: foundTarget });
+                            
+                            if (foundTarget.type === 'wrong_behavior') {
+                                if(window.SoundFX) window.SoundFX.playWin(); 
+                            } else {
+                                if(window.SoundFX) window.SoundFX.playLose(); 
+                            }
+                            wrapper.data('drawnTargets', drawnTargets);
+                        }
+                    }
+                } 
+                else if (isClick) {
+                    let pos = startPos;
+                    drawnTargets = drawnTargets.filter(t => {
+                        let absX = (t.target.x * canvas.width) / 100; 
+                        let absY = (t.target.y * canvas.height) / 100;
+                        let radius = ((t.target.r * canvas.width) / 100) * 1.4;
+                        let dist = Math.sqrt(Math.pow(pos.x - absX, 2) + Math.pow(pos.y - absY, 2));
+                        return dist > radius; 
+                    });
+                    wrapper.data('drawnTargets', drawnTargets);
+                }
+                
+                points = []; 
+                redraw(); 
+            });
+        }, 300);
+    },
+    check: function() {
+        $(window).off('resize.l18');
+        let drawnTargets = $('#l18-draw-wrapper').data('drawnTargets') || [];
+        
+        let correctPicks = drawnTargets.filter(t => t.target.type === 'wrong_behavior').length;
+        let wrongPicks = drawnTargets.filter(t => t.target.type === 'good_behavior').length;
+
+        let finalScore = correctPicks - wrongPicks;
+        if (finalScore < 0) finalScore = 0; 
+        
+        let totalMax = 1; 
+
+        return {
+            score: finalScore * 4, 
+            tieuDe: finalScore >= totalMax ? "Bé Ngoan Quá!" : "Hãy chú ý hơn nhé!",
+            icon: finalScore >= totalMax ? "🌟" : "👀",
+            message: `Bé đã tìm được ${correctPicks} hành vi đúng.\nSố điểm đạt được ở vòng này là: ${finalScore * 4} điểm!`
+        };
+    }
+},
+    19: {
+        instruction: "Bé hãy quan sát các hành vi dưới đây và vẽ gạch chéo lên hành vi sai nhé!",
+        render: function($container) {
+            const items = [
+                { id: 1, isCorrect: true }, { id: 2, isCorrect: true },
+                { id: 3, isCorrect: true },  { id: 4, isCorrect: true },
+                { id: 5, isCorrect: false }
+            ];
+
+            $container.append(`
+                <h3 class="mb-4 fw-bold text-center" style="color: #d63031;">✨ Vòng 19: Gạch Chéo Hành Vi Sai</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0 text-center">Bé hãy quan sát và vẽ gạch chéo lên hành vi sai nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy quan sát các hành vi dưới đây và vẽ gạch chéo lên hành vi sai nhé!" title="Nghe lại">🔊</button>
+                </div>
+                <div class="row mx-auto justify-content-center" style="max-width: 800px;">
+                    ${items.map(item => `
+                        <div class="col-6 col-md-4 mb-4">
+                            <div class="cross-wrapper" id="wrapper-${item.id}" data-correct="${item.isCorrect}">
+                                <img src="IMG/19_ (${item.id}).jpg" class="img-in-cross">
+                                <canvas id="canvas-${item.id}" class="cross-canvas"></canvas>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `);
+
+            setTimeout(() => {
+                $('.cross-wrapper').each(function() {
+                    let $wrap = $(this);
+                    let canvas = $wrap.find('canvas')[0];
+                    if(!canvas) return;
+                    let ctx = canvas.getContext('2d');
+                    canvas.width = $wrap.width(); canvas.height = canvas.width;
+                    
+                    let isCrossed = false; 
+
+                    $(canvas).on('mousedown touchstart', function(e) {
+                        e.preventDefault();
+                        if (isCrossed) {
+                            isCrossed = false;
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            $wrap.data('marked', false);
+                        } else {
+                            isCrossed = true;
+                            $wrap.data('marked', true);
+                            ctx.strokeStyle = '#ff4757';
+                            ctx.lineWidth = 15;
+                            ctx.lineCap = 'round';
+                            ctx.beginPath();
+                            ctx.moveTo(20, 20); ctx.lineTo(canvas.width-20, canvas.height-20);
+                            ctx.stroke();
+                            ctx.beginPath();
+                            ctx.moveTo(canvas.width-20, 20); ctx.lineTo(20, canvas.height-20);
+                            ctx.stroke();
+                            window.SoundFX.playClick();
+                        }
+                    });
+                });
+            }, 300);
+        },
+       check: function() {
+            let score = 0;
+
+            $('.cross-wrapper').each(function() {
+                let marked = $(this).data('marked'); 
+                let isCorrect = $(this).data('correct') === true; 
+
+                if (marked && !isCorrect) {
+                    score += 5; // Gạch chéo hình SAI -> Cộng 5
+                } 
+                else if (marked && isCorrect) {
+                    score -= 1; // Gạch nhầm hình ĐÚNG -> Trừ 1
+                }
+            });
+
+            let finalScore = score > 0 ? score : 0;
+
+            return { 
+                score: finalScore, 
+                tieuDe: finalScore === 5 ? "Tuyệt vời quá!" : "Xong rồi!", 
+                icon: finalScore === 5 ? "🌟" : "✏️", 
+                message: `Bé đã đánh dấu xong!\nSố điểm đạt được ở vòng này là: ${finalScore} điểm.` 
+            };
+        }
+    },
+    20: {
+        instruction: "Bé hãy chọn mặt buồn cho hành vi sai và mặt cười cho hành vi đúng nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #686de0;">✨ Vòng 20: Bé Chọn Cảm Xúc</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0">Bé hãy chọn mặt buồn cho hành vi sai và mặt cười cho hành vi đúng nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy chọn mặt buồn cho hành vi sai và mặt cười cho hành vi đúng nhé!" title="Nghe lại">🔊</button>
+                </div>
+                
+                <div class="row mx-auto" style="max-width: 900px;">
+                    ${[1, 2, 3, 4, 5, 6].map(i => `
+                        <div class="col-lg-4 col-md-6 col-12 mb-4">
+                            <div class="l2-question-box flex-column h-100" data-q="${i}">
+                                <div class="text-center mb-3" style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                                    <img src="IMG/20_target (${i}).png" alt="Câu ${i}" style="max-height: 140px; max-width: 100%; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                </div>
+                                <div class="d-flex justify-content-center gap-3 w-100">
+                                    <label>
+                                        <input type="radio" name="l20_q${i}" value="vui" class="l2-option-input">
+                                        <div class="l2-option-box" style="width: 80px; height: 60px; font-size: 2rem;">🙂</div>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="l20_q${i}" value="buon" class="l2-option-input">
+                                        <div class="l2-option-box" style="width: 80px; height: 60px; font-size: 2rem;">☹️</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `);
+        },
+        check: function() {
+            const dapAnChuan = ["buon", "buon", "buon", "vui", "buon", "vui"]; 
+            let score = 0;
+
+            for(let i = 1; i <= 6; i++) {
+                let userSelect = $(`input[name="l20_q${i}"]:checked`).val();
+                let $row = $(`.l2-question-box[data-q="${i}"]`);
+
+                if (userSelect === dapAnChuan[i-1]) {
+                    score++;
+                    $row.css("border-color", "#2ed573");
+                } else {
+                    $row.css("border-color", "#ff4757");
+                }
+            }
+
+            return {
+                score: score,
+                tieuDe: score === 6 ? "Tuyệt vời bé ơi!" : "Cố lên nhé!",
+                icon: score === 6 ? "🏆" : "🙂",
+                message: `Bé đã chọn đúng ${score}/6 câu.`
+            };
+        }
+    },
+21: {
+    instruction: "Bé hãy vẽ dấu Tick cho hành vi đúng và dấu X cho hành vi sai nhé!",
+    render: function($container) {
+        $container.append(`
+            <h3 class="mb-3 fw-bold text-center" style="color: #686de0;">✨ Vòng 21: Đúng hay Sai?</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0 text-center">Bé hãy vẽ dấu ✔️ cho hành vi tốt và dấu ❌ cho hành vi chưa tốt nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy quan sát bức tranh. Quẹt tay vẽ dấu Tick cho hành vi đúng và dấu X cho hành vi sai nhé!" title="Nghe lại">🔊</button>
+            </div>
+
+            <div id="l21-draw-wrapper" style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; border: 4px solid #a29bfe; border-radius: 20px; overflow: hidden; touch-action: none; background: #fff;">
+                
+                <img src="IMG/21_bg_desktop.png" id="l21-bg-desktop" class="d-none d-md-block" style="width: 100%; height: auto; display: block; pointer-events: none; user-select: none;">
+                
+                <img src="IMG/21_bg_mobile.png" id="l21-bg-mobile" class="d-block d-md-none" style="width: 100%; height: auto; display: block; pointer-events: none; user-select: none;">
+
+                <canvas id="l21-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: crosshair;"></canvas>
+            </div>
+            <p class="text-center mt-3 text-danger fw-bold">⚠️ Mẹo: Nếu vẽ sai, bé chạm vào dấu đã vẽ để xóa đi nhé!</p>
+        `);
+
+        setTimeout(() => {
+            const canvas = document.getElementById('l21-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const wrapper = $('#l21-draw-wrapper');
+            
+            // =========================================================================
+            // TỌA ĐỘ BẢN MÁY TÍNH (4 CỘT X 2 HÀNG)
+            // 'v' là hành vi đúng (cần vẽ tick)
+            // 'x' là hành vi sai (cần vẽ chữ X)
+            // =========================================================================
+            const targetsDesktop = [
+                { id: 1, x: 15.8, y: 29.8, expected: 'v' },
+                { id: 2, x: 39.4, y: 32.8, expected: 'v' },
+                { id: 3, x: 65.3, y: 29.3, expected: 'x' },
+                { id: 4, x: 87.1, y: 28.8, expected: 'v' },
+                { id: 5, x: 18.9, y: 74.6, expected: 'x' },
+                { id: 6, x: 38.8, y: 76.8, expected: 'v' },
+                { id: 8, x: 62.6, y: 72.1, expected: 'v' },
+                { id: 9, x: 82.1, y: 70.2, expected: 'v' },
+            ];
+
+            // =========================================================================
+            // TỌA ĐỘ BẢN ĐIỆN THOẠI (2 CỘT X 4 HÀNG)
+            // =========================================================================
+            const targetsMobile = [
+                { id: 1, x: 27.2, y: 13.2, expected: 'v' }, 
+                { id: 2, x: 74.5, y: 12.1, expected: 'v' },
+                { id: 3, x: 31.7, y: 39.8, expected: 'x' },
+                { id: 4, x: 78.2, y: 33.2, expected: 'v' },
+                { id: 5, x: 30.9, y: 62.3, expected: 'x' },
+                { id: 6, x: 79.0, y: 60.0, expected: 'v' },
+                { id: 7, x: 25.8, y: 85.1, expected: 'v' },
+                { id: 8, x: 71.0, y: 85.8, expected: 'v' },
+            ];
+let activeTargets = [];
+            let drawnMarks = []; // Mảng chứa các dấu đã nắn
+            let isDrawing = false;
+            let isClick = true; 
+            let startPos = null;
+            let points = []; // Điểm của nét đang vẽ
+            let currentStrokes = []; // Lưu trữ các nét chưa được nắn hình (Dùng cho chữ X vẽ 2 nét)
+            let drawTimer = null; // Timer chờ vẽ nét thứ 2 của chữ X
+
+            wrapper.data('drawnMarks', drawnMarks);
+
+            $(window).off('resize.l21');
+            function resizeCanvas() {
+                canvas.width = wrapper.width();
+                canvas.height = wrapper.height();
+
+                if (window.innerWidth < 768) activeTargets = targetsMobile;
+                else activeTargets = targetsDesktop;
+
+                redraw(); 
+            }
+
+            function redraw() {
+                if (!ctx) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // 1. VẼ CÁC DẤU ĐÃ CHỐT VÀ TỰ ĐỘNG PHÓNG TO TRÊN MOBILE
+                drawnMarks.forEach((m) => {
+                    let absX = (m.target.x * canvas.width) / 100;
+                    let absY = (m.target.y * canvas.height) / 100;
+                    
+                    // NÂNG CẤP: Phóng to kích thước dấu vẽ nếu là Điện thoại
+                    let s = window.innerWidth < 768 ? canvas.width * 0.08 : canvas.width * 0.04;
+                    if (s < 25) s = 25; // Chống thu quá nhỏ
+
+                    ctx.lineWidth = window.innerWidth < 768 ? 6 : 8; 
+
+                    if (m.type === 'v') {
+                        // VẼ DẤU TICK (Màu Xanh)
+                        ctx.strokeStyle = m.isLocked ? '#2ed573' : '#a4b0be'; 
+                        ctx.beginPath();
+                        ctx.moveTo(absX - s*0.8, absY);
+                        ctx.lineTo(absX - s*0.2, absY + s*0.8);
+                        ctx.lineTo(absX + s*1.2, absY - s);
+                        ctx.stroke();
+                    } else if (m.type === 'x') {
+                        // VẼ DẤU X (Màu Đỏ)
+                        ctx.strokeStyle = m.isLocked ? '#ff4757' : '#a4b0be'; 
+                        ctx.beginPath();
+                        ctx.moveTo(absX - s, absY - s); ctx.lineTo(absX + s, absY + s);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(absX + s, absY - s); ctx.lineTo(absX - s, absY + s);
+                        ctx.stroke();
+                    }
+                });
+
+                // 2. VẼ NÉT ĐANG QUẸT THEO TAY (Và các nét cũ chưa nắn hình)
+                ctx.strokeStyle = '#feca57';
+                ctx.lineWidth = window.innerWidth < 768 ? 5 : 7;
+                
+                // Vẽ các nét đang nằm trong hàng chờ (chữ X vẽ 2 nét)
+                currentStrokes.forEach(stroke => {
+                    if(stroke.length > 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(stroke[0].x, stroke[0].y);
+                        stroke.forEach(p => ctx.lineTo(p.x, p.y));
+                        ctx.stroke();
+                    }
+                });
+
+                // Vẽ nét đang quẹt
+                if (isDrawing && points.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(points[0].x, points[1].y);
+                    points.forEach(p => ctx.lineTo(p.x, p.y));
+                    ctx.stroke();
+                }
+            }
+
+            $(window).on('resize.l21', function() {
+                if ($('#l21-canvas').length > 0) resizeCanvas();
+                else $(window).off('resize.l21'); 
+            });
+            resizeCanvas();
+
+            function getMousePos(e) {
+                let rect = canvas.getBoundingClientRect();
+                let evt = e.originalEvent;
+                let clientX = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientX : evt.clientX;
+                let clientY = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientY : evt.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            // THUẬT TOÁN NHẬN DIỆN HÌNH VẼ
+            function recognizeGesture(strokes) {
+                if (!strokes || strokes.length === 0) return null;
+
+                // XỬ LÝ CHỮ V (Thường vẽ bằng 1 nét gấp khúc)
+                if (strokes.length === 1) {
+                    let pts = strokes[0];
+                    if (pts.length < 5) return null;
+                    let start = pts[0];
+                    let end = pts[pts.length - 1];
+                    
+                    // Tìm đỉnh thấp nhất (y lớn nhất)
+                    let lowest = pts[0];
+                    for(let p of pts) {
+                        if (p.y > lowest.y) lowest = p;
+                    }
+
+                    // Nếu là nét nhấp nhô xuống rồi lên dứt khoát -> Chữ V
+                    if (start.y < lowest.y - 15 && end.y < lowest.y - 15 && end.x > start.x + 10) {
+                        return 'v';
+                    }
+                }
+                
+                // XỬ LÝ CHỮ X (Chờ vẽ đủ 2 nét cắt nhau)
+                if (strokes.length >= 2) {
+                    // Đơn giản hóa: Cứ có 2 nét trở lên nằm gần nhau là coi như vẽ X cho bé dễ chơi
+                    // Bạn có thể viết thêm logic kiểm tra 2 nét có cắt nhau không ở đây
+                    return 'x';
+                }
+
+                return null;
+            }
+
+            $(canvas).on('mousedown touchstart', function(e) {
+                e.preventDefault();
+                
+                // CHẠM ĐỂ XÓA DẤU BỊ SAI
+                let pos = getMousePos(e);
+                let hitMark = false;
+                
+                drawnMarks = drawnMarks.filter(m => {
+                    let absX = (m.target.x * canvas.width) / 100; 
+                    let absY = (m.target.y * canvas.height) / 100;
+                    let s = window.innerWidth < 768 ? canvas.width * 0.08 : canvas.width * 0.04;
+                    if(s < 25) s = 25;
+                    
+                    let dist = Math.sqrt(Math.pow(pos.x - absX, 2) + Math.pow(pos.y - absY, 2));
+                    
+                    // Nếu click trúng dấu chưa khóa -> XÓA
+                    if (dist < (s * 2) && !m.isLocked) {
+                        hitMark = true;
+                        return false; 
+                    }
+                    return true;
+                });
+                
+                if(hitMark) {
+                    wrapper.data('drawnMarks', drawnMarks);
+                    redraw();
+                    return; 
+                }
+
+                isDrawing = true; 
+                isClick = true;
+                startPos = getMousePos(e);
+                points = [startPos];
+                
+                // Xóa timer chờ nét thứ 2 nếu bé đang vẽ dở chữ X
+                if (drawTimer) clearTimeout(drawTimer);
+            });
+
+            $(canvas).on('mousemove touchmove', function(e) {
+                if (!isDrawing) return; e.preventDefault(); 
+                let currentPos = getMousePos(e);
+                points.push(currentPos);
+                
+                if (Math.abs(currentPos.x - startPos.x) > 5 || Math.abs(currentPos.y - startPos.y) > 5) {
+                    isClick = false;
+                }
+                redraw();
+            });
+
+            $(canvas).on('mouseup touchend', function(e) {
+                if (!isDrawing) return; isDrawing = false;
+                
+                if (!isClick && points.length > 5) {
+                    currentStrokes.push([...points]); // Lưu nét vẽ vừa xong vào hàng chờ
+
+                    // KIỂM TRA CHỮ V TRƯỚC (NẮN NGAY LẬP TỨC)
+                    if (currentStrokes.length === 1) {
+                        let shape = recognizeGesture(currentStrokes);
+                        if(shape === 'v') {
+                            processReshape('v'); // Là V thì nắn liền
+                            currentStrokes = []; // Reset nháp
+                            redraw();
+                            return; // Thoát game, không chờ nét 2 nữa
+                        }
+                    }
+
+                    // KIỂM TRA CHỮ X (CHỜ 400MS XEM CÓ VẼ THÊM NÉT 2 KHÔNG)
+                    if (drawTimer) clearTimeout(drawTimer);
+                    
+                    drawTimer = setTimeout(() => {
+                        let shape = recognizeGesture(currentStrokes);
+                        if (shape === 'x') {
+                            processReshape('x'); // Hết thời gian chờ mà có 2 nét -> Nắn thành X
+                        }
+                        // Reset nháp dù có nắn được hình hay không
+                        currentStrokes = [];
+                        redraw();
+                    }, 400); // Thời gian chờ vẽ nét thứ 2 của chữ X
+                }
+                
+                // Xóa nét đang quẹt (nhưng giữ lại currentStrokes để vẽ nháp)
+                points = []; 
+                redraw(); 
+            });
+
+            // HÀM XỬ LÝ NẮN HÌNH VÀ HÍT TỌA ĐỘ
+            function processReshape(shape) {
+                if(!shape) return;
+                // Tính Tâm của cụm nét vẽ
+                let sumX = 0, sumY = 0, count = 0;
+                currentStrokes.forEach(stroke => {
+                    stroke.forEach(p => { sumX += p.x; sumY += p.y; count++; });
+                });
+                let centerX = sumX / count;
+                let centerY = sumY / count;
+
+                // Tìm xem vẽ gần bức tranh nào nhất
+                let foundTarget = null;
+                activeTargets.forEach(t => {
+                    let tx = (t.x * canvas.width) / 100; 
+                    let ty = (t.y * canvas.height) / 100;
+                    let dist = Math.sqrt(Math.pow(centerX - tx, 2) + Math.pow(centerY - ty, 2));
+                    
+                    // Bán kính hút (Hitbox)
+                    let hitbox = window.innerWidth < 768 ? 60 : 80;
+                    if (dist < hitbox) foundTarget = t;
+                });
+
+                if (foundTarget) {
+                    let existsIdx = drawnMarks.findIndex(m => m.target.id === foundTarget.id);
+                    
+                    if (existsIdx === -1 || !drawnMarks[existsIdx].isLocked) {
+                        if (existsIdx !== -1) drawnMarks.splice(existsIdx, 1);
+
+                        let isCorrectShape = (shape === foundTarget.expected);
+
+                        drawnMarks.push({
+                            target: foundTarget,
+                            type: shape,
+                            isLocked: isCorrectShape // Vẽ chuẩn xác với yêu cầu -> Khóa luôn
+                        });
+
+                        if (isCorrectShape) {
+                            if(window.SoundFX) window.SoundFX.playWin(); 
+                        } else {
+                            if(window.SoundFX) window.SoundFX.playLose(); 
+                        }
+                        wrapper.data('drawnMarks', drawnMarks);
+                    }
+                }
+            }
+
+        }, 300);
+    },
+    check: function() {
+        $(window).off('resize.l21');
+        let drawnMarks = $('#l21-draw-wrapper').data('drawnMarks') || [];
+        
+        let score = 0;
+        
+        drawnMarks.forEach(m => {
+            if (m.type === m.target.expected) score += 1; 
+            else score -= 1; // Vẽ sai -> Bị trừ 1 điểm
+        });
+
+        if (score < 0) score = 0;
+
+        return {
+            score: score, 
+            tieuDe: score === 8 ? "Bé Siêu Trí Tuệ!" : "Cố lên nhé!",
+            icon: score === 8 ? "🏆" : "🙂",
+            message: `Bé đã nhận biết đúng ${score}/8 câu.\n${score === 8 ? "Chúc mừng bé đã hoàn thành vòng chơi này!" : "Hãy tiếp tục cố gắng nhé!"}`
+        };
+    }
+},
+    22: {
+        instruction: "Bé hãy kéo các hành vi đúng vào ô Mặt Cười và hành vi sai vào ô Mặt Buồn nhé!",
+        render: function($container) {
+            const items = [
+                { id: 1, type: 'false' }, { id: 2, type: 'true' }, { id: 3, type: 'false' }, { id: 4, type: 'true' },
+                { id: 5, type: 'true' }, { id: 6, type: 'false' }, { id: 7, type: 'true' }, { id: 8, type: 'true' },
+                { id: 9, type: 'true' }, { id: 10, type: 'false' }, { id: 11, type: 'false' }, { id: 12, type: 'false' }
+            ];
+
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #6c5ce7;">✨ Vòng 22: Phân Loại Hành Vi</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0 text-center">Kéo các hành vi đúng vào ô Mặt Cười và hành vi sai vào ô Mặt Buồn nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy kéo các hành vi đúng vào ô Mặt Cười và hành vi sai vào ô Mặt Buồn nhé!" title="Nghe lại">🔊</button>
+                </div>
+                <div class="l22-container mb-4">
+                    <div class="l22-board" data-type="true">
+                        <div class="l22-board-title">Hành Vi Đúng 🙂</div>
+                        <div class="l22-drop-zone" data-type="true"></div>
+                    </div>
+                    <div class="l22-board" data-type="false">
+                        <div class="l22-board-title">Hành Vi Sai ☹️</div>
+                        <div class="l22-drop-zone" data-type="false"></div>
+                    </div>
+                </div>
+
+                <div id="l22-pool" class="d-flex flex-wrap justify-content-center gap-3 mt-4" style="min-height: 100px; border-top: 2px dashed #ddd; padding: 20px;">
+                    ${items.map(item => `
+                        <div class="l22-drag-item" data-type="${item.type}">
+                            <img src="IMG/22 (${item.id}).png" alt="Item ${item.id}">
+                        </div>
+                    `).join('')}
+                </div>
+            `);
+
+            $(".l22-drag-item").draggable({ 
+                revert: "invalid", 
+                zIndex: 1000,
+                helper: "clone", 
+                cursorAt: { top: 35, left: 35 }, 
+                start: function(event, ui) {
+                    ui.helper.addClass('l22-helper'); 
+                    ui.position.top = event.pageY - $(event.target).offset().top;
+                    ui.position.left = event.pageX - $(event.target).offset().left;
+                }
+            });
+
+            $(".l22-drop-zone").droppable({
+                accept: ".l22-drag-item",
+                drop: function(event, ui) {
+                    let itemType = ui.draggable.data("type");
+                    let zoneType = $(this).data("type");
+                    
+                    ui.draggable.addClass('dropped').appendTo(this).css({
+                        position: 'relative', top: 0, left: 0, width: '', height: '' 
+                    });
+
+                    if (itemType === zoneType) {
+                        ui.draggable.draggable("disable"); 
+                        ui.draggable.addClass('locked').removeClass('wrong'); 
+                    } else {
+                        ui.draggable.addClass('wrong').removeClass('locked');
+                    }
+                }
+            });
+        },
+        check: function() {
+            let correctCount = $(".l22-drag-item.ui-draggable-disabled").length;
+            let totalItems = 12;
+
+            return {
+                score: correctCount,
+                tieuDe: correctCount === totalItems ? "Bé Ngoan Quá!" : "Làm Tốt Nào!",
+                icon: correctCount === totalItems ? "🏆" : "🙂",
+                message: `Bé đã phân loại đúng ${correctCount}/${totalItems} hành vi.\nNhận thêm ${correctCount} sao ngọt ngào nhé!`
+            };
+        }
+    }
+};
+
+$(document).ready(function() {
+    // TỪ WELCOME SCREEN -> RA MÀN HÌNH INTRO GAME 4
+    $('#btn-to-start-screen').click(function() {
+        $('#welcome-screen').fadeOut(500, function() {
+            $('#game4-intro-screen').css('display', 'flex').hide().fadeIn(500);
+        });
+    });
+
+    // TỪ MÀN HÌNH INTRO -> VÀO GAME 4 (Vòng 17)
+    $('#btn-start-game4').click(function() {
+        let bgMusic = document.getElementById('bg-music');
+        if(bgMusic) { bgMusic.loop = true; bgMusic.volume = 0.5; bgMusic.play().catch(e => {}); }
+
+        $('#game4-intro-screen').fadeOut(500, function() {
+            $('#main-game').fadeIn(500);
+            window.gameState.level = 17;
+            window.loadLevelStructure(17);
+        });
+    });
+
+    // CÁC HÀM XỬ LÝ NÚT BẤM
+    $('#btn-lam-lai').off('click').on('click', function() {
+        $('#custom-alert-overlay').hide();
+        $(`#level-wrapper-${window.gameState.level}`).remove(); 
+        window.loadLevelStructure(window.gameState.level); 
+    });
+
+    $('#btn-replay-round').off('click').on('click', function() {
+        $(`#level-wrapper-${window.gameState.level}`).remove(); 
+        window.loadLevelStructure(window.gameState.level);
+    });
+
+    $('#btn-submit').off('click').on('click', function() {
+        let result = window.LEVEL_MODULES[window.gameState.level].check();
+        let roundMaxScore = window.MAX_SCORES[window.gameState.level] || 5;
+
+        let proceed = function() {
+            window.stopAllMedia();
+            window.gameState.roundScores[window.gameState.level] = roundMaxScore > 0 ? result.score : 0;
+            
+            let currentTotalScore = 0; let roundsPlayed = 0;
+            for(let i = 17; i <= 22; i++) {
+                if(window.gameState.roundScores[i] !== undefined) { currentTotalScore += window.gameState.roundScores[i]; roundsPlayed++; }
+            }
+            window.gameState.score = currentTotalScore; window.updateUI();
+
+            if (window.gameState.replayQueue && window.gameState.replayQueue.length > 0) {
+                window.gameState.level = window.gameState.replayQueue.shift();
+                window.saveData(); window.loadLevelStructure(window.gameState.level);
+                if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+            else if (roundsPlayed === 6) { // 6 vòng (17 đến 22)
+                window.showGameEnd(currentTotalScore >= PASS_SCORE, currentTotalScore);
+            }
+            else {
+                window.gameState.level++;
+                window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
+                if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+        };
+
+        if (roundMaxScore === 0) { proceed(); return; }
+
+        $('#grading-overlay').css('display', 'flex');
+
+        window.preloadedFeedbackAudio = null;
+        let textToRead = window.cleanTextForTTS(result.message);
+        fetch("https://api.fpt.ai/hmi/tts/v5", {
+            method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead
+        }).then(res => res.json()).then(data => {
+            if (data && data.async) {
+                let noCacheUrl = data.async + (data.async.includes('?') ? '&' : '?') + 't=' + Date.now();
+                let audio = new Audio(noCacheUrl);
+                audio.oncanplaythrough = () => { window.preloadedFeedbackAudio = audio; };
+                audio.load();
+            }
+        });
+
+        setTimeout(() => {
+            $('#grading-overlay').hide();
+            let simulatedRoundsPlayed = 0;
+            let tempRoundScores = { ...window.gameState.roundScores }; tempRoundScores[window.gameState.level] = result.score;
+            for(let i = 17; i <= 22; i++) if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
+            
+            if (simulatedRoundsPlayed === 6 && (!window.gameState.replayQueue || window.gameState.replayQueue.length === 0)) {
+                proceed();
+            } else {
+                window.showNotification(result.tieuDe, result.message, result.icon, result.score, roundMaxScore, proceed);
+            }
+        }, 2000);
+    });
+
+    $('#btn-reset').click(function() {
+        $('#btn-close-alert, #btn-lam-lai').hide(); 
+        $('#btn-confirm-reset, #btn-cancel-reset').show(); 
+        $('#custom-alert-title').text("Xóa Tiến Trình 🔄");
+        $('#custom-alert-message').text("Bé có chắc chắn muốn xóa hết điểm và chơi lại từ đầu không?");
+        $('#custom-alert-icon').text("🎠");
+        $('#custom-alert-overlay').css('display', 'flex');
+    });
+
+    $('#btn-confirm-reset').off('click').on('click', function() {
+        for(let i = 17; i <= 22; i++) {
+            delete window.gameState.roundScores[i];
+            $(`#level-wrapper-${i}`).remove();
+        }
+        window.gameState.level = 17; window.gameState.score = 0; window.gameState.replayQueue = [];
+        window.updateUI(); $('#custom-alert-overlay').hide(); window.loadLevelStructure(17);
+    });
+
+    $('#btn-cancel-reset').off('click').on('click', function() { $('#custom-alert-overlay').hide(); });
+
+    $('#btn-next').off('click').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        window.stopAllMedia(); window.gameState.level++; window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
+        if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+    });
+
+    $('#btn-prev').off('click').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        if (window.gameState.level > 17) {
+            window.stopAllMedia(); window.gameState.level--; window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
+            if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+        }
+    });
+});
+// === NÚT SKIP (DÀNH CHO DEV TEST) TỐI ƯU CHO GAME ĐỘC LẬP ===
+    $('#btn-skip-test').off('click').on('click', function() {
+        if(typeof window.stopAllMedia === 'function') window.stopAllMedia();
+        
+        // 1. Tự động lấy danh sách các vòng có trong game hiện tại (Dùng để thay thế getGameContext)
+        let availableLevels = Object.keys(window.LEVEL_MODULES).map(Number).sort((a, b) => a - b);
+        let currentIndex = availableLevels.indexOf(window.gameState.level);
+
+        // 2. Nếu chưa phải vòng cuối cùng của file này
+        if (currentIndex !== -1 && currentIndex < availableLevels.length - 1) {
+            
+            // Cộng full điểm ảo cho vòng này để qua bài suôn sẻ
+            let maxPoint = window.MAX_SCORES[window.gameState.level] || 5;
+            window.gameState.roundScores[window.gameState.level] = maxPoint;
+            
+            // Tính toán lại tổng điểm hiển thị trên góc phải
+            let total = 0;
+            for(let key in window.gameState.roundScores) {
+                total += window.gameState.roundScores[key];
+            }
+            window.gameState.score = total;
+            if(typeof window.updateUI === 'function') window.updateUI();
+
+            // Nhảy sang vòng kế tiếp
+            window.gameState.level = availableLevels[currentIndex + 1];
+            if(typeof window.saveData === 'function') window.saveData();
+            
+            // Ẩn vòng cũ, load vòng mới
+            $('.level-wrapper').hide();
+            if(typeof window.loadLevelStructure === 'function') window.loadLevelStructure(window.gameState.level);
+            if(typeof window.updateNavButtons === 'function') window.updateNavButtons();
+            
+            // Tự động đọc đề vòng mới
+            if(window.LEVEL_MODULES[window.gameState.level] && typeof window.speakInstruction === 'function') {
+                window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+        } else {
+            // Đã là vòng cuối cùng, tự động kích hoạt nút Chấm Điểm (màu xanh) để kết thúc game luôn
+            $('#btn-submit').click();
+        }
+    });
+</script>
+</body>
+</html>

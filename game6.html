@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thế Giới Bé Ngoan - Game 6</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="audio-loading-overlay">
+    <img src="IMG/thay_u_tron.png" width="120" class="teacher-bounce mb-3">
+    <h3 class="fw-bold" style="color: #0984e3;">Thầy Ú Tròn đang đọc đề...</h3>
+</div>
+
+<div id="welcome-screen">
+    <h1 class="bounce-animation" style="color: #880E4F; font-weight: 900; font-size: 3.5rem; text-shadow: 2px 2px 0px #fff; margin-bottom: 25px;">
+        TRƯỜNG MẦM NON 6
+    </h1>
+    <h2 class="bounce-animation" style="color: #5D4037; font-weight: 700; margin-bottom: 10px; font-size: 1.8rem; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+        Giáo viên: Bùi Thị Thúy Nga
+    </h2>
+    <h3 class="bounce-animation" style="color: #5D4037; font-weight: 700; margin-bottom: 40px; font-size: 1.5rem; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);">
+        Lứa tuổi: 4 - 5 tuổi
+    </h3>
+    <button id="btn-to-start-screen" class="btn-start" style="background-color: #E91E63; color: #fff; border: none; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);">
+        Khám phá ➡️
+    </button>
+</div>
+
+<div id="game6-intro-screen">
+    <div class="bounce-animation">
+        <img src="IMG/icon_nhac.png" alt="Game 6 Icon" width="300" style="margin-bottom: 20px;">
+    </div>
+    <h1 class="game-title bounce-animation" style="text-shadow: 4px 4px 0px #8e44ad;">Trò Chơi<br>Âm Nhạc 🎵</h1>
+    <h3 class="text-white mb-5" style="font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">Bé hãy dùng đôi tai tinh nhạy để đoán nhé!</h3>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <button id="btn-start-game6" class="btn-start" style="background-color: #9b59b6; color: #fff; border-color: #fff;">Bắt Đầu! 🚀</button>
+    </div>
+</div>
+
+<div id="main-game" class="container mt-5" style="display: none;">
+    <div class="card cute-card">
+        <div class="card-header cute-header text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0 fw-bold bg-warning text-dark px-4 py-2" style="border-radius: 20px;">
+                ⭐ Điểm: <span id="current-score">0</span>
+            </h3>
+        </div>
+        
+        <div class="card-body p-4 d-flex flex-column" style="min-height: 500px;">
+            <div id="game-container" class="flex-grow-1"></div>
+        </div>
+
+        <div class="card-footer bg-white border-0 p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex gap-2">
+                    <button id="btn-prev" class="btn btn-secondary nav-btn disabled">⬅️ Quay lại</button>
+                    <button id="btn-next" class="btn btn-primary nav-btn disabled"> Tiếp theo ➡️</button>
+                </div>
+                <button id="btn-submit" class="btn btn-success cute-btn px-4 py-2" style="font-size: 1.3rem; transform: scale(1.1);">✅ Chấm điểm!</button>
+                <div class="d-flex gap-2">
+                    <button id="btn-skip-test" class="btn btn-outline-dark" style="border-radius: 50px; padding: 8px 20px; font-weight: bold; border-width: 2px;">
+                ⏭️ Skip
+            </button>
+                    <button id="btn-replay-round" class="btn btn-outline-warning" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🔄 Làm lại vòng</button>
+                    <button id="btn-reset" class="btn btn-outline-danger" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🗑️ Xóa tiến trình</button>
+                </div>
+            </div>
+        </div>  
+    </div>
+</div>
+
+<div id="custom-alert-overlay" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+        <h3 id="custom-alert-title" style="color: #ff4757; font-weight: 900;"></h3>
+        <p id="custom-alert-message" style="font-size: 18px; color: #555; white-space: pre-line;"></p>
+        <div class="d-flex justify-content-center gap-2">
+            <button id="btn-lam-lai" class="btn btn-warning btn-cute">Làm lại vòng</button>
+            <button id="btn-close-alert" class="btn btn-cute">Tiếp tục!</button>
+            <button id="btn-confirm-reset" class="btn btn-success btn-cute" style="display:none;">Chắc chắn</button>
+            <button id="btn-cancel-reset" class="btn btn-secondary btn-cute" style="display:none;">Hủy bỏ</button>
+        </div>
+    </div>
+</div>
+
+<div id="game-end-overlay" class="custom-alert-overlay">
+    <div class="custom-alert-box" style="max-width: 550px;">
+        <h1 id="game-end-title" class="fw-bold mb-3" style="font-size: 2.5rem;"></h1>
+        <p id="game-end-message" class="fs-5 mb-4" style="color: #555; white-space: pre-line;"></p>
+        <div id="game-end-buttons" class="d-flex justify-content-center align-items-center gap-3 flex-wrap"></div>
+    </div>
+</div>
+
+<div id="grading-overlay">
+    <img src="IMG/thay_u_tron_diem.png" width="150" class="teacher-bounce">
+    <h2 class="mt-4 fw-bold" style="color: #6c5ce7;">Thầy Ú Tròn đang chấm điểm...</h2>
+</div>
+
+<div id="app-logo">
+    <a href="#welcome-screen"><img src="IMG/logo.jpg" alt="Logo"></a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
+<script>
+// =========================================================================
+// BIẾN TOÀN CỤC CỦA GAME 6 (Vòng 1 -> 7, Điểm số, Điểm từng vòng, Hàng đợi replay)
+// =========================================================================
+window.gameState = { level: 1, score: 0, roundScores: {}, replayQueue: [] };
+window.MAX_SCORES = { 1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1 }; // Tối đa 7 điểm
+const PASS_SCORE = 4; 
+
+// =========================================================================
+// HỆ THỐNG HIỆU ỨNG ÂM THANH MẶC ĐỊNH
+// =========================================================================
+const SoundFX = {
+    ctx: null,
+    init: function() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); },
+    playClick: function() {
+        try { this.init(); let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + 0.05); } catch(e) {}
+    },
+    playWin: function() {
+        try { this.init(); [440, 554, 659, 880].forEach((freq, i) => { let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'sine'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1); gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + i * 0.1 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.1 + 0.5);
+        osc.start(this.ctx.currentTime + i * 0.1); osc.stop(this.ctx.currentTime + i * 0.1 + 0.5); }); } catch(e) {}
+    },
+    playLose: function() {
+        try { this.init(); let osc = this.ctx.createOscillator(); let gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, this.ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.4, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.start(this.ctx.currentTime); osc.stop(this.ctx.currentTime + 0.5); } catch(e) {}
+    }
+};
+
+let lastClickTime = 0;
+$(document).on('mousedown touchstart', 'button, .btn, input, label', function() {
+    let now = Date.now(); if (now - lastClickTime > 100) { SoundFX.playClick(); lastClickTime = now; }
+});
+
+function stopAllMedia() {
+    $('audio:not(#bg-music), video').each(function() { this.pause(); this.currentTime = 0; });
+    if (window.currentAudio) window.currentAudio.pause();
+    $('.btn-speaker, .btn-mini-speaker, .btn-mini-speaker-inline, .btn-music-speaker').removeClass('playing speaker-attention-active');
+}
+
+// =========================================================================
+// API FPT - ĐỌC ÂM THANH & SMART LOADER
+// =========================================================================
+const FPT_API_KEY = '372DQFfUtnFcELppozNYtYlcCRfy9Jmr'; 
+window.currentAudio = null; window.audioLoaderTimer = null; window.preloadedFeedbackAudio = null;
+
+window.forceHideAudioLoader = function() {
+    if (window.audioLoaderTimer) { clearTimeout(window.audioLoaderTimer); window.audioLoaderTimer = null; }
+    $('#audio-loading-overlay').hide();
+};
+
+function cleanTextForTTS(text) { return String(text || "").replace(/[🌈🎉⭐❤️💖🔊✨🧸🚀🍎🍌🍇🍭🎈🌟🎯🧮🔄✅🍀🌸👑🎠]/g, "").replace(/\s+/g, " ").trim(); }
+
+window.speakInstruction = function(vanBan, btnElement = null, callback = null, useLoader = false) {
+    const textToRead = cleanTextForTTS(vanBan);
+    if (!textToRead) { if(callback) callback(); return; }
+    if (btnElement) $(btnElement).addClass('playing');
+
+    if (useLoader) {
+        window.forceHideAudioLoader(); 
+        window.audioLoaderTimer = setTimeout(() => { $('#audio-loading-overlay').css('display', 'flex'); }, 400); 
+    }
+
+    let bgMusic = document.getElementById('bg-music');
+    if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+
+    fetch("https://api.fpt.ai/hmi/tts/v5", { method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead })
+    .then(res => res.json()).then(data => {
+        window.forceHideAudioLoader();
+        if (data && data.async) checkAndPlayAudio(data.async, 0, btnElement, callback);
+        else if(callback) callback();
+    }).catch(e => { window.forceHideAudioLoader(); if(callback) callback(); });
+}
+
+function checkAndPlayAudio(url, retry, btnElement, callback) {
+    if(retry > 15) { 
+        if(btnElement) $(btnElement).removeClass('playing');
+        window.forceHideAudioLoader(); let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; if(callback) callback(); return;
+    }
+    
+    let noCacheUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(); 
+    let audio = new Audio(noCacheUrl);
+    
+    const onAudioReady = () => { window.forceHideAudioLoader(); };
+    audio.addEventListener('loadeddata', onAudioReady); 
+    audio.addEventListener('canplay', onAudioReady);
+    audio.addEventListener('playing', onAudioReady);
+    audio.addEventListener('timeupdate', () => { if (audio.currentTime > 0.1) onAudioReady(); });
+
+    audio.oncanplaythrough = function() {
+        onAudioReady(); window.currentAudio = audio;
+        let playPromise = audio.play();
+        if (playPromise !== undefined) playPromise.catch(e => { onAudioReady(); });
+    };
+
+    audio.onended = function() {
+        if(btnElement) $(btnElement).removeClass('playing');
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; 
+        if(callback) callback();
+    };
+    audio.onerror = () => setTimeout(() => checkAndPlayAudio(url, retry + 1, btnElement, callback), 1000);
+    audio.load();
+}
+
+$(document).on('click', '.btn-speaker', function() { window.speakInstruction($(this).attr('data-text'), this); });
+
+// =========================================================================
+// CÁC HÀM XỬ LÝ GIAO DIỆN HỆ THỐNG
+// =========================================================================
+function saveData() { localStorage.setItem('game6Progress', JSON.stringify(window.gameState)); }
+function updateUI() { $('#current-level').text(window.gameState.level); $('#current-score').text(window.gameState.score); }
+
+function updateNavButtons() {
+    if (window.gameState.roundScores[window.gameState.level] !== undefined) $('#btn-next').removeClass('disabled').css('cursor', 'pointer');
+    else $('#btn-next').addClass('disabled').css('cursor', 'not-allowed');
+
+    if (window.gameState.level === 1) $('#btn-prev').addClass('disabled').css('cursor', 'not-allowed');
+    else $('#btn-prev').removeClass('disabled').css('cursor', 'pointer');
+}
+
+function showNotification(title, message, icon, score, total, callback) {
+    $('#btn-confirm-reset, #btn-cancel-reset').hide();
+    $('#custom-alert-title').prev('img').remove();
+    
+    let isGood = (score > total / 2) || (score === total && total > 0) || total === 0;
+    let gifUrl = isGood ? 'IMG/thay_u_tron_vui.png' : ((score === total/2) ? 'IMG/thay_u_tron_binh_thuong.png' : 'IMG/thay_u_tron_buon.png');
+    $('#custom-alert-title').before(`<img src="${gifUrl}" width="80" class="mb-2 teacher-bounce">`);
+    
+    $('#custom-alert-title').text(title); $('#custom-alert-message').text(message); 
+    
+    if (isGood) SoundFX.playWin(); else SoundFX.playLose();
+    
+    let isPass = (total === 0) || (score >= total * 0.6);
+    if (!isPass) { $('#btn-close-alert').hide(); $('#btn-lam-lai').show(); } 
+    else if (score < total && total > 0) { $('#btn-close-alert').show(); $('#btn-lam-lai').show(); } 
+    else { $('#btn-close-alert').show(); $('#btn-lam-lai').hide(); }
+
+    $('#custom-alert-overlay').css('display', 'flex');
+
+    if (window.preloadedFeedbackAudio) {
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+        window.currentAudio = window.preloadedFeedbackAudio;
+        window.currentAudio.play().catch(e => {});
+        window.currentAudio.onended = function() { if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; };
+        window.preloadedFeedbackAudio = null;
+    } else { window.speakInstruction(message); }
+
+    $('#btn-close-alert').off('click').on('click', function() {
+        if (window.currentAudio) { window.currentAudio.pause(); window.currentAudio = null; }
+        $('#custom-alert-overlay').hide();
+        if (typeof callback === 'function') callback();
+    });
+}
+
+function showGameEnd(isPass, totalScore) {
+    $('#game-end-overlay').css('display', 'flex');
+    let $buttons = $('#game-end-buttons'); $buttons.empty();
+
+    if (isPass) {
+        $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/7 sao ở trò chơi Âm Nhạc.\nBé đã hoàn thành tất cả các trò chơi!`);
+        SoundFX.playWin(); 
+        $buttons.append(`<button class="btn btn-secondary btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="window.goHome()">🏠 Về Menu</button>`);
+        $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="window.replayAll()">🔄 Chơi lại trò này</button>`);
+        window.speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Âm Nhạc!`);
+    } else {
+        $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/7 sao. Cần đạt tối thiểu 4 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        SoundFX.playLose();
+        window.gameState.replayQueue = [];
+        for (let i = 1; i <= 7; i++)  {
+            if (window.gameState.roundScores[i] !== undefined && window.gameState.roundScores[i] < window.MAX_SCORES[i]) {
+                window.gameState.replayQueue.push(i);
+            }
+        }
+        $buttons.append(`<button class="btn btn-warning btn-cute" style="transform: scale(1.1); font-weight: 900;" onclick="window.startReplay()">🔄 Chơi lại các vòng sai</button>`);
+        window.speakInstruction("Bé cần cố gắng thêm một chút nữa nhé! Hãy ấn nút để làm lại các vòng sai.");
+    }
+}
+
+window.loadLevelStructure = function(level) {
+    let $mainContainer = $('#game-container');
+    $mainContainer.children('.level-wrapper').hide();
+    $('#btn-submit').show();
+
+    if (window.LEVEL_MODULES[level]) {
+        let $levelWrapper = $(`#level-wrapper-${level}`);
+        if ($levelWrapper.length === 0) {
+            $levelWrapper = $(`<div id="level-wrapper-${level}" class="level-wrapper"></div>`);
+            $levelWrapper.append(`<div class="text-center mb-4"><img src="IMG/thay_u_tron.png" width="100" class="teacher-bounce"></div>`);
+            $mainContainer.append($levelWrapper); 
+            window.LEVEL_MODULES[level].render($levelWrapper);
+        }
+        $levelWrapper.show();
+        updateNavButtons();
+    } else {
+        let finishText = "Chúc Mừng Bé! Bé đã xuất sắc hoàn thành tất cả các màn chơi!";
+        let $finishWrapper = $('#finish-wrapper');
+        if ($finishWrapper.length === 0) {
+            $finishWrapper = $(`<div id="finish-wrapper" class="level-wrapper"></div>`);
+            $finishWrapper.html(`
+                <div class="text-center bounce-animation mt-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3113/3113054.png" width="130" class="mb-4">
+                    <h1 class="fw-bold" style="color: #ff6b81; font-size: 3.5rem;">Chúc Mừng Bé! 🏆</h1>
+                    <h2 id="final-score-display" class="mt-4 p-3 bg-warning d-inline-block" style="border-radius: 20px; color:#fff; font-weight:900;">Tổng điểm đạt được: ${window.gameState.score} ⭐</h2>
+                </div>
+            `);
+            $mainContainer.append($finishWrapper);
+        } else { $('#final-score-display').text(`Tổng điểm đạt được: ${window.gameState.score} ⭐`); }
+        $finishWrapper.show(); $('#btn-submit').hide(); window.speakInstruction(finishText, null);
+    }
+};
+
+window.replayAll = function() {
+    $('#game-end-overlay').hide();
+    window.gameState.level = 1; 
+    for(let i = 1; i <= 7; i++) {
+        delete window.gameState.roundScores[i]; 
+        $(`#level-wrapper-${i}`).remove(); 
+    }
+    window.gameState.replayQueue = []; window.gameState.score = 0; saveData(); updateUI(); window.loadLevelStructure(1);
+    window.speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
+};
+
+window.startReplay = function() {
+    $('#game-end-overlay').hide();
+    window.gameState.level = window.gameState.replayQueue.shift(); 
+    saveData();
+    $(`#level-wrapper-${window.gameState.level}`).remove(); 
+    window.loadLevelStructure(window.gameState.level);
+    window.speakInstruction("Chúng ta cùng làm lại vòng " + window.gameState.level + " nhé!", null, null, true);
+};
+
+window.goHome = function() {
+    window.location.href = "index.html"; 
+};
+ // === NÚT SKIP (DÀNH CHO DEV TEST) TỐI ƯU CHO GAME ĐỘC LẬP ===
+    $('#btn-skip-test').off('click').on('click', function() {
+        if(typeof window.stopAllMedia === 'function') window.stopAllMedia();
+        
+        // 1. Tự động lấy danh sách các vòng có trong game hiện tại (Dùng để thay thế getGameContext)
+        let availableLevels = Object.keys(window.LEVEL_MODULES).map(Number).sort((a, b) => a - b);
+        let currentIndex = availableLevels.indexOf(window.gameState.level);
+
+        // 2. Nếu chưa phải vòng cuối cùng của file này
+        if (currentIndex !== -1 && currentIndex < availableLevels.length - 1) {
+            
+            // Cộng full điểm ảo cho vòng này để qua bài suôn sẻ
+            let maxPoint = window.MAX_SCORES[window.gameState.level] || 5;
+            window.gameState.roundScores[window.gameState.level] = maxPoint;
+            
+            // Tính toán lại tổng điểm hiển thị trên góc phải
+            let total = 0;
+            for(let key in window.gameState.roundScores) {
+                total += window.gameState.roundScores[key];
+            }
+            window.gameState.score = total;
+            if(typeof window.updateUI === 'function') window.updateUI();
+
+            // Nhảy sang vòng kế tiếp
+            window.gameState.level = availableLevels[currentIndex + 1];
+            if(typeof window.saveData === 'function') window.saveData();
+            
+            // Ẩn vòng cũ, load vòng mới
+            $('.level-wrapper').hide();
+            if(typeof window.loadLevelStructure === 'function') window.loadLevelStructure(window.gameState.level);
+            if(typeof window.updateNavButtons === 'function') window.updateNavButtons();
+            
+            // Tự động đọc đề vòng mới
+            if(window.LEVEL_MODULES[window.gameState.level] && typeof window.speakInstruction === 'function') {
+                window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+        } else {
+            // Đã là vòng cuối cùng, tự động kích hoạt nút Chấm Điểm (màu xanh) để kết thúc game luôn
+            $('#btn-submit').click();
+        }
+    });
+// =========================================================================
+// DỮ LIỆU CÁC VÒNG CỦA GAME 6 (VÒNG 28 -> 34)
+// =========================================================================
+window.LEVEL_MODULES = {
+    1: {
+        instruction: "Nghe nhạc đoán tên bài hát, bé bấm vào hình cái loa để phát đoạn nhạc nhé",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 1: Nghe Đoán Bài Hát 🎼</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0 text-center">Bé hãy bấm vào hình cái loa để phát đoạn nhạc nhé!</h5>
+                    <button class="btn-speaker" data-text="Nghe đoán bài hát, bé bấm vào hình cái loa để phát đoạn nhạc nhé!" title="Nghe lại">🔊</button>
+                </div>
+
+                <div class="text-center mb-4">
+                    <img src="IMG/28_main.png" style="width: 150px; height: 150px; object-fit: contain; border-radius: 20px;">
+                </div>
+
+                <div class="music-player-wrapper mx-auto mb-5">
+                    <button type="button" class="btn-music-speaker" id="speaker-28">🔊</button>
+                    <div class="music-progress-area">
+                        <input type="range" id="progress-28" class="music-track-bar" value="0" min="0" max="100">
+                    </div>
+                    <audio id="audio-file-28" src="AUDIO/28_sound.mp3"></audio>
+                </div>
+
+                <div class="row mx-auto justify-content-center" style="max-width: 850px;">
+                    ${[1, 2, 3].map(opt => {
+                        let titles = { 1: "Bài hát con Cào Cào", 2: "Bài hát con Gà Con", 3: "Bài hát con Cá Vàng" };
+                        return `
+                        <div class="col-4 mb-3 px-2">
+                            <label style="cursor: pointer; width: 100%; margin:0;">
+                                <input type="radio" name="l28_q" value="${opt}" class="l28-radio-input" style="display:none;">
+                                <div class="music-opt-card text-center p-2">
+                                    <div class="music-img-frame mb-2">
+                                        <img src="IMG/28_opt (${opt}).png" style="width:100%; height:100%; object-fit:contain; border-radius:10px;">
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <span class="fw-bold text-muted" style="font-size:0.9rem;">${titles[opt]}</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <div class="text-center mt-2">
+                                <button type="button" class="btn-mini-speaker" data-audio="AUDIO/28_ans (${opt}).mp3">🔊 Đọc</button>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `);
+
+            setTimeout(() => { $('#speaker-28').addClass('speaker-attention-active'); }, 4500);
+
+            let audio = document.getElementById('audio-file-28');
+            let $slider = $('#progress-28');
+
+            $('#speaker-28').click(function() {
+                $(this).removeClass('speaker-attention-active');
+                if (audio.paused) { audio.play(); $(this).text('⏸️'); } 
+                else { audio.pause(); $(this).text('🔊'); }
+            });
+
+            audio.ontimeupdate = function() { if (audio.duration) { $slider.val((audio.currentTime / audio.duration) * 100); } };
+            $slider.on('input', function() { if (audio.duration) { audio.currentTime = (this.value / 100) * audio.duration; } });
+            audio.onended = function() { $('#speaker-28').text('🔊'); $slider.val(0); };
+
+            let miniAudio = null;
+            $('.btn-mini-speaker').click(function(e) {
+                e.preventDefault(); 
+                if (miniAudio) miniAudio.pause(); 
+                
+                $('.btn-mini-speaker').removeClass('playing');
+                $(this).addClass('playing');
+
+                miniAudio = new Audio($(this).data('audio'));
+                miniAudio.play();
+                
+                let $btn = $(this);
+                miniAudio.onended = function() { $btn.removeClass('playing'); };
+            });
+        },
+        check: function() {
+            let userSelect = $('input[name="l28_q"]:checked').val();
+            let isCorrect = (userSelect === "1"); 
+
+            $('.music-opt-card').css('border-color', '#eee');
+            if (userSelect) {
+                let $card = $(`input[name="l28_q"]:checked`).next('.music-opt-card');
+                $card.css('border-color', isCorrect ? '#2ed573' : '#ff4757');
+            }
+
+            let audio = document.getElementById('audio-file-28');
+            if(audio) { audio.pause(); audio.currentTime = 0; }
+
+            return { score: isCorrect ? 1 : 0, tieuDe: isCorrect ? "Bé nghe chuẩn quá!" : "Chưa chính xác!", icon: isCorrect ? "🌟" : "🍀", message: isCorrect ? "Chính xác! Đó là bài hát Con Cào Cào." : "Chưa đúng rồi, bé thử lại nhé!" };
+        }
+    },
+
+    2: {
+        instruction: "Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 2: Nghe Đoán Tên Bài Hát 🎼</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0 text-center">Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!" title="Nghe lại">🔊</button>
+                </div>
+
+                <div class="music-player-wrapper mx-auto mb-5">
+                    <button type="button" class="btn-music-speaker" id="speaker-29">🔊</button>
+                    <div class="music-progress-area">
+                        <input type="range" id="progress-29" class="music-track-bar" value="0" min="0" max="100">
+                    </div>
+                    <audio id="audio-file-29" src="AUDIO/29_sound.mp3"></audio>
+                </div>
+
+                <div class="d-flex flex-column gap-3 mx-auto" style="max-width: 480px;">
+                    ${[1, 2, 3].map(opt => {
+                        let labels = { 1: "Cháu yêu bà", 2: "Cả nhà thương nhau", 3: "Bé quét nhà" };
+                        return `
+                        <label style="cursor: pointer; width: 100%; margin:0;">
+                            <input type="radio" name="l29_q" value="${opt}" class="l29-radio-input" style="display:none;">
+                            <div class="music-text-card py-3 px-4 fw-bold d-flex align-items-center">
+                                <button type="button" class="btn-mini-speaker-inline me-3" data-audio="AUDIO/29_ans (${opt}).mp3">🔊</button>
+                                <span>${labels[opt]}</span>
+                            </div>
+                        </label>
+                        `;
+                    }).join('')}
+                </div>
+            `);
+
+            setTimeout(() => { $('#speaker-29').addClass('speaker-attention-active'); }, 2500);
+
+            let audio = document.getElementById('audio-file-29');
+            let $slider = $('#progress-29');
+
+            $('#speaker-29').click(function() {
+                $(this).removeClass('speaker-attention-active');
+                if (audio.paused) { audio.play(); $(this).text('⏸️'); } 
+                else { audio.pause(); $(this).text('🔊'); }
+            });
+
+            audio.ontimeupdate = function() { if (audio.duration) { $slider.val((audio.currentTime / audio.duration) * 100); } };
+            $slider.on('input', function() { if (audio.duration) { audio.currentTime = (this.value / 100) * audio.duration; } });
+            audio.onended = function() { $('#speaker-29').text('🔊'); $slider.val(0); };
+
+            let miniAudio = null;
+            $('.btn-mini-speaker-inline').click(function(e) {
+                e.preventDefault(); 
+                if (miniAudio) miniAudio.pause(); 
+                
+                $('.btn-mini-speaker-inline').removeClass('playing');
+                $(this).addClass('playing');
+
+                miniAudio = new Audio($(this).data('audio'));
+                miniAudio.play();
+                
+                let $btn = $(this);
+                miniAudio.onended = function() { $btn.removeClass('playing'); };
+            });
+        },
+        check: function() {
+            let userSelect = $('input[name="l29_q"]:checked').val();
+            let isCorrect = (userSelect === "2"); 
+
+            $('.music-text-card').css({'border-color': '#eee', 'box-shadow': '0 4px 0 #eee'});
+            if (userSelect) {
+                let $card = $(`input[name="l29_q"]:checked`).next('.music-text-card');
+                $card.css(isCorrect ? {'border-color': '#2ed573', 'box-shadow': '0 4px 0 #2ed573'} : {'border-color': '#ff4757', 'box-shadow': '0 4px 0 #ff4757'});
+            }
+
+            let audio = document.getElementById('audio-file-29');
+            if(audio) { audio.pause(); audio.currentTime = 0; }
+
+            return { score: isCorrect ? 1 : 0, tieuDe: isCorrect ? "Đúng rồi bé ơi!" : "Chưa chính xác!", icon: isCorrect ? "🌟" : "❌", message: isCorrect ? "Tuyệt vời! Đó chính là bài hát Cả nhà thương nhau." : "Chưa đúng rồi, bé nghe lại lần nữa xem!" };
+        }
+    },
+    3: {
+        instruction: "Bé hãy nghe đoạn nhạc và đoán xem bài hát nhắc đến ai nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 3: Đoán Nhân Vật 👨‍👩‍👧</h3>
+                <div class="d-flex align-items-center justify-content-center mb-5">
+                    <h5 class="text-secondary mb-0 text-center">Bé hãy nghe đoạn nhạc và đoán xem bài hát nhắc đến ai nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc và đoán nhân vật trong bài hát" title="Nghe lại">🔊</button>
+                </div>
+
+                <div class="music-player-wrapper mx-auto mb-5">
+                    <button type="button" class="btn-music-speaker" id="speaker-30">🔊</button>
+                    <div class="music-progress-area">
+                        <input type="range" id="progress-30" class="music-track-bar" value="0" min="0" max="100">
+                    </div>
+                    <audio id="audio-file-30" src="AUDIO/30_sound.mp3"></audio>
+                </div>
+
+                <div class="row mx-auto justify-content-center" style="max-width: 850px;">
+                    ${[1, 2, 3].map(opt => {
+                        let labels = { 1: "Bố", 2: "Mẹ", 3: "Bà" };
+                        return `
+                        <div class="col-4 mb-3 px-2">
+                            <label style="cursor: pointer; width: 100%; margin:0;">
+                                <input type="radio" name="l30_q" value="${opt}" class="l30-radio-input" style="display:none;">
+                                <div class="music-opt-card text-center p-2">
+                                    <div class="music-img-frame mb-2" style="height: 120px;">
+                                        <img src="IMG/30_opt (${opt}).png" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+                                    </div>
+                                    <span class="fw-bold text-muted d-block" style="font-size:1rem;">${labels[opt]}</span>
+                                </div>
+                            </label>
+                            <div class="text-center mt-2">
+                                <button type="button" class="btn-mini-speaker" data-audio="AUDIO/30_ans (${opt}).mp3">🔊 Đọc</button>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `);
+
+            setTimeout(() => { $('#speaker-30').addClass('speaker-attention-active'); }, 2500);
+
+            let audio = document.getElementById('audio-file-30');
+            let $slider = $('#progress-30');
+
+            $('#speaker-30').click(function() {
+                $(this).removeClass('speaker-attention-active'); 
+                if (audio.paused) { audio.play(); $(this).text('⏸️'); } 
+                else { audio.pause(); $(this).text('🔊'); }
+            });
+
+            audio.ontimeupdate = function() { if (audio.duration) { $slider.val((audio.currentTime / audio.duration) * 100); } };
+            $slider.on('input', function() { if (audio.duration) { audio.currentTime = (this.value / 100) * audio.duration; } });
+            audio.onended = function() { $('#speaker-30').text('🔊'); $slider.val(0); };
+
+            let miniAudio = null;
+            $('.btn-mini-speaker').click(function(e) {
+                e.preventDefault(); 
+                if (miniAudio) miniAudio.pause(); 
+                $('.btn-mini-speaker').removeClass('playing');
+                $(this).addClass('playing');
+                miniAudio = new Audio($(this).data('audio'));
+                miniAudio.play();
+                let $btn = $(this);
+                miniAudio.onended = function() { $btn.removeClass('playing'); };
+            });
+        },
+        check: function() {
+            let userSelect = $('input[name="l30_q"]:checked').val();
+            let isCorrect = (userSelect === "3"); 
+
+            $('.music-opt-card').css({'border-color': '#eee', 'box-shadow': '0 4px 0 #eee'});
+            if (userSelect) {
+                let $card = $(`input[name="l30_q"]:checked`).next('.music-opt-card');
+                $card.css(isCorrect ? {'border-color': '#2ed573', 'box-shadow': '0 4px 0 #2ed573'} : {'border-color': '#ff4757', 'box-shadow': '0 4px 0 #ff4757'});
+            }
+
+            let audio = document.getElementById('audio-file-30');
+            if(audio) { audio.pause(); audio.currentTime = 0; }
+
+            return { score: isCorrect ? 1 : 0, tieuDe: isCorrect ? "Tuyệt vời bé ơi!" : "Chưa chính xác!", icon: isCorrect ? "🌟" : "❌", message: isCorrect ? "Chính xác! Bài hát này nhắc đến Bà." : "Bài hát nhắc đến ai nhỉ? Bé nghe lại nhé!" };
+        }
+    },
+
+    4: {
+        instruction: "Bé hãy nghe đoạn nhạc rồi chọn câu hát tiếp theo nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 4: Hát Tiếp Khúc Ca 🎤</h3>
+               <div class="d-flex align-items-center justify-content-center mb-5">
+                    <h5 class="text-secondary mb-0 text-center">Bé nghe đoạn nhạc rồi chọn câu hát tiếp theo nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc rồi chọn câu hát tiếp theo nhé!" title="Nghe lại">🔊</button>
+                </div>
+
+                <div class="music-player-wrapper mx-auto mb-5">
+                    <button type="button" class="btn-music-speaker" id="speaker-31">🔊</button>
+                    <div class="music-progress-area">
+                        <input type="range" id="progress-31" class="music-track-bar" value="0" min="0" max="100">
+                    </div>
+                    <audio id="audio-file-31" src="AUDIO/31_sound.mp3"></audio>
+                </div>
+
+                <div class="d-flex flex-column gap-3 mx-auto" style="max-width: 480px;">
+                    ${[1, 2, 3].map(opt => {
+                        let labels = { 1: "Con cò trắng trắng", 2: "Con cá vàng bơi", 3: "Hai con bướm xinh xinh" };
+                        return `
+                        <label style="cursor: pointer; width: 100%; margin:0;">
+                            <input type="radio" name="l31_q" value="${opt}" class="l31-radio-input" style="display:none;">
+                            <div class="music-text-card py-3 px-4 fw-bold d-flex align-items-center">
+                                <button type="button" class="btn-mini-speaker-inline me-3" data-audio="AUDIO/31_ans (${opt}).mp3">🔊</button>
+                                <span>${labels[opt]}</span>
+                            </div>
+                        </label>
+                        `;
+                    }).join('')}
+                </div>
+            `);
+
+            setTimeout(() => { $('#speaker-31').addClass('speaker-attention-active'); }, 3000);
+
+            let audio = document.getElementById('audio-file-31');
+            let $slider = $('#progress-31');
+
+            $('#speaker-31').click(function() {
+                $(this).removeClass('speaker-attention-active');
+                if (audio.paused) { audio.play(); $(this).text('⏸️'); } 
+                else { audio.pause(); $(this).text('🔊'); }
+            });
+
+            audio.ontimeupdate = function() { if (audio.duration) { $slider.val((audio.currentTime / audio.duration) * 100); } };
+            $slider.on('input', function() { if (audio.duration) { audio.currentTime = (this.value / 100) * audio.duration; } });
+            audio.onended = function() { $('#speaker-31').text('🔊'); $slider.val(0); };
+
+            let miniAudio = null;
+            $('.btn-mini-speaker-inline').click(function(e) {
+                e.preventDefault(); 
+                if (miniAudio) miniAudio.pause(); 
+                $('.btn-mini-speaker-inline').removeClass('playing');
+                $(this).addClass('playing');
+                miniAudio = new Audio($(this).data('audio'));
+                miniAudio.play();
+                let $btn = $(this);
+                miniAudio.onended = function() { $btn.removeClass('playing'); };
+            });
+        },
+        check: function() {
+            let userSelect = $('input[name="l31_q"]:checked').val();
+            let isCorrect = (userSelect === "3"); 
+
+            $('.music-text-card').css({'border-color': '#eee', 'box-shadow': '0 4px 0 #eee'});
+            if (userSelect) {
+                let $card = $(`input[name="l31_q"]:checked`).next('.music-text-card');
+                $card.css(isCorrect ? {'border-color': '#2ed573', 'box-shadow': '0 4px 0 #2ed573'} : {'border-color': '#ff4757', 'box-shadow': '0 4px 0 #ff4757'});
+            }
+
+            let audio = document.getElementById('audio-file-31');
+            if(audio) { audio.pause(); audio.currentTime = 0; }
+
+            return { score: isCorrect ? 1 : 0, tieuDe: isCorrect ? "Đúng rồi bé ơi!" : "Chưa chính xác!", icon: isCorrect ? "🌟" : "❌", message: isCorrect ? "Tuyệt vời! Bé đã thuộc lời bài hát rồi." : "Câu hát tiếp theo là gì nhỉ? Bé nghe lại lần nữa xem!" };
+        }
+    },
+    5: {
+        instruction: "Bé hãy nghe đoạn nhạc và đoán xem bài hát thuộc chủ đề nào nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 5: Đoán Chủ Đề 🌳🚗🐶</h3>
+                <div class="d-flex align-items-center justify-content-center mb-5">
+                    <h5 class="text-secondary mb-0 text-center">Bé hãy nghe đoạn nhạc và đoán xem bài hát thuộc chủ đề nào nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc và đoán chủ đề bài hát nhé" title="Nghe lại">🔊</button>
+                </div>
+
+                <div class="music-player-wrapper mx-auto mb-5">
+                    <button type="button" class="btn-music-speaker" id="speaker-32">🔊</button>
+                    <div class="music-progress-area">
+                        <input type="range" id="progress-32" class="music-track-bar" value="0" min="0" max="100">
+                    </div>
+                    <audio id="audio-file-32" src="AUDIO/32_sound.mp3"></audio>
+                </div>
+
+                <div class="row mx-auto justify-content-center" style="max-width: 850px;">
+                    ${[1, 2, 3].map(opt => {
+                        let labels = { 1: "Hoa lá", 2: "Giao Thông", 3: "Động vật" };
+                        return `
+                        <div class="col-4 mb-3 px-2">
+                            <label style="cursor: pointer; width: 100%; margin:0;">
+                                <input type="radio" name="l32_q" value="${opt}" class="l32-radio-input" style="display:none;">
+                                <div class="music-opt-card text-center p-2">
+                                    <div class="music-img-frame mb-2" style="height: 120px;">
+                                        <img src="IMG/32_opt (${opt}).png" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+                                    </div>
+                                    <span class="fw-bold text-muted d-block" style="font-size:1rem;">${labels[opt]}</span>
+                                </div>
+                            </label>
+                            <div class="text-center mt-2">
+                                <button type="button" class="btn-mini-speaker" data-audio="AUDIO/32_ans (${opt}).mp3">🔊 Đọc</button>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `);
+
+            setTimeout(() => { $('#speaker-32').addClass('speaker-attention-active'); }, 2500);
+
+            let audio = document.getElementById('audio-file-32');
+            let $slider = $('#progress-32');
+
+            $('#speaker-32').click(function() {
+                $(this).removeClass('speaker-attention-active'); 
+                if (audio.paused) { audio.play(); $(this).text('⏸️'); } 
+                else { audio.pause(); $(this).text('🔊'); }
+            });
+
+            audio.ontimeupdate = function() { if (audio.duration) { $slider.val((audio.currentTime / audio.duration) * 100); } };
+            $slider.on('input', function() { if (audio.duration) { audio.currentTime = (this.value / 100) * audio.duration; } });
+            audio.onended = function() { $('#speaker-32').text('🔊'); $slider.val(0); };
+
+            let miniAudio = null;
+            $('.btn-mini-speaker').click(function(e) {
+                e.preventDefault(); 
+                if (miniAudio) miniAudio.pause(); 
+                $('.btn-mini-speaker').removeClass('playing');
+                $(this).addClass('playing');
+                miniAudio = new Audio($(this).data('audio'));
+                miniAudio.play();
+                let $btn = $(this);
+                miniAudio.onended = function() { $btn.removeClass('playing'); };
+            });
+        },
+        check: function() {
+            let userSelect = $('input[name="l32_q"]:checked').val();
+            let isCorrect = (userSelect === "3"); // Đáp án: 3 (Động vật)
+
+            $('.music-opt-card').css({'border-color': '#eee', 'box-shadow': '0 4px 0 #eee'});
+            if (userSelect) {
+                let $card = $(`input[name="l32_q"]:checked`).next('.music-opt-card');
+                $card.css(isCorrect ? {'border-color': '#2ed573', 'box-shadow': '0 4px 0 #2ed573'} : {'border-color': '#ff4757', 'box-shadow': '0 4px 0 #ff4757'});
+            }
+
+            let audio = document.getElementById('audio-file-32');
+            if(audio) { audio.pause(); audio.currentTime = 0; }
+
+            return { 
+                score: isCorrect ? 1 : 0, 
+                tieuDe: isCorrect ? "Đúng rồi bé ơi!" : "Chưa chính xác!", 
+                icon: isCorrect ? "🌟" : "❌", 
+                message: isCorrect ? "Tuyệt vời! Đây là bài hát về chủ đề Động vật." : "Bài hát thuộc chủ đề nào nhỉ? Bé thử lại nhé!" 
+            };
+        }
+    },
+
+    6: {
+        instruction: "Bé nghe nhạc không lời và đoán xem đó là bài hát nào nhé!",
+        render: function($container) {
+            $container.append(`
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 6: Giai Điệu Quen Thuộc 🎹</h3>
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <h5 class="text-secondary mb-0 text-center">Bé nghe nhạc không lời và đoán xem đó là bài hát nào nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé nghe nhạc không lời và đoán xem đó là bài hát nào nhé!" title="Nghe lại">🔊</button>
+                </div>
+
+                <div class="music-player-wrapper mx-auto mb-5">
+                    <button type="button" class="btn-music-speaker" id="speaker-33">🔊</button>
+                    <div class="music-progress-area">
+                        <input type="range" id="progress-33" class="music-track-bar" value="0" min="0" max="100">
+                    </div>
+                    <audio id="audio-file-33" src="AUDIO/33_sound.mp3"></audio>
+                </div>
+
+                <div class="d-flex flex-column gap-3 mx-auto" style="max-width: 450px;">
+                    ${[1, 2, 3].map(opt => {
+                        let labels = { 1: "Con cò bé bé", 2: "Em yêu cây xanh", 3: "Con chim non" };
+                        return `
+                        <label style="cursor: pointer; width: 100%; margin:0;">
+                            <input type="radio" name="l33_q" value="${opt}" class="l33-radio-input" style="display:none;">
+                            <div class="music-text-card py-3 px-4 fw-bold d-flex align-items-center">
+                                <button type="button" class="btn-mini-speaker-inline me-3" data-audio="AUDIO/33_ans (${opt}).mp3">🔊</button>
+                                <span>${labels[opt]}</span>
+                            </div>
+                        </label>
+                        `;
+                    }).join('')}
+                </div>
+            `);
+
+            setTimeout(() => { $('#speaker-33').addClass('speaker-attention-active'); }, 2500);
+
+            let audio = document.getElementById('audio-file-33');
+            let $slider = $('#progress-33');
+
+            $('#speaker-33').click(function() {
+                $(this).removeClass('speaker-attention-active');
+                if (audio.paused) { audio.play(); $(this).text('⏸️'); } 
+                else { audio.pause(); $(this).text('🔊'); }
+            });
+
+            audio.ontimeupdate = function() { if (audio.duration) { $slider.val((audio.currentTime / audio.duration) * 100); } };
+            $slider.on('input', function() { if (audio.duration) { audio.currentTime = (this.value / 100) * audio.duration; } });
+            audio.onended = function() { $('#speaker-33').text('🔊'); $slider.val(0); };
+
+            let miniAudio = null;
+            $('.btn-mini-speaker-inline').click(function(e) {
+                e.preventDefault(); 
+                if (miniAudio) miniAudio.pause(); 
+                $('.btn-mini-speaker-inline').removeClass('playing');
+                $(this).addClass('playing');
+                miniAudio = new Audio($(this).data('audio'));
+                miniAudio.play();
+                let $btn = $(this);
+                miniAudio.onended = function() { $btn.removeClass('playing'); };
+            });
+        },
+        check: function() {
+            let userSelect = $('input[name="l33_q"]:checked').val();
+            let isCorrect = (userSelect === "1"); // Đáp án: 1 (Con cò bé bé)
+
+            $('.music-text-card').css({'border-color': '#eee', 'box-shadow': '0 4px 0 #eee'});
+            if (userSelect) {
+                let $card = $(`input[name="l33_q"]:checked`).next('.music-text-card');
+                $card.css(isCorrect ? {'border-color': '#2ed573', 'box-shadow': '0 4px 0 #2ed573'} : {'border-color': '#ff4757', 'box-shadow': '0 4px 0 #ff4757'});
+            }
+
+            let audio = document.getElementById('audio-file-33');
+            if(audio) { audio.pause(); audio.currentTime = 0; }
+
+            return { 
+                score: isCorrect ? 1 : 0, 
+                tieuDe: isCorrect ? "Thính tai quá bé ơi!" : "Chưa chính xác!", 
+                icon: isCorrect ? "🌟" : "❌", 
+                message: isCorrect ? "Giỏi lắm! Đó chính là bài hát Con cò bé bé." : "Giai điệu này quen lắm, bé thử nghe lại xem!" 
+            };
+        }
+    },
+    7: {
+    instruction: "Bé hãy nghe đoạn nhạc, sau đó nối tên bài hát với hình ảnh và chủ đề phù hợp nhé!",
+    render: function($container) {
+        // CẤU HÌNH DỮ LIỆU 3 CỘT
+        const col1 = [
+            { id: 1, text: "Con chim non" },
+            { id: 2, text: "Đàn gà con" },
+            { id: 3, text: "Em yêu cây xanh" }
+        ];
+        const col2 = [
+            { id: 1, img: "IMG/34_col2_1.png" }, // Ảnh Cây xanh
+            { id: 2, img: "IMG/34_col2_2.png" }, // Ảnh Gà con
+            { id: 3, img: "IMG/34_col2_3.png" }  // Ảnh Chim non
+        ];
+        const col3 = [
+            { id: 1, text: "Thực vật" }, // Ảnh Cây cối
+            { id: 2, text: "Động vật"}, // Ảnh Thú vật
+            { id: 3, text: "Giao thông"} // Ảnh Xe cộ
+        ];
+
+        $container.append(`
+            <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 7: Thử Thách Cuối Cùng 🏆</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0 text-center">Bé hãy nghe nhạc và nối Tên bài hát &rarr; Hình ảnh &rarr; Chủ đề nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc, sau đó nối tên bài hát với hình ảnh và chủ đề phù hợp nhé!" title="Nghe lại">🔊</button>
+            </div>
+
+            <div class="music-player-wrapper mx-auto mb-4">
+                <button type="button" class="btn-music-speaker" id="speaker-34">🔊</button>
+                <div class="music-progress-area">
+                    <input type="range" id="progress-34" class="music-track-bar" value="0" min="0" max="100">
+                </div>
+                <audio id="audio-file-34" src="AUDIO/34_sound.mp3"></audio>
+            </div>
+
+            <div id="l34-wrapper" style="position: relative; width: 100%; max-width: 900px; margin: 0 auto; padding: 20px 0;">
+                <canvas id="l34-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none;"></canvas>
+                
+                <div class="row align-items-center justify-content-center m-0">
+                    
+                    <div class="col-4 d-flex flex-column justify-content-around align-items-center gap-4" style="z-index: 15;">
+                        <h5 class="fw-bold" style="color: #8e44ad; margin-bottom: -10px;">Tên Bài Hát</h5>
+                        ${col1.map(item => `
+                            <div class="l34-item d-flex flex-column align-items-center justify-content-center" data-col="1" data-id="${item.id}" style="border-color: #fbc2eb;">
+                                <span class="fw-bold text-center" style="font-size: 1.1rem; color: #574b90; line-height: 1.2;">${item.text}</span>
+                                <button type="button" class="btn-mini-speaker-inline mt-2" onclick="window.speakInstruction('${item.text}', this); event.stopPropagation();">🔊</button>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="col-4 d-flex flex-column justify-content-around align-items-center gap-4" style="z-index: 15;">
+                        <h5 class="fw-bold" style="color: #e17055; margin-bottom: -10px;">Hình Ảnh</h5>
+                        ${col2.map(item => `
+                            <div class="l34-item p-2" data-col="2" data-id="${item.id}" style="border-color: #fab1a0;">
+                                <img src="${item.img}" style="width: 100%; height: 80px; object-fit: contain;">
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="col-4 d-flex flex-column justify-content-around align-items-center gap-4" style="z-index: 15;">
+                        <h5 class="fw-bold" style="color: #00b894; margin-bottom: -10px;">Chủ Đề</h5>
+                        ${col3.map(item => `
+                            <div class="l34-item d-flex flex-column align-items-center justify-content-center p-2" data-col="3" data-id="${item.id}" style="border-color: #55efc4;">
+                                <span class="fw-bold text-center" style="font-size: 1rem; color: #2d3436;">${item.text}</span>
+                                <button type="button" class="btn-mini-speaker-inline mt-2" onclick="window.speakInstruction('${item.text}', this); event.stopPropagation();">🔊</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .l34-item {
+                    background: #fff; border: 3px solid #eee; border-radius: 15px; width: 100%; max-width: 140px; padding: 15px 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.2s; position: relative;
+                    touch-action: none; /* Khóa cuộn trang khi vẽ */
+                }
+                .l34-item:hover { transform: scale(1.05); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+                .l34-item.connected { background-color: #f8f9fa; }
+                
+                @media (max-width: 576px) {
+                    .l34-item { max-width: 100px; padding: 10px 5px; border-width: 2px; }
+                    .l34-item span { font-size: 0.85rem !important; }
+                    .l34-item img { height: 50px !important; }
+                    .btn-mini-speaker-inline { width: 30px; height: 30px; font-size: 0.9rem; }
+                }
+            </style>
+        `);
+
+        // Xử lý Audio chính
+        setTimeout(() => { $('#speaker-34').addClass('speaker-attention-active'); }, 4000);
+        let audio = document.getElementById('audio-file-34');
+        let $slider = $('#progress-34');
+
+        $('#speaker-34').click(function() {
+            $(this).removeClass('speaker-attention-active');
+            if (audio.paused) { audio.play(); $(this).text('⏸️'); } 
+            else { audio.pause(); $(this).text('🔊'); }
+        });
+        audio.ontimeupdate = function() { if (audio.duration) { $slider.val((audio.currentTime / audio.duration) * 100); } };
+        $slider.on('input', function() { if (audio.duration) { audio.currentTime = (this.value / 100) * audio.duration; } });
+        audio.onended = function() { $('#speaker-34').text('🔊'); $slider.val(0); };
+
+        // LOGIC KÉO NỐI 3 CỘT (Khóa chéo 1-1)
+        this.conns1 = {}; // Lưu nối Cột 1 -> Cột 2
+        this.conns2 = {}; // Lưu nối Cột 2 -> Cột 3
+        const self = this;
+        
+        setTimeout(() => {
+            const canvas = document.getElementById('l34-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const $wrapper = $('#l34-wrapper');
+
+            let isDrawing = false;
+            let activeDraw = null; 
+            let currentMouse = { x: 0, y: 0 };
+
+            function resizeCanvas() {
+                canvas.width = $wrapper.width();
+                canvas.height = $wrapper.height();
+                drawLines();
+            }
+            resizeCanvas();
+            $(window).off('resize.l34').on('resize.l34', resizeCanvas);
+
+            function getCenterPos($el) {
+                let offset = $el.offset(); let wrapOffset = $wrapper.offset();
+                return { x: offset.left - wrapOffset.left + $el.outerWidth() / 2, y: offset.top - wrapOffset.top + $el.outerHeight() / 2 };
+            }
+
+            function getMousePos(e) {
+                let rect = canvas.getBoundingClientRect(); let evt = e.originalEvent || e;
+                let cx = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientX : evt.clientX;
+                let cy = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientY : evt.clientY;
+                return { x: cx - rect.left, y: cy - rect.top };
+            }
+
+            function drawLines() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.lineWidth = 5; ctx.lineCap = 'round';
+                
+                // Vẽ nét Cột 1 -> Cột 2
+                ctx.strokeStyle = '#a29bfe';
+                for (let c1_id in self.conns1) {
+                    let c2_id = self.conns1[c1_id];
+                    let p1 = getCenterPos($(`.l34-item[data-col="1"][data-id="${c1_id}"]`));
+                    let p2 = getCenterPos($(`.l34-item[data-col="2"][data-id="${c2_id}"]`));
+                    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                }
+
+                // Vẽ nét Cột 2 -> Cột 3
+                ctx.strokeStyle = '#fdcb6e';
+                for (let c2_id in self.conns2) {
+                    let c3_id = self.conns2[c2_id];
+                    let p1 = getCenterPos($(`.l34-item[data-col="2"][data-id="${c2_id}"]`));
+                    let p2 = getCenterPos($(`.l34-item[data-col="3"][data-id="${c3_id}"]`));
+                    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                }
+
+                // Vẽ nét đang quẹt lơ lửng
+                if (isDrawing && activeDraw) {
+                    let p1 = getCenterPos($(`.l34-item[data-col="${activeDraw.col}"][data-id="${activeDraw.id}"]`));
+                    ctx.strokeStyle = 'rgba(255, 118, 117, 0.8)';
+                    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(currentMouse.x, currentMouse.y); ctx.stroke();
+                }
+            }
+
+            // Mousedown / Touchstart trên item
+            $wrapper.find('.l34-item').on('mousedown touchstart', function(e) {
+                e.preventDefault();
+                let col = $(this).data('col');
+                let id = $(this).data('id');
+
+                // Chỉ cho phép bắt đầu kéo từ Cột 1 hoặc Cột 2
+                if (col === 1 || col === 2) {
+                    isDrawing = true;
+                    activeDraw = { col: col, id: id };
+                    currentMouse = getMousePos(e);
+                    
+                    // Gỡ bỏ đường kết nối CŨ xuất phát từ ô NÀY
+                    if (col === 1 && self.conns1[id]) delete self.conns1[id];
+                    if (col === 2 && self.conns2[id]) delete self.conns2[id];
+                    
+                    drawLines();
+                }
+            });
+
+            $(document).on('mousemove.l34 touchmove.l34', function(e) {
+                if (!isDrawing) return; e.preventDefault(); 
+                currentMouse = getMousePos(e); drawLines();
+            });
+
+            $(document).on('mouseup.l34 touchend.l34', function(e) {
+                if (!isDrawing) return; isDrawing = false;
+                
+                // Cột mục tiêu phải kề cạnh cột xuất phát
+                let targetCol = activeDraw.col + 1;
+                let foundId = null;
+                
+                // Quét xem bé thả có trúng ô nào không
+                $(`.l34-item[data-col="${targetCol}"]`).each(function() {
+                    let pTarget = getCenterPos($(this));
+                    let dist = Math.sqrt(Math.pow(currentMouse.x - pTarget.x, 2) + Math.pow(currentMouse.y - pTarget.y, 2));
+                    
+                    if (dist < 80) { // Bán kính hút
+                        foundId = $(this).data('id');
+                    }
+                });
+
+                if (foundId) {
+                    // LOGIC: Gỡ bỏ đường kết nối CŨ đang chui VÀO ô MỤC TIÊU NÀY
+                    if (activeDraw.col === 1) {
+                        for (let key in self.conns1) {
+                            if (self.conns1[key] === foundId) delete self.conns1[key];
+                        }
+                        self.conns1[activeDraw.id] = foundId;
+                    }
+                    if (activeDraw.col === 2) {
+                        for (let key in self.conns2) {
+                            if (self.conns2[key] === foundId) delete self.conns2[key];
+                        }
+                        self.conns2[activeDraw.id] = foundId;
+                    }
+                    if (window.SoundFX) window.SoundFX.playClick();
+                }
+                
+                activeDraw = null; drawLines();
+            });
+        }, 300);
+    },
+    check: function() {
+        $(document).off('mousemove.l34 touchmove.l34 mouseup.l34 touchend.l34');
+        $(window).off('resize.l34');
+
+        // Logic check: Đáp án đúng duy nhất là nối 1(Col1) -> 3(Col2) -> 2(Col3)
+        let isCorrect = true; 
+
+        $('.l34-item').css('border-color', '#eee'); 
+        
+        // Quét Cột 1 -> Cột 2
+        for (let c1 in this.conns1) {
+            let c2 = this.conns1[c1];
+            // Đánh dấu đỏ cho tất cả các đường nối sai / mồi nhử
+            let color = (c1 == 1 && c2 == 3) ? '#2ed573' : '#ff4757';
+            $(`.l34-item[data-col="1"][data-id="${c1}"]`).css('border-color', color);
+            $(`.l34-item[data-col="2"][data-id="${c2}"]`).css('border-color', color);
+            
+            if (color === '#ff4757') isCorrect = false; // Phát hiện có đường sai -> Mất điểm
+        }
+        
+        // Quét Cột 2 -> Cột 3
+        for (let c2 in this.conns2) {
+            let c3 = this.conns2[c2];
+            let color = (c2 == 3 && c3 == 2) ? '#2ed573' : '#ff4757';
+            
+            // Nếu ô đó đã bị viền đỏ từ trước thì ưu tiên giữ đỏ, nếu không thì set màu mới
+            if ($(`.l34-item[data-col="2"][data-id="${c2}"]`).css('border-color') !== 'rgb(255, 71, 87)') {
+                $(`.l34-item[data-col="2"][data-id="${c2}"]`).css('border-color', color);
+            }
+            $(`.l34-item[data-col="3"][data-id="${c3}"]`).css('border-color', color);
+            
+            if (color === '#ff4757') isCorrect = false; 
+        }
+
+        // Bắt lỗi bé chưa nối đủ đường chính xác
+        if (this.conns1[1] != 3 || this.conns2[3] != 2) {
+            isCorrect = false;
+        }
+
+        let audio = document.getElementById('audio-file-34');
+        if(audio) { audio.pause(); audio.currentTime = 0; }
+
+        return { 
+            score: isCorrect ? 1 : 0, 
+            tieuDe: isCorrect ? "Giỏi quá bé ơi!" : "Chưa chính xác!", 
+            icon: isCorrect ? "🏆" : "❌", 
+            message: isCorrect ? "Tuyệt vời! Bé đã nối đúng tên bài hát, hình ảnh và chủ đề rồi!" : "Bé hãy nối thật chính xác Tên - Hình ảnh - Chủ đề nhé!" 
+        };
+    }
+}
+};
+
+$(document).ready(function() {
+    // TỪ WELCOME SCREEN -> RA MÀN HÌNH INTRO GAME 6
+    $('#btn-to-start-screen').click(function() {
+        $('#welcome-screen').fadeOut(500, function() {
+            $('#game6-intro-screen').css('display', 'flex').hide().fadeIn(500);
+        });
+    });
+
+    // TỪ MÀN HÌNH INTRO -> VÀO GAME 6 (Vòng 28)
+    $('#btn-start-game6').click(function() {
+        let bgMusic = document.getElementById('bg-music');
+        if(bgMusic) { bgMusic.loop = true; bgMusic.volume = 0.5; bgMusic.play().catch(e => {}); }
+
+        $('#game6-intro-screen').fadeOut(500, function() {
+            $('#main-game').fadeIn(500);
+            window.gameState.level = 1;
+            window.loadLevelStructure(1);
+        });
+    });
+
+    // CÁC HÀM XỬ LÝ NÚT BẤM
+    $('#btn-lam-lai').off('click').on('click', function() {
+        $('#custom-alert-overlay').hide();
+        $(`#level-wrapper-${window.gameState.level}`).remove(); 
+        window.loadLevelStructure(window.gameState.level); 
+    });
+
+    $('#btn-replay-round').off('click').on('click', function() {
+        $(`#level-wrapper-${window.gameState.level}`).remove(); 
+        window.loadLevelStructure(window.gameState.level);
+    });
+
+    $('#btn-submit').off('click').on('click', function() {
+        let result = window.LEVEL_MODULES[window.gameState.level].check();
+        let roundMaxScore = window.MAX_SCORES[window.gameState.level] || 1; // Game này mỗi vòng max 1 điểm
+
+        let proceed = function() {
+            window.stopAllMedia();
+            window.gameState.roundScores[window.gameState.level] = roundMaxScore > 0 ? result.score : 0;
+            
+            let currentTotalScore = 0; let roundsPlayed = 0;
+            for(let i = 1; i <= 7; i++) {
+                if(window.gameState.roundScores[i] !== undefined) { currentTotalScore += window.gameState.roundScores[i]; roundsPlayed++; }
+            }
+            window.gameState.score = currentTotalScore; window.updateUI();
+
+            if (window.gameState.replayQueue && window.gameState.replayQueue.length > 0) {
+                window.gameState.level = window.gameState.replayQueue.shift();
+                window.saveData(); window.loadLevelStructure(window.gameState.level);
+                if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+            else if (roundsPlayed === 7) { // 7 vòng (1 đến 7)
+                window.showGameEnd(currentTotalScore >= PASS_SCORE, currentTotalScore);
+            }
+            else {
+                window.gameState.level++;
+                window.saveData(); 
+                window.loadLevelStructure(window.gameState.level); 
+                window.updateNavButtons();
+                window.updateUI(); // <--- THÊM DÒNG NÀY ĐỂ SỐ VÒNG TỰ NHẢY
+                if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+        };
+
+        if (roundMaxScore === 0) { proceed(); return; }
+
+        $('#grading-overlay').css('display', 'flex');
+
+        window.preloadedFeedbackAudio = null;
+        let textToRead = window.cleanTextForTTS(result.message);
+        fetch("https://api.fpt.ai/hmi/tts/v5", {
+            method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead
+        }).then(res => res.json()).then(data => {
+            if (data && data.async) {
+                let noCacheUrl = data.async + (data.async.includes('?') ? '&' : '?') + 't=' + Date.now();
+                let audio = new Audio(noCacheUrl);
+                audio.oncanplaythrough = () => { window.preloadedFeedbackAudio = audio; };
+                audio.load();
+            }
+        });
+
+        setTimeout(() => {
+            $('#grading-overlay').hide();
+            let simulatedRoundsPlayed = 0;
+            let tempRoundScores = { ...window.gameState.roundScores }; tempRoundScores[window.gameState.level] = result.score;
+            for(let i = 1; i <= 7; i++) if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
+            
+            if (simulatedRoundsPlayed === 7 && (!window.gameState.replayQueue || window.gameState.replayQueue.length === 0)) {
+                proceed();
+            } else {
+                window.showNotification(result.tieuDe, result.message, result.icon, result.score, roundMaxScore, proceed);
+            }
+        }, 2000);
+    });
+
+    $('#btn-reset').click(function() {
+        $('#btn-close-alert, #btn-lam-lai').hide(); 
+        $('#btn-confirm-reset, #btn-cancel-reset').show(); 
+        $('#custom-alert-title').text("Xóa Tiến Trình 🔄");
+        $('#custom-alert-message').text("Bé có chắc chắn muốn xóa hết điểm và chơi lại từ đầu không?");
+        $('#custom-alert-icon').text("🎠");
+        $('#custom-alert-overlay').css('display', 'flex');
+    });
+
+    $('#btn-confirm-reset').off('click').on('click', function() {
+        for(let i = 1; i <= 7; i++) {
+            delete window.gameState.roundScores[i];
+            $(`#level-wrapper-${i}`).remove();
+        }
+        window.gameState.level = 1; window.gameState.score = 0; window.gameState.replayQueue = [];
+        window.updateUI(); $('#custom-alert-overlay').hide(); window.loadLevelStructure(1);
+    });
+
+    $('#btn-cancel-reset').off('click').on('click', function() { $('#custom-alert-overlay').hide(); });
+
+    $('#btn-next').off('click').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        window.stopAllMedia(); 
+        window.gameState.level++; 
+        window.saveData(); 
+        window.loadLevelStructure(window.gameState.level); 
+        window.updateNavButtons();
+        window.updateUI(); // <--- THÊM DÒNG NÀY
+        if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+    });
+
+    $('#btn-prev').off('click').on('click', function() {
+        if ($(this).hasClass('disabled')) return;
+        if (window.gameState.level > 1) {
+            window.stopAllMedia(); window.gameState.level--; window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
+            if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+        }
+    });
+});
+</script>
+</body>
+</html>
