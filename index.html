@@ -1120,8 +1120,8 @@
 
 </style>
 </head>
-<body>
 
+<audio id="bg-music" loop src="../AUDIO/game.mp3"></audio>
 <div id="welcome-screen" style="background: linear-gradient(135deg, #FFF9C4 0%, #F48FB1 100%); height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: absolute; top: 0; left: 0; width: 100%; z-index: 2000;">
     
     <h1 class="bounce-animation" style="color: #880E4F; font-weight: 900; font-size: 3.5rem; text-shadow: 2px 2px 0px #fff; margin-bottom: 25px;">
@@ -1140,10 +1140,12 @@
         Khám phá ➡️
     </button>
 </div>
-    <div id="start-screen">
-        <h1 class="game-title bounce-animation">Thế Giới<br>Bé Ngoan 🌈</h1>
-        <button id="btn-start-game" class="btn-start">Chơi Ngay! 🚀</button>
-    </div>
+<div id="start-screen">
+    <img src="../IMG/thay_u_tron_vui.png" alt="Thầy Ú Tròn" width="180" class="bounce-animation mb-3">
+    
+    <h1 class="game-title bounce-animation">Thế Giới<br>Bé Ngoan 🌈</h1>
+    <button id="btn-start-game" class="btn-start">Chơi Ngay! 🚀</button>
+</div>
 
     <div id="menu-screen">
         <h1 class="game-title1 bounce-animation">Lựa Chọn Trò Chơi</h1>
@@ -1314,9 +1316,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
 <script>
 $(document).ready(function() {
-    $('#btn-to-start-screen').click(function() {
-        $('#welcome-screen').fadeOut(500);
-    });
+$('#btn-to-start-screen').click(function() {
+    $('#welcome-screen').fadeOut(500);
+    
+    // Phát nhạc nền
+    let bgMusic = document.getElementById('bg-music');
+    if(bgMusic) {
+        bgMusic.loop = true;  // ÉP BUỘC TỰ ĐỘNG LẶP LẠI BẰNG JAVASCRIPT
+        bgMusic.volume = 0.5; // Âm lượng nền vừa phải (50%)
+        bgMusic.play().catch(e => console.log("Trình duyệt chặn autoplay"));
+    }
+});
     // =========================================================================
     // HỆ THỐNG ÂM THANH TOÀN CỤC (Không cần file mp3)
     // =========================================================================
@@ -1390,7 +1400,7 @@ function getGameContext(level) {
     if (level >= 28 && level <= 34) return { id: 6, name: "Âm nhạc", start: 28, end: 34, passScore: 4, maxScore: 7 }; 
     
     // Giữ nguyên các Game trước
-    if (level >= 23 && level <= 27) return { id: 5, name: "Trang phục", start: 23, end: 27, passScore: 35, maxScore: 53 };  
+    if (level >= 23 && level <= 27) return { id: 5, name: "Trang phục", start: 23, end: 27, passScore: 35, maxScore: 55 };  
     if (level >= 17 && level <= 22) return { id: 4, name: "Hành vi đúng sai", start: 17, end: 22, passScore: 35, maxScore: 40 }; 
     if (level >= 12 && level <= 16) return { id: 3, name: "Chữ cái a, A", start: 12, end: 16, passScore: 25, maxScore: 36 }; 
     if (level >= 6 && level <= 11) return { id: 2, name: "Tìm Bóng", start: 6, end: 11, passScore: 25, maxScore: 31 }; 
@@ -1418,8 +1428,9 @@ $('#btn-skip-test').click(function() {
     // =========================================================================
     // CẤU HÌNH API FPT.AI (TEXT TO SPEECH)
     // =========================================================================
-   const FPT_API_KEY = 'IKkwJn1eF99FfOXeZwmSv09hJ69cR4JX'; 
-    let currentAudio = null; 
+  const FPT_API_KEY = 'WvdRpzTdG6TCsmfZUPfTa2o3phgtoHgm'; 
+let currentAudio = null; 
+let audioLoaderTimer = null; // Biến kiểm soát độ trễ thông minh
     // Hàm dừng mọi video/âm thanh đang phát khi qua vòng khác
 function stopAllMedia() {
     $('audio, video').each(function() {
@@ -1440,38 +1451,127 @@ function stopAllMedia() {
           .replace(/\s+/g, " ")
           .trim();
     }
-      // Hàm gọi API FPT - CHỈ DÙNG FPT, KHÔNG DÙNG FALLBACK
-function speakInstruction(vanBan, btnElement = null, callback = null) {
+// =========================================================================
+// HỆ THỐNG ĐỌC ÂM THANH - SMART LOADER (CHỐNG KẸT KHUNG)
+// =========================================================================
+
+// 1. Biến toàn cục quản lý bộ đếm thời gian
+window.audioLoaderTimer = null;
+
+// 2. Hàm dọn dẹp và TẮT KHUNG TUYỆT ĐỐI
+window.forceHideAudioLoader = function() {
+    // Hủy ngay lệnh hiện khung (nếu đang đếm ngược chờ hiện)
+    if (window.audioLoaderTimer) {
+        clearTimeout(window.audioLoaderTimer);
+        window.audioLoaderTimer = null;
+    }
+    // Ẩn khung ngay lập tức nếu nó đang hiện trên màn hình
+    let loader = document.getElementById('audio-loading-overlay');
+    if (loader && loader.style.display !== 'none') {
+        loader.style.display = 'none';
+    }
+};
+
+// 3. HÀM GỌI API FPT
+function speakInstruction(vanBan, btnElement = null, callback = null, useLoader = false) {
     const textToRead = cleanTextForTTS(vanBan);
-    if (!textToRead) return;
+    if (!textToRead) { if(callback) callback(); return; }
 
     if (btnElement) $(btnElement).addClass('playing');
 
+    // CHÌA KHÓA Ở ĐÂY: Không hiện khung ngay! Chờ 400ms. 
+    // Nếu mạng load nhanh hơn 400ms, khung sẽ bị hủy trước khi kịp hiện ra.
+    if (useLoader) {
+        window.forceHideAudioLoader(); // Dọn dẹp tàn dư
+        window.audioLoaderTimer = setTimeout(() => {
+            let loader = document.getElementById('audio-loading-overlay');
+            if (loader) loader.style.display = 'flex';
+        }, 400); // Khoảng trễ 400ms để đảm bảo mượt mà
+    }
+
+    let bgMusic = document.getElementById('bg-music');
+    if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+
     fetch("https://api.fpt.ai/hmi/tts/v5", {
         method: "POST",
-        headers: { "api-key": FPT_API_KEY, "voice": "banmai", "speed": "0" },
+        headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" },
         body: textToRead
     })
     .then(res => res.json())
     .then(data => {
         if (data && data.async) {
-            const audio = new Audio(data.async);
-            audio.play();
-            audio.onended = () => {
-                if(btnElement) $(btnElement).removeClass('playing');
-                if(callback) callback();
-            };
+            // Nhớ truyền 'useLoader' xuống hàm dưới
+            checkAndPlayAudio(data.async, 0, btnElement, callback, useLoader);
+        } else {
+            window.forceHideAudioLoader();
+            if(callback) callback();
         }
+    }).catch(e => {
+        window.forceHideAudioLoader();
+        if(callback) callback();
     });
 }
 
+// 4. HÀM PHÁT ÂM THANH
+function checkAndPlayAudio(url, retry, btnElement, callback, useLoader) {
+    if(retry > 15) { 
+        if(btnElement) $(btnElement).removeClass('playing');
+        window.forceHideAudioLoader();
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5;
+        if(callback) callback();
+        return;
+    }
+    
+    let noCacheUrl = url + (url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+    let audio = new Audio(noCacheUrl);
+    
+    // CỤM SỰ KIỆN TẮT KHUNG: Bất cứ khi nào file âm thanh "động đậy", hủy khung ngay!
+    const onAudioReady = () => {
+        window.forceHideAudioLoader();
+    };
+
+    audio.addEventListener('loadeddata', onAudioReady);
+    audio.addEventListener('canplay', onAudioReady);
+    audio.addEventListener('playing', onAudioReady);
+    audio.addEventListener('timeupdate', () => {
+        if (audio.currentTime > 0) onAudioReady();
+    });
+
+    audio.oncanplaythrough = function() {
+        onAudioReady();
+        currentAudio = audio;
+        
+        let playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(e => {
+                console.warn("Trình duyệt chặn phát âm thanh:", e);
+                onAudioReady(); // Chặn thì cũng phải tắt khung
+            });
+        }
+    };
+
+    audio.onended = function() {
+        if(btnElement) $(btnElement).removeClass('playing');
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; 
+        if(callback) callback();
+    };
+
+    audio.onerror = function() {
+        setTimeout(() => checkAndPlayAudio(url, retry + 1, btnElement, callback, useLoader), 1000);
+    };
+    
+    audio.load();
+}
 // ================= HỆ THỐNG ĐIỀU HƯỚNG TỐI ƯU =================
+// Thay thế khối sự kiện này
 $('#btn-close-alert').off('click').on('click', function() { 
     stopAllMedia();
     gameState.level++;
     saveData();
     loadLevelStructure(gameState.level);
-    if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction);
+    if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction, null, null, true);
 });
 
 $('#btn-next').off('click').on('click', function() {
@@ -1480,7 +1580,7 @@ $('#btn-next').off('click').on('click', function() {
     gameState.level++;
     saveData();
     loadLevelStructure(gameState.level);
-    if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction);
+    if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction, null, null, true);
 });
 
 $('#btn-prev').off('click').on('click', function() {
@@ -1492,7 +1592,7 @@ $('#btn-prev').off('click').on('click', function() {
         gameState.level--;
         saveData();
         loadLevelStructure(gameState.level);
-        if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction);
+        if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction, null, null, true);
     }
 });
 
@@ -2512,6 +2612,11 @@ $('#btn-back-from-game6').click(function() {
         const matchMap = { 1: 8, 2: 10, 3: 12, 4: 7, 5: 9, 6: 11 };
 
         $container.append(`
+        <h3 class="mb-3 fw-bold text-center" style="color: #00b894;">✨ Vòng 3: Nối Bóng Bạn Nhỏ</h3>
+        <div class="d-flex align-items-center justify-content-center mb-4">
+            <h5 class="text-secondary mb-0 text-center">Bé hãy kéo con vật vào đúng cái bóng của nó nhé!</h5>
+            <button class="btn-speaker" data-text="Bé hãy kéo con vật vào đúng cái bóng của nó nhé!" title="Nghe lại">🔊</button>
+        </div>
             <div class="g2-grid-3x3 mb-5 m-0 mx-auto" id="animal-pool">
                 ${[1,2,3,4,5,6].map(i => `
                     <div class="animal-drag" data-val="${i}">
@@ -2599,6 +2704,10 @@ $('#btn-back-from-game6').click(function() {
 
     $container.append(`
         <h3 class="mb-2 fw-bold text-center" style="color: #0984e3;">✨ Vòng 9: Chọn Hình Đúng</h3>
+    <div class="d-flex align-items-center justify-content-center mb-4">
+        <h5 class="text-secondary mb-0 text-center">Bé hãy nhìn hình bên trái và bấm chọn hình đúng ở bên phải nhé!</h5>
+        <button class="btn-speaker" data-text="Bé hãy nhìn hình bên trái và bấm chọn hình đúng ở bên phải nhé!" title="Nghe lại">🔊</button>
+    </div>
         <div class="mx-auto" style="max-width: 750px;">
             ${questions.map((q, qIdx) => `
                 <div class="l2-question-box align-items-center py-3 px-4" data-q="${qIdx + 1}" style="border-radius: 20px; margin-bottom: 20px;">
@@ -2658,6 +2767,10 @@ $('#btn-back-from-game6').click(function() {
 
         $container.append(`
             <h3 class="mb-4 fw-bold text-center" style="color: #6c5ce7;">🧩 Vòng 10: Tìm Bóng Bạn Nhỏ</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+    <h5 class="text-secondary mb-0 text-center">Bé hãy kéo các con vật vào đúng bóng của chúng trên bức tranh nhé!</h5>
+    <button class="btn-speaker" data-text="Bé hãy kéo các con vật vào đúng bóng của chúng trên bức tranh nhé!" title="Nghe lại">🔊</button>
+</div>
             <div class="puzzle-container mb-4" style="position: relative; max-width: 800px; margin: 0 auto;">
                 <img src="../IMG/10.png" class="puzzle-bg" style="width: 100%; height: auto; display: block;">
                 <div class="puzzle-slot" data-val="1" style="position: absolute; top: 20%; left: 24%; width: 19%; height: 27%;"></div>    
@@ -2749,8 +2862,9 @@ $('#btn-back-from-game6').click(function() {
         $container.append(`
             <h3 class="mb-4 fw-bold text-center" style="color: #0984e3;">✨ Vòng Cuối: Thử Thách Thông Minh</h3>
             <div class="d-flex align-items-center justify-content-center mb-4">
-                <h5 class="text-secondary mb-0">Bé hãy chọn 1 hình đúng nhất với bức tranh nhé!</h5>
-            </div>
+    <h5 class="text-secondary mb-0">Bé hãy chọn 1 hình đúng nhất với bức tranh nhé!</h5>
+    <button class="btn-speaker" data-text="Bé hãy chọn hình đúng nhất nhé!" title="Nghe lại">🔊</button>
+</div>
             
             <div class="row align-items-center" style="max-width: 800px; margin: 0 auto;">
                 <div class="col-12 col-md-6 mb-4 mb-md-0">
@@ -2827,7 +2941,7 @@ $('#btn-back-from-game6').click(function() {
             $('#item-pants').css({ 'transform': 'scale(1)' });
             $(this).css({ 'transform': 'scale(1.1)', 'border-style': 'solid', 'border-color': '#2ed573' });
             
-            let msg = "Đây là chữ a thường. Tiếp theo, bé hãy nhấn vào cái quần nhé!";
+            let msg = "Đây là chữ A hoa. Tiếp theo, bé hãy nhấn vào cái quần nhé!";
             $('#l12-instruction').text(msg);
             speakInstruction(msg);
 
@@ -2842,7 +2956,7 @@ $('#btn-back-from-game6').click(function() {
                 // GẮN CLASS COMPLETED ĐỂ KIỂM TRA CHUẨN 100% TRÊN MỌI TRÌNH DUYỆT
                 $(this).addClass('completed');
                 
-                let msg = "Đây là chữ A hoa.";
+                let msg = "Đây là chữ a thường.";
                 $('#l12-instruction').text(msg);
                 
                 // Đọc xong âm thanh mới tự động gọi chấm điểm
@@ -3552,7 +3666,7 @@ $('#btn-back-from-game6').click(function() {
             score: score, // Phải trả về score để hệ thống Game 3 ghi nhận
             tieuDe: score === 10 ? "Cảm ơn bé đã giúp bạn cá!" : "Bạn cá đã về được hồ!",
             icon: score === 10 ? "🏆" : "🐠",
-            message: `Bé đã nối được đường về bể được 10/10 sao.`
+            message: `Bé đã nối được đường về bể và nhận được ${score}/10 sao.`        
         };
     }
 },
@@ -3561,8 +3675,10 @@ $('#btn-back-from-game6').click(function() {
     render: function($container) {
         $container.append(`
             <h3 class="mb-3 fw-bold text-center" style="color: #686de0;">✨ Vòng 1: Bé Cùng Quan Sát</h3>
-            
-            <h4 class="mb-3 fw-bold text-center" style="color: #ff9f43;">Bé hãy nhận biết hành vi của 2 bạn nhỏ là đúng hay sai</h4>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+            <h5 class="text-secondary mb-0 text-center">Bé hãy xem video sau và chọn xem hành vi trên là đúng hay sai nhé!</h5>
+            <button class="btn-speaker" data-text="Bé hãy xem video sau và chọn xem hành vi trên là đúng hay sai nhé!" title="Nghe lại">🔊</button>
+            </div>
 
             <div class="text-center mb-4">
                 <video id="l17-video" width="100%" controls playsinline style="max-width: 500px; border-radius: 20px; border: 5px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
@@ -3588,7 +3704,11 @@ $('#btn-back-from-game6').click(function() {
         speakInstruction(instructorText, null, function() {
             $('#l17-msg').text("Mời bé xem video nhé!");
             let video = document.getElementById('l17-video');
-            
+            let bgMusic = document.getElementById('bg-music');
+
+            video.onplay = function() { if(bgMusic) bgMusic.pause(); };
+            video.onpause = function() { if(bgMusic) bgMusic.play(); };
+
             // XỬ LÝ LỖI TRÌNH DUYỆT CHẶN VIDEO
             let playPromise = video.play();
             if (playPromise !== undefined) {
@@ -3597,8 +3717,8 @@ $('#btn-back-from-game6').click(function() {
                     $('#l17-msg').text("Bé hãy bấm nút Play (▶️) để xem video nhé!");
                 });
             }
-
             video.onended = function() {
+                if(bgMusic) bgMusic.play(); // Bật lại nhạc khi xem xong
                 $('#l17-msg').text("Bây giờ bé hãy chọn đáp án đúng hoặc sai ở bên dưới nhé!");
                 speakInstruction("Bây giờ bé hãy chọn đáp án đúng hoặc sai ở bên dưới nhé!");
             };
@@ -3693,6 +3813,10 @@ $('#btn-back-from-game6').click(function() {
 
         $container.append(`
             <h3 class="mb-4 fw-bold text-center" style="color: #d63031;">✨ Vòng 3: Gạch Chéo Hành Vi Sai</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+    <h5 class="text-secondary mb-0 text-center">Bé hãy quan sát và vẽ gạch chéo lên hành vi sai nhé!</h5>
+    <button class="btn-speaker" data-text="Bé hãy quan sát các hành vi dưới đây và vẽ gạch chéo lên hành vi sai nhé!" title="Nghe lại">🔊</button>
+</div>
             <div class="row mx-auto" style="max-width: 800px;">
                 ${items.map(item => `
                     <div class="col-6 mb-4">
@@ -3827,6 +3951,10 @@ $('#btn-back-from-game6').click(function() {
     render: function($container) {
         $container.append(`
             <h3 class="mb-3 fw-bold text-center" style="color: #686de0;">✨ Vòng 5: Đúng hay Sai?</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+    <h5 class="text-secondary mb-0 text-center">Bé hãy chọn dấu V cho hành vi đúng và dấu X cho hành vi sai nhé!</h5>
+    <button class="btn-speaker" data-text="Bé hãy chọn dấu V cho hành vi đúng và dấu X cho hành vi sai nhé!" title="Nghe lại">🔊</button>
+</div>
             <div class="row mx-auto" style="max-width: 900px;">
                 ${[1, 2, 3, 4, 5, 6, 7, 8].map(i => `
                     <div class="col-md-6 col-12 mb-4">
@@ -3878,7 +4006,10 @@ $('#btn-back-from-game6').click(function() {
 
         $container.append(`
             <h3 class="mb-3 fw-bold text-center" style="color: #6c5ce7;">✨ Vòng 6: Phân Loại Hành Vi</h3>
-            
+            <div class="d-flex align-items-center justify-content-center mb-4">
+    <h5 class="text-secondary mb-0 text-center">Kéo các hành vi đúng vào ô Mặt Cười và hành vi sai vào ô Mặt Buồn nhé!</h5>
+    <button class="btn-speaker" data-text="Bé hãy kéo các hành vi đúng vào ô Mặt Cười và hành vi sai vào ô Mặt Buồn nhé!" title="Nghe lại">🔊</button>
+</div>
             <div class="l22-container mb-4">
                 <div class="l22-board" data-type="true">
                     <div class="l22-board-title">Hành Vi Đúng 🙂</div>
@@ -3959,7 +4090,10 @@ $('#btn-back-from-game6').click(function() {
     render: function($container) {
         $container.append(`
             <h3 class="mb-3 fw-bold text-center" style="color: #e67e22;">🌞 Vòng 1: Thời Tiết & Trang Phục 🌧️</h3>
-            
+            <div class="d-flex align-items-center justify-content-center mb-4">
+    <h5 class="text-secondary mb-0 text-center">Bé hãy nối trang phục và đồ dùng phù hợp với thời tiết nắng hoặc mưa nhé!</h5>
+    <button class="btn-speaker" data-text="Bé hãy nối trang phục và đồ dùng phù hợp với thời tiết nắng hoặc mưa nhé!" title="Nghe lại">🔊</button>
+</div>
             <div id="l23-wrapper" class="row align-items-center justify-content-center mx-auto" style="position: relative; min-height: 450px; max-width: 900px; padding: 20px 0;">
                 
                 <canvas id="l23-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none;"></canvas>
@@ -4157,7 +4291,7 @@ $('#btn-back-from-game6').click(function() {
         $(window).off('resize.l23');
 
         // Đáp án chuẩn (1: Nắng, 2: Mưa)
-        const correctMap = { 1:2, 2:2, 3:1, 4:1, 5:2, 6:2, 7:1, 8:1, 9:1, 10:1 };
+        const correctMap = { 1:2, 2:2, 3:1, 4:1, 5:2, 6:2, 7:1, 8:1};
         let score = 0;
 
         for (let id in correctMap) {
@@ -4457,8 +4591,9 @@ $('#btn-back-from-game6').click(function() {
         $container.append(`
             <h3 class="mb-3 fw-bold text-center" style="color: #00b894;">🌸 Vòng 4: Bốn Mùa Yêu Thương ⛄</h3>
             <div class="d-flex align-items-center justify-content-center mb-4">
-                <h5 class="text-secondary mb-0 text-center">Kéo đồ vật vào phù hợp với thời tiết nhé!</h5>
-            </div>
+    <h5 class="text-secondary mb-0 text-center">Kéo đồ vật vào phù hợp với thời tiết nhé!</h5>
+    <button class="btn-speaker" data-text="Bé hãy kéo các trang phục và vật dụng xung quanh vào đúng bức tranh mùa của nó nhé!" title="Nghe lại">🔊</button>
+</div>
 
             <div id="l26-game-container" style="max-width: 900px; margin: 0 auto;">
                 ${groups.map(g => `
@@ -4841,6 +4976,7 @@ $('#btn-back-from-game6').click(function() {
             <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 1: Nghe Đoán Bài Hát 🎼</h3>
             <div class="d-flex align-items-center justify-content-center mb-4">
                 <h5 class="text-secondary mb-0 text-center">Bé hãy bấm vào hình cái loa để phát đoạn nhạc nhé!</h5>
+                <button class="btn-speaker" data-text="Nghe đoán bài hát, bé bấm vào hình cái loa để phát đoạn nhạc nhé!" title="Nghe lại">🔊</button>
             </div>
 
             <div class="text-center mb-4">
@@ -4961,8 +5097,10 @@ $('#btn-back-from-game6').click(function() {
         $container.append(`
             <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 2: Nghe Đoán Tên Bài Hát 🎼</h3>
             <div class="d-flex align-items-center justify-content-center mb-4">
-                <h5 class="text-secondary mb-0 text-center">Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!</h5>
-            </div>
+        <div class="d-flex align-items-center justify-content-center mb-4">
+            <h5 class="text-secondary mb-0 text-center">Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!</h5>
+            <button class="btn-speaker" data-text="Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!" title="Nghe lại">🔊</button>
+        </div>
 
             <div class="music-player-wrapper mx-auto mb-5">
                 <button type="button" class="btn-music-speaker" id="speaker-29">🔊</button>
@@ -5067,6 +5205,7 @@ $('#btn-back-from-game6').click(function() {
             <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 3: Đoán Nhân Vật 👨‍👩‍👧</h3>
             <div class="d-flex align-items-center justify-content-center mb-5">
                 <h5 class="text-secondary mb-0 text-center">Bé hãy nghe đoạn nhạc và đoán xem bài hát nhắc đến ai nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc và đoán nhân vật trong bài hát" title="Nghe lại">🔊</button>
             </div>
 
             <div class="music-player-wrapper mx-auto mb-5">
@@ -5175,8 +5314,9 @@ $('#btn-back-from-game6').click(function() {
     render: function($container) {
         $container.append(`
             <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 4: Hát Tiếp Khúc Ca 🎤</h3>
-            <div class="d-flex align-items-center justify-content-center mb-5">
+           <div class="d-flex align-items-center justify-content-center mb-5">
                 <h5 class="text-secondary mb-0 text-center">Bé nghe đoạn nhạc rồi chọn câu hát tiếp theo nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc rồi chọn câu hát tiếp theo nhé!" title="Nghe lại">🔊</button>
             </div>
 
             <div class="music-player-wrapper mx-auto mb-5">
@@ -5389,6 +5529,7 @@ $('#btn-back-from-game6').click(function() {
             <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 6: Giai Điệu Quen Thuộc 🎹</h3>
             <div class="d-flex align-items-center justify-content-center mb-4">
                 <h5 class="text-secondary mb-0 text-center">Bé nghe nhạc không lời và đoán xem đó là bài hát nào nhé!</h5>
+                <button class="btn-speaker" data-text="Bé nghe nhạc không lời và đoán xem đó là bài hát nào nhé!" title="Nghe lại">🔊</button>
             </div>
 
             <div class="music-player-wrapper mx-auto mb-5">
@@ -5493,7 +5634,8 @@ $('#btn-back-from-game6').click(function() {
         $container.append(`
             <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 7: Thử Thách Cuối Cùng 🏆</h3>
             <div class="d-flex align-items-center justify-content-center mb-4">
-                <h5 class="text-secondary mb-0 text-center">Bé hãy nghe đoạn nhạc và chọn đáp án có đủ Tên, Hình ảnh và Chủ đề đúng nhất nhé!</h5>
+                <h5 class="text-secondary mb-0 text-center">Nghe nhạc và chọn đáp án có đủ Tên, Hình ảnh và Chủ đề nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc ngắn và đoán tên bài hát, hình ảnh của bài hát và chủ đề của bài hát nhé" title="Nghe lại">🔊</button>
             </div>
 
             <div class="music-player-wrapper mx-auto mb-5">
@@ -5749,16 +5891,24 @@ $('#btn-back-from-game6').click(function() {
     $('#btn-confirm-reset, #btn-cancel-reset').hide();
     $('#custom-alert-title').prev('img').remove();
     
+    let isGood = (score > total / 2) || (score === total && total > 0) || total === 0;
+    
     // Hình ảnh thầy giáo
-    let gifUrl = (score === total && total > 0) || total === 0 ? '../IMG/thay_u_tron_vui.png' : ((score >= total/2) ? '../IMG/thay_u_tron_binh_thuong.png' : '../IMG/thay_u_tron_buon.png');
+    let gifUrl = isGood ? '../IMG/thay_u_tron_vui.png' : ((score === total/2) ? '../IMG/thay_u_tron_binh_thuong.png' : '../IMG/thay_u_tron_buon.png');
     $('#custom-alert-title').before(`<img src="${gifUrl}" width="80" class="mb-2 teacher-bounce">`);
     
     $('#custom-alert-title').text(title);
     $('#custom-alert-message').text(message);
     $('#custom-alert-icon').text(icon);
     
-    let isPass = (total === 0) || (score >= total * 0.6);
+    // LOGIC ÂM THANH: ĐÚNG TING TING, SAI BÓP BÓP
+    if (isGood) {
+        SoundFX.playWin(); 
+    } else {
+        SoundFX.playLose(); 
+    }
     
+    let isPass = (total === 0) || (score >= total * 0.6);
     if (!isPass) {
         $('#btn-close-alert').hide(); 
         $('#btn-lam-lai').show();      
@@ -5770,20 +5920,27 @@ $('#btn-back-from-game6').click(function() {
         $('#btn-lam-lai').hide();
     }
 
-    // HIỂN THỊ BẢNG
     $('#custom-alert-overlay').css('display', 'flex');
-    speakInstruction(message);
 
-    // SỬA LỖI: Hủy mọi sự kiện cũ trước khi gán sự kiện mới
+    // ĐỌC LỜI KHEN (Có tải trước nếu đã load)
+    if (window.preloadedFeedbackAudio) {
+        let bgMusic = document.getElementById('bg-music');
+        if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.1;
+        
+        currentAudio = window.preloadedFeedbackAudio;
+        currentAudio.play().catch(e => console.log("Không thể tự phát nhạc"));
+        currentAudio.onended = function() { if (bgMusic && !bgMusic.paused) bgMusic.volume = 0.5; };
+        window.preloadedFeedbackAudio = null;
+    } else {
+        speakInstruction(message);
+    }
+
     $('#btn-close-alert').off('click').on('click', function() {
-        // 1. Dừng âm thanh đang đọc (nếu có)
         if (currentAudio) {
             currentAudio.pause();
             currentAudio = null;
         }
-        // 2. Ẩn bảng
         $('#custom-alert-overlay').hide();
-        // 3. Thực thi callback để chuyển vòng
         if (typeof callback === 'function') callback();
     });
 }
@@ -5798,93 +5955,70 @@ $('#btn-replay-round').off('click').on('click', function() {
     $(`#level-wrapper-${gameState.level}`).remove(); 
     loadLevelStructure(gameState.level);
 });
-// --- LOGIC CHẤM ĐIỂM VÀ CHUYỂN VÒNG TỐI ƯU ---
-$('#btn-submit').click(function() {
+window.preloadedFeedbackAudio = null; // Biến lưu trữ âm thanh tải trước
+
+$('#btn-submit').off('click').on('click', function() {
     let result = LEVEL_MODULES[gameState.level].check();
     let ctx = getGameContext(gameState.level);
-    let roundMaxScore = MAX_SCORES[gameState.level];
-    if (roundMaxScore === undefined) roundMaxScore = 5;
+    let roundMaxScore = MAX_SCORES[gameState.level] || 5;
 
-    // --- HÀM THỰC THI CHUYỂN VÒNG (PROCEED) ---
     let proceed = function() {
         stopAllMedia();
-        // 1. Lưu điểm (Vòng học tập thì lưu 0 điểm)
-        if (roundMaxScore > 0) {
-            gameState.roundScores[gameState.level] = result.score;
-        } else {
-            gameState.roundScores[gameState.level] = 0; 
-        }
-
-        // 2. Tính tổng điểm
-        let currentTotalScore = 0;
-        let roundsPlayed = 0;
+        gameState.roundScores[gameState.level] = roundMaxScore > 0 ? result.score : 0;
+        
+        let currentTotalScore = 0; let roundsPlayed = 0;
         for(let i = ctx.start; i <= ctx.end; i++) {
-            if(gameState.roundScores[i] !== undefined) {
-                currentTotalScore += gameState.roundScores[i];
-                roundsPlayed++;
-            }
+            if(gameState.roundScores[i] !== undefined) { currentTotalScore += gameState.roundScores[i]; roundsPlayed++; }
         }
-        gameState.score = currentTotalScore;
-        updateUI();
+        gameState.score = currentTotalScore; updateUI();
 
-        // 3. Phân luồng điều hướng
         if (gameState.replayQueue && gameState.replayQueue.length > 0) {
-            // Trường hợp A: Đang trong quá trình chơi lại các vòng sai
             gameState.level = gameState.replayQueue.shift();
-            saveData();
-            loadLevelStructure(gameState.level);
-            if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction);
+            saveData(); loadLevelStructure(gameState.level);
+            if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction, null, null, true); // True = Bật Khung Load
         }
         else if (roundsPlayed === (ctx.end - ctx.start + 1)) {
-            // Trường hợp B: Đã chơi đủ vòng -> Mở bảng Kết thúc Game
-            if (currentTotalScore >= ctx.passScore) {
-                showGameEnd(true, currentTotalScore, ctx);
-            } else {
-                showGameEnd(false, currentTotalScore, ctx);
-            }
+            showGameEnd(currentTotalScore >= ctx.passScore, currentTotalScore, ctx);
         }
         else {
-            // Trường hợp C: Qua vòng tiếp theo bình thường
             gameState.level++;
-            saveData();
-            loadLevelStructure(gameState.level);
-            updateNavButtons();
-            if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction);
+            saveData(); loadLevelStructure(gameState.level); updateNavButtons();
+            if(LEVEL_MODULES[gameState.level]) speakInstruction(LEVEL_MODULES[gameState.level].instruction, null, null, true); // True = Bật Khung Load
         }
     };
 
-    // ==========================================
-    // KIỂM TRA ĐIỀU KIỆN ĐỂ BỎ QUA BẢNG THÔNG BÁO
-    // ==========================================
+    if (roundMaxScore === 0) { proceed(); return; }
 
-    // ĐIỀU KIỆN 1: Nếu là vòng học tập (Vòng 12 - 0 điểm)
-    // -> Bỏ qua hiệu ứng Thầy giáo chấm điểm, qua màn ngay lập tức
-    if (roundMaxScore === 0) {
-        proceed();
-        return;
-    }
-
-    // ĐIỀU KIỆN 2: Nếu là vòng bình thường -> Hiện thầy giáo đang chấm điểm...
     $('#grading-overlay').css('display', 'flex');
+
+    // TẢI TRƯỚC API LỜI KHEN TRONG LÚC CHỜ 2 GIÂY CHẤM ĐIỂM
+    window.preloadedFeedbackAudio = null;
+    let textToRead = cleanTextForTTS(result.message);
+    fetch("https://api.fpt.ai/hmi/tts/v5", {
+        method: "POST", headers: { "api-key": FPT_API_KEY, "voice": "leminh", "speed": "-0.5" }, body: textToRead
+    }).then(res => res.json()).then(data => {
+        if (data && data.async) {
+            let retry = 0;
+            let tryLoad = function() {
+                if (retry > 15) return;
+                let audio = new Audio(data.async + '&t=' + Date.now());
+                audio.oncanplaythrough = () => { window.preloadedFeedbackAudio = audio; };
+                audio.onerror = () => { retry++; setTimeout(tryLoad, 1000); };
+                audio.load();
+            };
+            tryLoad();
+        }
+    });
+
     setTimeout(() => {
         $('#grading-overlay').hide();
-
-        // Tính toán giả định xem sau khi lưu điểm thì có phải là kết thúc Game không
-        let tempRoundScores = { ...gameState.roundScores };
-        tempRoundScores[gameState.level] = result.score;
         let simulatedRoundsPlayed = 0;
-        for(let i = ctx.start; i <= ctx.end; i++) {
-            if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
-        }
+        let tempRoundScores = { ...gameState.roundScores }; tempRoundScores[gameState.level] = result.score;
+        for(let i = ctx.start; i <= ctx.end; i++) if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
         
-        // Cờ kiểm tra: Đã chơi đủ vòng VÀ không còn vòng nào trong hàng đợi chơi lại
-        let willShowGameEnd = (simulatedRoundsPlayed === (ctx.end - ctx.start + 1)) && (!gameState.replayQueue || gameState.replayQueue.length === 0);
-
-        if (willShowGameEnd) {
-            // Nếu là vòng chốt sổ -> Gọi thẳng hàm qua màn (Chỉ hiện Game-End-Overlay)
+        if (simulatedRoundsPlayed === (ctx.end - ctx.start + 1) && (!gameState.replayQueue || gameState.replayQueue.length === 0)) {
             proceed();
         } else {
-            // Nếu chưa phải vòng cuối -> Hiện popup "Tiếp tục" bình thường
             showNotification(result.tieuDe, result.message, result.icon, result.score, roundMaxScore, proceed);
         }
     }, 2000);
@@ -6015,5 +6149,4 @@ window.startReplay = function() {
     <img id="teacher-gif" src="../IMG/thay_u_tron_diem.png" width="150" class="teacher-bounce">
     <h2 class="mt-4 fw-bold" style="color: #6c5ce7;">Thầy Ú Tròn đang chấm điểm...</h2>
 </div>
-</body>
 </html>
