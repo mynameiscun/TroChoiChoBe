@@ -364,77 +364,89 @@ window.startReplay = function() {
 // DỮ LIỆU CÁC VÒNG CỦA GAME 1
 // =========================================================================
 window.LEVEL_MODULES = {
-   1: {
+1: {
     instruction: "Hãy nối con số ở cột trái với hình ảnh số lượng tương ứng ở cột phải nhé!",
     render: function($container) {
-        // Đưa biến l1_userConnections lên làm biến global nội bộ của file để không bị lỗi undefine
         window.l1_userConnections = []; 
         
         $container.append(`
             <h3 class="mb-2 fw-bold text-center" style="color: #ff4757;">✨ Vòng 1: Toán Học Vui Nhộn</h3>
-            <div class="d-flex align-items-center justify-content-center mb-4">
-                <h5 class="text-secondary mb-0">Hãy nối con số ở cột trái với hình ảnh số lượng tương ứng nhé!</h5>
+            <div class="d-flex align-items-center justify-content-center mb-3">
+                <h5 class="text-secondary mb-0">Hãy nối con số với hình ảnh số lượng tương ứng nhé!</h5>
                 <button class="btn-speaker" data-text="Hãy nối con số ở cột trái với hình ảnh số lượng tương ứng ở cột phải nhé!" title="Nghe lại hướng dẫn">🔊</button>
             </div>
             
-            <div class="d-flex justify-content-center align-items-stretch mx-auto l1-responsive-container">
-                
-                <div class="d-flex flex-column justify-content-between align-items-center l1-col">
-                    <div class="l1-row-item"><img src="IMG/1.jpg" alt="Số 1"></div>
-                    <div class="l1-row-item"><img src="IMG/2.jpg" alt="Số 2"></div>
-                    <div class="l1-row-item"><img src="IMG/3.jpg" alt="Số 3"></div>
-                    <div class="l1-row-item"><img src="IMG/4.jpg" alt="Số 4"></div>
-                    <div class="l1-row-item"><img src="IMG/5.jpg" alt="Số 5"></div>
+            <div class="l1-board mx-auto">
+                <div class="l1-col-left">
+                    <div class="l1-item"><img src="IMG/1.jpg" alt="1"></div>
+                    <div class="l1-item"><img src="IMG/2.jpg" alt="2"></div>
+                    <div class="l1-item"><img src="IMG/3.jpg" alt="3"></div>
+                    <div class="l1-item"><img src="IMG/4.jpg" alt="4"></div>
+                    <div class="l1-item"><img src="IMG/5.jpg" alt="5"></div>
                 </div>
                 
-                <div id="l1-canvas-wrapper">
-                    <canvas id="l1-canvas" class="draw-canvas"></canvas>
+                <div class="l1-col-center" id="l1-canvas-wrapper">
+                    <canvas id="l1-canvas"></canvas>
                 </div>
 
-                <div class="d-flex flex-column justify-content-between align-items-center l1-col">
-                    <div class="l1-row-item"><img src="IMG/buom.jpg" alt="Bướm"></div>
-                    <div class="l1-row-item"><img src="IMG/sao.jpg" alt="Sao"></div>
-                    <div class="l1-row-item"><img src="IMG/tao.jpg" alt="Táo"></div>
-                    <div class="l1-row-item"><img src="IMG/cay.jpg" alt="Cây"></div>
-                    <div class="l1-row-item"><img src="IMG/vit.jpg" alt="Vịt"></div>
+                <div class="l1-col-right">
+                    <div class="l1-item"><img src="IMG/buom.jpg" alt="Bướm"></div>
+                    <div class="l1-item"><img src="IMG/sao.jpg" alt="Sao"></div>
+                    <div class="l1-item"><img src="IMG/tao.jpg" alt="Táo"></div>
+                    <div class="l1-item"><img src="IMG/cay.jpg" alt="Cây"></div>
+                    <div class="l1-item"><img src="IMG/vit.jpg" alt="Vịt"></div>
                 </div>
             </div>
 
             <style>
-                /* CSS Tự Động Thu Phóng Cho Game 1 */
-                .l1-responsive-container {
-                    width: 100%; max-width: 500px; /* Khóa độ rộng max để trên PC không bị quá to */
-                    height: 65vh; max-height: 500px; min-height: 380px; 
-                    gap: 10px; /* Khoảng cách giữa 3 cột cực kỳ sít nhau */
+                /* CSS TỐI ƯU HÓA KHÔNG GIAN CHO ĐIỆN THOẠI */
+                .l1-board {
+                    width: 100%;
+                    max-width: 420px; /* Độ rộng đẹp nhất cho cả Mobile lẫn PC */
+                    aspect-ratio: 3 / 4; /* LUÔN GIỮ KHUNG CHỮ NHẬT NÀY - BÍ QUYẾT CHỐNG LỆCH LAYOUT */
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: stretch;
+                    padding: 10px;
+                    border: 4px solid #ffda79;
+                    border-radius: 20px;
+                    background: #fff;
+                    box-sizing: border-box;
+                    touch-action: none; /* Khóa cuộn trang tuyệt đối khi đang chơi */
                 }
-                .l1-col {
-                    flex: 0 0 22%; /* 2 Cột chiếm 22% chiều rộng */
-                    max-width: 90px;
+                .l1-col-left, .l1-col-right {
+                    width: 22%; /* Cột trái/phải chiếm 22% chiều rộng */
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
                 }
-                #l1-canvas-wrapper {
-                    flex-grow: 1; /* Canvas chiếm trọn toàn bộ phần không gian ở giữa */
+                .l1-col-center {
+                    width: 52%; /* Canvas chiếm 52% ở giữa, KHÔNG CÒN KHE HỞ */
                     position: relative;
                 }
                 #l1-canvas {
-                    position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 15px;
+                    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                    cursor: crosshair;
                 }
-                .l1-row-item {
+                .l1-item {
                     width: 100%;
-                    aspect-ratio: 1 / 1; /* Tự động bóp thành hình vuông */
-                    height: auto;
+                    aspect-ratio: 1; /* Tự ép thành hình vuông hoàn hảo */
+                    border: 2px dashed #eccc68;
+                    border-radius: 12px;
+                    background: #fffdf6;
                     display: flex; align-items: center; justify-content: center;
-                    border: 3px dashed #eccc68; border-radius: 15px; background-color: #fffdf6;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
                 }
-                .l1-row-item img { max-width: 80%; max-height: 80%; object-fit: contain; pointer-events: none; }
+                .l1-item img {
+                    max-width: 80%; max-height: 80%; object-fit: contain;
+                    pointer-events: none; user-select: none;
+                }
             </style>
         `);
 
-        // Khởi tạo Canvas và Logic nối dây (Đã fix Responsive)
         setTimeout(() => {
             const canvas = document.getElementById('l1-canvas');
             if(!canvas) return;
-            const $wrapper = $('#l1-canvas-wrapper');
+            const wrapper = document.getElementById('l1-canvas-wrapper');
             const ctx = canvas.getContext('2d');
             
             let yPositions = [];
@@ -443,48 +455,48 @@ window.LEVEL_MODULES = {
             let isDrawing = false, activeStartIdx = null, currentMouseX = 0, currentMouseY = 0;
 
             function resizeCanvas() {
-                // Ép canvas nhận độ phân giải thực theo px để nét vẽ không bị mờ và lệch
-                canvas.width = $wrapper.width(); 
-                canvas.height = $wrapper.height();
+                // Cập nhật độ phân giải Canvas bằng với kích thước hiển thị CSS
+                canvas.width = wrapper.clientWidth; 
+                canvas.height = wrapper.clientHeight;
                 rightX = canvas.width - 15;
 
-                // Tính toán lại tọa độ tâm của các hình vuông (Y) mỗi khi màn hình bị co giãn
+                // Đo tọa độ các khối hình vuông để vẽ chấm tròn nối dây
                 yPositions = [];
-                const canvasOffsetTop = $(canvas).offset().top;
-                $('.l1-col:first-child .l1-row-item').each(function() {
-                    let itemCenterY = $(this).offset().top + ($(this).outerHeight() / 2);
-                    yPositions.push(itemCenterY - canvasOffsetTop);
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                $('.l1-col-left .l1-item').each(function() {
+                    let itemRect = this.getBoundingClientRect();
+                    // Tâm Y = khoảng cách từ Top của Box đến Top của Canvas + một nửa Box
+                    let itemCenterY = (itemRect.top - canvasRect.top) + (itemRect.height / 2);
+                    yPositions.push(itemCenterY);
                 });
 
                 redrawCanvas();
             }
 
-            // Bắt sự kiện xoay màn hình điện thoại hoặc thay đổi kích thước web
-            $(window).off('resize.l1').on('resize.l1', function() {
-                if ($('#l1-canvas').length) resizeCanvas();
-                else $(window).off('resize.l1');
+            // Dùng ResizeObserver để tự động scale lại mọi thứ ngay lập tức khi màn hình xoay/đổi cỡ
+            window.l1_resizeObserver = new ResizeObserver(() => {
+                resizeCanvas();
             });
-            
-            // Đảm bảo ảnh load xong mới bắt đầu đo kích thước
-            setTimeout(resizeCanvas, 150);
+            window.l1_resizeObserver.observe(document.querySelector('.l1-board'));
 
             function redrawCanvas() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Vẽ các điểm neo (chấm tròn 2 bên)
+                // Vẽ các chấm tròn neo
                 yPositions.forEach((y) => {
-                    ctx.fillStyle = '#2ed573'; ctx.beginPath(); ctx.arc(leftX, y, 10, 0, Math.PI * 2); ctx.fill();
-                    ctx.fillStyle = '#ff4757'; ctx.beginPath(); ctx.arc(rightX, y, 10, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#2ed573'; ctx.beginPath(); ctx.arc(leftX, y, 8, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#ff4757'; ctx.beginPath(); ctx.arc(rightX, y, 8, 0, Math.PI * 2); ctx.fill();
                 });
                 
                 ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.strokeStyle = '#ff6b81';
                 
-                // Vẽ lại các đường đã nối thành công
+                // Vẽ dây đã nối
                 window.l1_userConnections.forEach(conn => {
                     ctx.beginPath(); ctx.moveTo(leftX, yPositions[conn.from]); ctx.lineTo(rightX, yPositions[conn.to]); ctx.stroke();
                 });
                 
-                // Vẽ đường dây đang được kéo lơ lửng bằng tay
+                // Vẽ dây đang kéo lơ lửng
                 if (isDrawing && activeStartIdx !== null) {
                     ctx.strokeStyle = 'rgba(255, 107, 129, 0.6)';
                     ctx.beginPath(); ctx.moveTo(leftX, yPositions[activeStartIdx]); ctx.lineTo(currentMouseX, currentMouseY); ctx.stroke();
@@ -494,52 +506,59 @@ window.LEVEL_MODULES = {
             function getMousePos(e) {
                 let rect = canvas.getBoundingClientRect();
                 let evt = e.originalEvent || e;
-                let clientX = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientX : evt.clientX;
-                let clientY = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientY : evt.clientY;
+                let clientX = (evt.changedTouches && evt.changedTouches.length > 0) ? evt.changedTouches[0].clientX : evt.clientX;
+                let clientY = (evt.changedTouches && evt.changedTouches.length > 0) ? evt.changedTouches[0].clientY : evt.clientY;
                 return { x: clientX - rect.left, y: clientY - rect.top };
             }
 
-            $(canvas).on('mousedown touchstart', function(e) { 
-                e.preventDefault();
-                let pos = getMousePos(e);
-                // Vùng bắt dính điểm neo rộng 35px để bé dễ chạm trúng trên điện thoại
+            function checkStartDraw(pos) {
                 yPositions.forEach((y, idx) => { 
-                    if (Math.sqrt(Math.pow(pos.x - leftX, 2) + Math.pow(pos.y - y, 2)) < 35) { 
+                    // Vùng bắt dính đã được mở rộng lên 45px để bé dễ chạm trúng trên điện thoại nhỏ
+                    if (Math.sqrt(Math.pow(pos.x - leftX, 2) + Math.pow(pos.y - y, 2)) < 45) { 
                         isDrawing = true; activeStartIdx = idx; currentMouseX = pos.x; currentMouseY = pos.y;
-                        
-                        // Nếu bé chạm vào chấm đã nối, tự động gỡ dây cũ ra để vẽ lại
                         window.l1_userConnections = window.l1_userConnections.filter(c => c.from !== activeStartIdx);
+                        redrawCanvas();
                     } 
                 });
-            });
+            }
 
-            $(canvas).on('mousemove touchmove', function(e) {
-                if (!isDrawing) return; e.preventDefault();
-                let pos = getMousePos(e);
-                currentMouseX = pos.x; currentMouseY = pos.y;
-                redrawCanvas();
-            });
-
-            $(canvas).on('mouseup touchend', function(e) {
+            function checkEndDraw(pos) {
                 if (!isDrawing) return; isDrawing = false;
-                let pos = getMousePos(e); // Lấy vị trí lúc thả tay ra
-                
                 yPositions.forEach((y, idx) => {
-                    // Nếu thả tay gần chấm tròn đích
-                    if (Math.sqrt(Math.pow(pos.x - rightX, 2) + Math.pow(pos.y - y, 2)) < 35) {
-                        // Tự động tháo dây cũ của điểm đích trước khi nối dây mới (Cơ chế nối đè 1-1)
+                    if (Math.sqrt(Math.pow(pos.x - rightX, 2) + Math.pow(pos.y - y, 2)) < 45) {
                         window.l1_userConnections = window.l1_userConnections.filter(c => c.to !== idx);
                         window.l1_userConnections.push({ from: activeStartIdx, to: idx });
-                        if(window.SoundFX) window.SoundFX.playWin(); // Phát tiếng ting ting báo hiệu hít dây
+                        if(window.SoundFX) window.SoundFX.playWin(); 
                     }
                 });
                 activeStartIdx = null; redrawCanvas();
+            }
+
+            // =========================================================
+            // SỰ KIỆN CẢM ỨNG (TOUCH) CHO MOBILE 
+            // (Dùng addEventListener thuần để kích hoạt passive: false chặn cuộn)
+            // =========================================================
+            canvas.addEventListener('touchstart', function(e) { e.preventDefault(); checkStartDraw(getMousePos(e)); }, { passive: false });
+            canvas.addEventListener('touchmove', function(e) {
+                if (!isDrawing) return; e.preventDefault();
+                let pos = getMousePos(e); currentMouseX = pos.x; currentMouseY = pos.y; redrawCanvas();
+            }, { passive: false });
+            canvas.addEventListener('touchend', function(e) { checkEndDraw(getMousePos(e)); });
+            canvas.addEventListener('touchcancel', function(e) { isDrawing = false; activeStartIdx = null; redrawCanvas(); });
+
+            // SỰ KIỆN CHUỘT CHO MÁY TÍNH
+            canvas.addEventListener('mousedown', function(e) { e.preventDefault(); checkStartDraw(getMousePos(e)); });
+            canvas.addEventListener('mousemove', function(e) {
+                if (!isDrawing) return; e.preventDefault();
+                let pos = getMousePos(e); currentMouseX = pos.x; currentMouseY = pos.y; redrawCanvas();
             });
+            canvas.addEventListener('mouseup', function(e) { checkEndDraw(getMousePos(e)); });
+            canvas.addEventListener('mouseleave', function() { isDrawing = false; activeStartIdx = null; redrawCanvas(); });
+
         }, 300);
     },
     check: function() {
-        // Gỡ bỏ sự kiện thu phóng màn hình để dọn dẹp bộ nhớ khi qua vòng khác
-        $(window).off('resize.l1');
+        if (window.l1_resizeObserver) window.l1_resizeObserver.disconnect(); // Dọn dẹp bộ nhớ khi qua vòng
         
         // BẢNG ĐÁP ÁN: 0->2 (Táo), 1->0 (Bướm), 2->4 (Vịt), 3->1 (Sao), 4->3 (Cây)
         const dapAnDung = { 0: 2, 1: 0, 2: 4, 3: 1, 4: 3 }; 

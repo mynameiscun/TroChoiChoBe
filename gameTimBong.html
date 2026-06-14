@@ -449,109 +449,204 @@ window.LEVEL_MODULES = {
         }
     },
     2: {
-        instruction: "Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!",
-        render: function($container) {
-            g2_l2_connections = []; 
-            $container.append(`
-                <h3 class="mb-2 fw-bold text-center" style="color: #ff4757;">✨ Vòng 2: Nối Bóng Bạn Nhỏ</h3>
-                <div class="d-flex align-items-center justify-content-center mb-4">
-                    <h5 class="text-secondary mb-0">Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!</h5>
-                    <button class="btn-speaker" data-text="Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!" title="Nghe lại">🔊</button>
-                </div>
-                
-                <div class="d-flex justify-content-between align-items-center g2-l2-container">
-                    <div class="d-flex flex-column justify-content-between" style="height: 400px; width: 140px;">
-                        <div class="l1-row-item"><img src="IMG/Layer 1.png"></div>
-                        <div class="l1-row-item"><img src="IMG/Layer 2.png"></div>
-                        <div class="l1-row-item"><img src="IMG/Layer 3.png"></div>
-                        <div class="l1-row-item"><img src="IMG/Layer 4.png"></div>
-                    </div>
-                    
-                    <canvas id="g2-l2-canvas" width="260" height="400" class="draw-canvas"></canvas>
-                    
-                    <div class="d-flex flex-column justify-content-between" style="height: 400px; width: 140px;">
-                        <div class="l1-row-item"><img src="IMG/Layer 5.png"></div>
-                        <div class="l1-row-item"><img src="IMG/Layer 6.png"></div>
-                        <div class="l1-row-item"><img src="IMG/Layer 7.png"></div>
-                        <div class="l1-row-item"><img src="IMG/Layer 8.png"></div>
-                    </div>
-                </div>
-            `);
+    instruction: "Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!",
+    render: function($container) {
+        window.g2_l2_connections = []; 
+        $container.append(`
+            <h3 class="mb-2 fw-bold text-center" style="color: #ff4757;">✨ Vòng 2: Nối Bóng Bạn Nhỏ</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0">Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!</h5>
+                <button class="btn-speaker" data-text="Hãy nối bạn động vật ở cột trái với cái bóng chân tương ứng ở cột phải nhé!" title="Nghe lại">🔊</button>
+            </div>
             
-            setTimeout(() => {
-                const canvas = document.getElementById('g2-l2-canvas');
-                if(!canvas) return;
-                const rect = canvas.getBoundingClientRect();
-                canvas.width = rect.width; canvas.height = rect.height;
-                const ctx = canvas.getContext('2d');
+            <div class="l2-board mx-auto">
                 
-                const canvasOffsetTop = $(canvas).offset().top;
-                const yPositions = [];
-                $('.g2-l2-container .d-flex.flex-column:first-child .l1-row-item').each(function() {
-                    let itemCenterY = $(this).offset().top + ($(this).outerHeight() / 2);
-                    yPositions.push(itemCenterY - canvasOffsetTop);
-                });
+                <div class="l2-col-side" id="l2-col-left">
+                    <div class="l2-row-item"><img src="../IMG/Layer 1.png" alt="1"></div>
+                    <div class="l2-row-item"><img src="../IMG/Layer 2.png" alt="2"></div>
+                    <div class="l2-row-item"><img src="../IMG/Layer 3.png" alt="3"></div>
+                    <div class="l2-row-item"><img src="../IMG/Layer 4.png" alt="4"></div>
+                </div>
                 
-                const leftX = 15; const rightX = canvas.width - 15;
-                let isDrawing = false, activeStartIdx = null, currentMouseX = 0, currentMouseY = 0;
+                <div class="l2-col-center" id="l2-canvas-wrapper">
+                    <canvas id="g2-l2-canvas" class="draw-canvas"></canvas>
+                </div>
+                
+                <div class="l2-col-side" id="l2-col-right">
+                    <div class="l2-row-item"><img src="../IMG/Layer 5.png" alt="A"></div>
+                    <div class="l2-row-item"><img src="../IMG/Layer 6.png" alt="B"></div>
+                    <div class="l2-row-item"><img src="../IMG/Layer 7.png" alt="C"></div>
+                    <div class="l2-row-item"><img src="../IMG/Layer 8.png" alt="D"></div>
+                </div>
 
-                function redrawCanvas() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    yPositions.forEach((y) => {
-                        ctx.fillStyle = '#2ed573'; ctx.beginPath(); ctx.arc(leftX, y, 10, 0, Math.PI * 2); ctx.fill();
-                        ctx.fillStyle = '#ff4757'; ctx.beginPath(); ctx.arc(rightX, y, 10, 0, Math.PI * 2); ctx.fill();
-                    });
-                    ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = '#ff6b81';
-                    
-                    g2_l2_connections.forEach(conn => {
-                        ctx.beginPath(); ctx.moveTo(leftX, yPositions[conn.from]); ctx.lineTo(rightX, yPositions[conn.to]); ctx.stroke();
-                    });
-                    
-                    if (isDrawing && activeStartIdx !== null) {
-                        ctx.strokeStyle = 'rgba(255, 107, 129, 0.6)';
-                        ctx.beginPath(); ctx.moveTo(leftX, yPositions[activeStartIdx]); ctx.lineTo(currentMouseX, currentMouseY); ctx.stroke();
-                    }
+            </div>
+
+            <style>
+                /* CSS ĐẶC BIỆT CHỐNG VỠ LAYOUT */
+                .l2-board {
+                    width: 100%;
+                    max-width: 450px; 
+                    aspect-ratio: 3 / 4; /* Giữ khung luôn có tỉ lệ 3:4 hoàn hảo */
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: stretch;
+                    padding: 10px;
+                    border: 4px dashed #ffcccb;
+                    border-radius: 20px;
+                    background: #fff9fa;
+                    box-sizing: border-box;
+                    touch-action: none; /* Rất quan trọng: Ngăn trình duyệt cuộn màn hình khi đang nối dây */
+                    margin-bottom: 20px;
                 }
+                .l2-col-side {
+                    width: 22%; /* 2 cột hình ảnh chiếm 22% chiều rộng mỗi bên */
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                }
+                .l2-col-center {
+                    width: 52%; /* Canvas chiếm gọn không gian giữa */
+                    position: relative;
+                }
+                #g2-l2-canvas {
+                    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                    cursor: crosshair; border: none; background: transparent;
+                }
+                .l2-row-item {
+                    width: 100%;
+                    aspect-ratio: 1; /* Hình vuông hoàn hảo */
+                    border: 2px dashed #eccc68;
+                    border-radius: 12px;
+                    background: #fffdf6;
+                    display: flex; align-items: center; justify-content: center;
+                }
+                .l2-row-item img {
+                    max-width: 80%; max-height: 80%; object-fit: contain;
+                    pointer-events: none; user-select: none;
+                }
+            </style>
+        `);
+        
+        setTimeout(() => {
+            const canvas = document.getElementById('g2-l2-canvas');
+            if(!canvas) return;
+            const wrapper = document.getElementById('l2-canvas-wrapper');
+            const ctx = canvas.getContext('2d');
+            
+            let yPositions = [];
+            let leftX = 15; 
+            let rightX = 0;
+            let isDrawing = false, activeStartIdx = null, currentMouseX = 0, currentMouseY = 0;
+
+            function resizeCanvas() {
+                canvas.width = wrapper.clientWidth; 
+                canvas.height = wrapper.clientHeight;
+                rightX = canvas.width - 15;
+
+                // TÍNH TỌA ĐỘ Y DỰA TRÊN KÍCH THƯỚC THỰC TẾ
+                yPositions = [];
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                $('#l2-col-left .l2-row-item').each(function() {
+                    let itemRect = this.getBoundingClientRect();
+                    let itemCenterY = (itemRect.top - canvasRect.top) + (itemRect.height / 2);
+                    yPositions.push(itemCenterY);
+                });
 
                 redrawCanvas();
+            }
 
-                $(canvas).on('mousedown touchstart', function(e) { e.preventDefault();
-                    let mouseX = e.offsetX || (e.touches ? e.touches[0].pageX - $(canvas).offset().left : 0);
-                    let mouseY = e.offsetY || (e.touches ? e.touches[0].pageY - $(canvas).offset().top : 0);
-                    yPositions.forEach((y, idx) => { if (Math.sqrt(Math.pow(mouseX - leftX, 2) + Math.pow(mouseY - y, 2)) < 25) { isDrawing = true; activeStartIdx = idx; } });
-                });
+            // Tự động scale khi màn hình đổi kích thước
+            window.l2_resizeObserver = new ResizeObserver(() => { resizeCanvas(); });
+            window.l2_resizeObserver.observe(document.querySelector('.l2-board'));
 
-                $(canvas).on('mousemove touchmove', function(e) {
-                    if (!isDrawing) return; e.preventDefault();
-                    currentMouseX = e.offsetX || (e.touches ? e.touches[0].pageX - $(canvas).offset().left : 0);
-                    currentMouseY = e.offsetY || (e.touches ? e.touches[0].pageY - $(canvas).offset().top : 0);
-                    redrawCanvas();
+            function redrawCanvas() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                yPositions.forEach((y) => {
+                    ctx.fillStyle = '#2ed573'; ctx.beginPath(); ctx.arc(leftX, y, 8, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#ff4757'; ctx.beginPath(); ctx.arc(rightX, y, 8, 0, Math.PI * 2); ctx.fill();
                 });
+                
+                ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.strokeStyle = '#ff6b81';
+                
+                window.g2_l2_connections.forEach(conn => {
+                    ctx.beginPath(); ctx.moveTo(leftX, yPositions[conn.from]); ctx.lineTo(rightX, yPositions[conn.to]); ctx.stroke();
+                });
+                
+                if (isDrawing && activeStartIdx !== null) {
+                    ctx.strokeStyle = 'rgba(255, 107, 129, 0.6)';
+                    ctx.beginPath(); ctx.moveTo(leftX, yPositions[activeStartIdx]); ctx.lineTo(currentMouseX, currentMouseY); ctx.stroke();
+                }
+            }
 
-                $(canvas).on('mouseup touchend', function(e) {
-                    if (!isDrawing) return; isDrawing = false;
-                    yPositions.forEach((y, idx) => {
-                        if (Math.sqrt(Math.pow(currentMouseX - rightX, 2) + Math.pow(currentMouseY - y, 2)) < 25) {
-                            g2_l2_connections = g2_l2_connections.filter(c => c.from !== activeStartIdx);
-                            g2_l2_connections.push({ from: activeStartIdx, to: idx });
-                        }
-                    });
-                    activeStartIdx = null; redrawCanvas();
+            function getMousePos(e) {
+                let rect = canvas.getBoundingClientRect();
+                let evt = e.originalEvent || e;
+                let clientX = (evt.changedTouches && evt.changedTouches.length > 0) ? evt.changedTouches[0].clientX : evt.clientX;
+                let clientY = (evt.changedTouches && evt.changedTouches.length > 0) ? evt.changedTouches[0].clientY : evt.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            function checkStartDraw(pos) {
+                yPositions.forEach((y, idx) => { 
+                    // Bán kính hít 45px, rất dễ chạm trên mobile
+                    if (Math.sqrt(Math.pow(pos.x - leftX, 2) + Math.pow(pos.y - y, 2)) < 45) { 
+                        isDrawing = true; activeStartIdx = idx; currentMouseX = pos.x; currentMouseY = pos.y;
+                        window.g2_l2_connections = window.g2_l2_connections.filter(c => c.from !== activeStartIdx);
+                        redrawCanvas();
+                    } 
                 });
-            }, 300);
-        },
-        check: function() {
-            const dapAnDung = { 0: 2, 1: 0, 2: 3, 3: 1 };
-            let soCauDung = 0;
-            g2_l2_connections.forEach(conn => { if (dapAnDung[conn.from] === conn.to) soCauDung++; });
-            return {
-                score: soCauDung * 1,
-                tieuDe: soCauDung === 4 ? "Kéo Cáp Siêu Đỉnh!" : "Cố Lên Nào!",
-                icon: soCauDung === 4 ? "🌟" : "🍀",
-                message: `Bé đã nối chính xác được ${soCauDung}/4 cặp hình.\nNhận ngay thêm ${soCauDung} sao!`
-            };
-        }
+            }
+
+            function checkEndDraw(pos) {
+                if (!isDrawing) return; isDrawing = false;
+                yPositions.forEach((y, idx) => {
+                    if (Math.sqrt(Math.pow(pos.x - rightX, 2) + Math.pow(pos.y - y, 2)) < 45) {
+                        window.g2_l2_connections = window.g2_l2_connections.filter(c => c.to !== idx);
+                        window.g2_l2_connections.push({ from: activeStartIdx, to: idx });
+                        if(window.SoundFX) window.SoundFX.playWin(); 
+                    }
+                });
+                activeStartIdx = null; redrawCanvas();
+            }
+
+            // =========================================================
+            // HỆ THỐNG XỬ LÝ SỰ KIỆN CẢM ỨNG & CHUỘT (CHỐNG CUỘN TRANG)
+            // =========================================================
+            canvas.addEventListener('touchstart', function(e) { e.preventDefault(); checkStartDraw(getMousePos(e)); }, { passive: false });
+            canvas.addEventListener('touchmove', function(e) {
+                if (!isDrawing) return; e.preventDefault();
+                let pos = getMousePos(e); currentMouseX = pos.x; currentMouseY = pos.y; redrawCanvas();
+            }, { passive: false });
+            canvas.addEventListener('touchend', function(e) { checkEndDraw(getMousePos(e)); });
+            canvas.addEventListener('touchcancel', function(e) { isDrawing = false; activeStartIdx = null; redrawCanvas(); });
+
+            canvas.addEventListener('mousedown', function(e) { e.preventDefault(); checkStartDraw(getMousePos(e)); });
+            canvas.addEventListener('mousemove', function(e) {
+                if (!isDrawing) return; e.preventDefault();
+                let pos = getMousePos(e); currentMouseX = pos.x; currentMouseY = pos.y; redrawCanvas();
+            });
+            canvas.addEventListener('mouseup', function(e) { checkEndDraw(getMousePos(e)); });
+            canvas.addEventListener('mouseleave', function() { isDrawing = false; activeStartIdx = null; redrawCanvas(); });
+
+        }, 300);
     },
+    check: function() {
+        if (window.l2_resizeObserver) window.l2_resizeObserver.disconnect(); 
+        
+        const dapAnDung = { 0: 2, 1: 0, 2: 3, 3: 1 };
+        let soCauDung = 0;
+        window.g2_l2_connections.forEach(conn => { if (dapAnDung[conn.from] === conn.to) soCauDung++; });
+        
+        return {
+            score: soCauDung * 1,
+            tieuDe: soCauDung === 4 ? "Kéo Cáp Siêu Đỉnh!" : "Cố Lên Nào!",
+            icon: soCauDung === 4 ? "🌟" : "🍀",
+            message: `Bé đã nối chính xác được ${soCauDung}/4 cặp hình.\nNhận ngay thêm ${soCauDung} sao!`
+        };
+    }
+},
     3: {
         instruction: "Bé hãy kéo con vật vào đúng cái bóng của nó nhé!",
         render: function($container) {
