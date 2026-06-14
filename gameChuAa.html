@@ -114,9 +114,9 @@
 // =========================================================================
 // BIẾN TOÀN CỤC CỦA GAME 3 (CHỮ CÁI A, A - Vòng 12 -> 16)
 // =========================================================================
-// MỚI: Đã cập nhật Vòng 4 thành 4 điểm. Tổng điểm tuyệt đối = 34.
+// MỚI: Đã cập nhật Vòng 4 thành 5 điểm. Tổng điểm tuyệt đối = 35.
 window.gameState = { level: 1, score: 0, roundScores: {}, replayQueue: [] };
-window.MAX_SCORES = { 1:2, 2:10, 3:8, 4:4, 5:10 }; 
+window.MAX_SCORES = { 1:2, 2:10, 3:8, 4:5, 5:10 }; 
 const PASS_SCORE = 20; // Mở lại biến PASS_SCORE để game biết điểm đậu
 // =========================================================================
 // HỆ THỐNG HIỆU ỨNG ÂM THANH MẶC ĐỊNH
@@ -287,14 +287,14 @@ function showGameEnd(isPass, totalScore) {
 
     if (isPass) {
         $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
-        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/48 sao ở trò chơi Chữ Cái a, A.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/49 sao ở trò chơi Chữ Cái a, A.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
         SoundFX.playWin(); 
         $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="replayAll()">🔄 Chơi lại từ đầu</button>`);
         $buttons.append(`<button class="btn btn-success btn-cute" style="transform: scale(1.15); font-weight: 900; background-color: #ff4757; padding: 15px 30px;" onclick="nextGame()">➡️ Qua màn tiếp theo</button>`);
         window.speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Chữ Cái a, A!`);
     } else {
         $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
-        $('#game-end-message').text(`Bé mới đạt ${totalScore}/48 sao. Cần đạt tối thiểu 20 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/49 sao. Cần đạt tối thiểu 20 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
         SoundFX.playLose();
         window.gameState.replayQueue = [];
         for (let i = 1; i <= 5; i++) {
@@ -818,9 +818,10 @@ window.LEVEL_MODULES = {
     render: function($container) {
         // Cấu trúc 3 câu hỏi (3 bức ảnh riêng biệt)
         const questions = [
-            { qId: 1, bg: '../IMG/15_bg (1).png' }, // Ví dụ: Ảnh con Cua (có chữ a)
-            { qId: 2, bg: '../IMG/15_bg (2).png' }, // Ví dụ: Ảnh cái Ca (có chữ a)
-            { qId: 3, bg: '../IMG/15_bg (3).png' }  // Ví dụ: Ảnh Quả Cam (có chữ a)
+            { qId: 1, bg: '../IMG/15_bg (1).png' }, //con cá
+            { qId: 2, bg: '../IMG/15_bg (2).png' }, //quả cam
+            { qId: 3, bg: '../IMG/15_bg (3).png' },  // bạn AN
+            { qId: 4, bg: '../IMG/15_bg (4).png' },  // Bông hoa
         ];
 
         $container.append(`
@@ -856,8 +857,14 @@ window.LEVEL_MODULES = {
                     { id: 2, x: 65.9, y: 88.1, r: 8 }  // Tọa độ chữ 'a' thứ 2 trong ảnh 2
                 ],
                 3: [
-                    { id: 1, x: 76.1, y: 81.1, r: 8 } // Tọa độ chữ 'a' trong ảnh 3
-                ]
+                    { id: 1, x: 31.5, y: 84.1, r: 8 }, // Tọa độ chữ 'a' trong ảnh 4
+                    { id: 2,  x: 64.5, y: 82.3, r: 8 }  // Tọa độ chữ 'a' thứ 2 trong ảnh 2
+
+                ],
+            4: [
+                    { id: 1, x: 91.7, y: 82.2, r: 8 } // Tọa độ chữ 'a' trong ảnh 3
+                ],
+                
             };
 
             // Khởi tạo Canvas cho từng bức ảnh
@@ -1010,7 +1017,8 @@ window.LEVEL_MODULES = {
             let expectedCount = 0;
             if (qId === 1) expectedCount = 1;
             if (qId === 2) expectedCount = 2; // Ví dụ câu 2 có 2 chữ a
-            if (qId === 3) expectedCount = 1;
+            if (qId === 3) expectedCount = 2; // Ví dụ câu 3 có 2 chữ a
+            if (qId === 4) expectedCount = 1; // Ví dụ câu 4 có 1 chữ a
 
             totalTargets += expectedCount;
             let currentScore = drawnTargets.length;

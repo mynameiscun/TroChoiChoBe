@@ -3,7 +3,6 @@
     body { font-family: 'Quicksand', sans-serif; background-color: #fff0f5; background-image: radial-gradient(#ffd1dc 2px, transparent 2px); background-size: 30px 30px; color: #574b90; margin: 0; padding: 0; }
     
     /* MÀN HÌNH CHỜ & INTRO */
-    #welcome-screen, #game6-intro-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
     #welcome-screen { background: linear-gradient(135deg, #FFF9C4 0%, #F48FB1 100%); z-index: 2000; }
     #game6-intro-screen { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); display: none; }
     
@@ -90,7 +89,6 @@
     }
     
     /* MÀN HÌNH CHỜ & INTRO */
-    #welcome-screen, #game5-intro-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
     #game5-intro-screen { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); display: none; }
     
     .game-title { color: #ffffff; font-weight: 900; font-size: 4.5rem; text-shadow: 4px 4px 0px #e67e22, 8px 8px 0px rgba(0,0,0,0.1); margin-bottom: 20px; }
@@ -198,7 +196,6 @@
     }
 
     /* MÀN HÌNH CHỜ & INTRO */
-    #welcome-screen, #game4-intro-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
     #game4-intro-screen { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); display: none; }
     
     .game-title { color: #ffffff; font-weight: 900; font-size: 4.5rem; text-shadow: 4px 4px 0px #4834d4, 8px 8px 0px rgba(0,0,0,0.1); margin-bottom: 20px; }
@@ -274,7 +271,6 @@
     }
 
     /* MÀN HÌNH CHỜ & INTRO */
-    #welcome-screen, #game2-intro-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
     #game2-intro-screen { background: linear-gradient(135deg, #ffd1dc 0%, #ffafbd 100%); display: none; }
     
     .game-title { color: #ffffff; font-weight: 900; font-size: 4.5rem; text-shadow: 4px 4px 0px #ff6b81, 8px 8px 0px rgba(0,0,0,0.1); margin-bottom: 20px; }
@@ -361,8 +357,24 @@
     }
 
     /* MÀN HÌNH CHỜ & INTRO */
-    #welcome-screen, #math-intro-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
-    #welcome-screen { background: linear-gradient(135deg, #FFF9C4 0%, #F48FB1 100%); z-index: 2000; }
+/* MÀN HÌNH CHỜ & INTRO (Tối ưu cho iPhone / Mobile) */
+    #welcome-screen, div[id$="-intro-screen"] { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        min-height: -webkit-fill-available; /* Cứu tinh cho iPhone Safari */
+        z-index: 1000; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        text-align: center; 
+        overflow-y: auto; /* Cho phép vuốt cuộn lên xuống */
+        padding: 40px 20px 100px 20px; /* Chừa 100px phía dưới để tránh thanh tìm kiếm */
+        box-sizing: border-box;
+    }    #welcome-screen { background: linear-gradient(135deg, #FFF9C4 0%, #F48FB1 100%); z-index: 2000; }
     #math-intro-screen { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); display: none; }
     
     .game-title { color: #ffffff; font-weight: 900; font-size: 4.5rem; text-shadow: 4px 4px 0px #4a90e2, 8px 8px 0px rgba(0,0,0,0.1); margin-bottom: 20px; }
@@ -440,7 +452,6 @@
     
 
     /* MÀN HÌNH CHỜ & INTRO */
-    #welcome-screen, #game3-intro-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
     #game3-intro-screen { background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); display: none; }
     
     .game-title { color: #ffffff; font-weight: 900; font-size: 4.5rem; text-shadow: 4px 4px 0px #00b894, 8px 8px 0px rgba(0,0,0,0.1); margin-bottom: 20px; }
