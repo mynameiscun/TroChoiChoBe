@@ -114,9 +114,9 @@
 // =========================================================================
 // BIẾN TOÀN CỤC CỦA GAME 5 (Vòng 23 -> 27)
 // =========================================================================
-window.gameState = { level: 23, score: 0, roundScores: {}, replayQueue: [] };
-window.MAX_SCORES = { 23:8, 24:9, 25:6, 26:24, 27:6 }; // Tối đa 53 điểm
-const PASS_SCORE = 32;
+window.gameState = { level: 1, score: 0, roundScores: {}, replayQueue: [] };
+window.MAX_SCORES = { 1:2, 2:10, 3:8, 4:8, 5:10 }; // Tối đa 38 điểm
+const PASS_SCORE = 25;
 
 // =========================================================================
 // HỆ THỐNG HIỆU ỨNG ÂM THANH MẶC ĐỊNH
@@ -236,7 +236,7 @@ function updateNavButtons() {
     if (window.gameState.roundScores[window.gameState.level] !== undefined) $('#btn-next').removeClass('disabled').css('cursor', 'pointer');
     else $('#btn-next').addClass('disabled').css('cursor', 'not-allowed');
 
-    if (window.gameState.level === 23) $('#btn-prev').addClass('disabled').css('cursor', 'not-allowed');
+    if (window.gameState.level === 1) $('#btn-prev').addClass('disabled').css('cursor', 'not-allowed');
     else $('#btn-prev').removeClass('disabled').css('cursor', 'pointer');
 }
 
@@ -281,7 +281,7 @@ function showGameEnd(isPass, totalScore) {
 
     if (isPass) {
         $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
-        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/53 sao ở trò chơi Trang Phục & Thời Tiết.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/34 sao ở trò chơi Trang Phục & Thời Tiết.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
         SoundFX.playWin(); 
         $buttons.append(`<button class="btn btn-secondary btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="window.goHome()">🏠 Về Menu</button>`);
         $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="window.replayAll()">🔄 Chơi lại trò này</button>`);
@@ -289,10 +289,10 @@ function showGameEnd(isPass, totalScore) {
         window.speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Trang Phục và Thời Tiết!`);
     } else {
         $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
-        $('#game-end-message').text(`Bé mới đạt ${totalScore}/53 sao. Cần đạt tối thiểu 32 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/34 sao. Cần đạt tối thiểu 25 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
         SoundFX.playLose();
         window.gameState.replayQueue = [];
-        for (let i = 23; i <= 27; i++) {
+        for (let i = 1; i <= 5; i++) {
             if (window.gameState.roundScores[i] !== undefined && window.gameState.roundScores[i] < window.MAX_SCORES[i]) {
                 window.gameState.replayQueue.push(i);
             }
@@ -337,13 +337,13 @@ window.loadLevelStructure = function(level) {
 
 window.replayAll = function() {
     $('#game-end-overlay').hide();
-    window.gameState.level = 23; 
-    for(let i = 23; i <= 27; i++) {
+    window.gameState.level = 1; 
+    for(let i = 1; i <= 5; i++) {
         delete window.gameState.roundScores[i]; 
         $(`#level-wrapper-${i}`).remove(); 
     }
-    window.gameState.replayQueue = []; window.gameState.score = 0; saveData(); updateUI(); window.loadLevelStructure(23);
-    window.speakInstruction(window.LEVEL_MODULES[23].instruction, null, null, true);
+    window.gameState.replayQueue = []; window.gameState.score = 0; saveData(); updateUI(); window.loadLevelStructure(1);
+    window.speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
 };
 
 window.startReplay = function() {
@@ -366,11 +366,11 @@ window.goHome = function() {
 // DỮ LIỆU CÁC VÒNG CỦA GAME 5 (VÒNG 23 -> 27)
 // =========================================================================
 window.LEVEL_MODULES = {
-    23: {
+    1: {
         instruction: "Bé hãy nối trang phục và đồ dùng phù hợp với thời tiết nắng hoặc mưa nhé!",
         render: function($container) {
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #e67e22;">🌞 Vòng 23: Thời Tiết & Trang Phục 🌧️</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #e67e22;">🌞 Vòng 1: Thời Tiết & Trang Phục 🌧️</h3>
                 <div class="d-flex align-items-center justify-content-center mb-4">
                     <h5 class="text-secondary mb-0 text-center">Bé hãy nối trang phục và đồ dùng phù hợp với thời tiết nắng hoặc mưa nhé!</h5>
                     <button class="btn-speaker" data-text="Bé hãy nối trang phục và đồ dùng phù hợp với thời tiết nắng hoặc mưa nhé!" title="Nghe lại">🔊</button>
@@ -513,11 +513,11 @@ window.LEVEL_MODULES = {
             };
         }
     },
-    24: {
+    2: {
         instruction: "Bé hãy chọn thời tiết phù hợp với trang phục nhé!",
         render: function($container) {
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #e67e22;">🌦️ Vòng 24: Trang Phục & Thời Tiết ❄️</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #e67e22;">🌦️ Vòng 2: Trang Phục & Thời Tiết ❄️</h3>
                 <div class="d-flex align-items-center justify-content-center mb-4">
                     <h5 class="text-secondary mb-0">Bé hãy chọn thời tiết phù hợp với trang phục nhé!</h5>
                     <button class="btn-speaker" data-text="Bé hãy chọn thời tiết phù hợp với trang phục nhé!" title="Nghe lại">🔊</button>
@@ -569,8 +569,8 @@ window.LEVEL_MODULES = {
             };
         }
     },
-    25: {
-        instruction: "Bé hãy nhìn thời tiết bên trái và chọn 2 trang phục phù hợp nhất ở bên phải nhé!",
+    3: {
+        instruction: "Bé hãy nhìn thời tiết và chọn đúng 2 trang phục phù hợp nhất ở bên phải nhé!",
         render: function($container) {
             const questions = [
                 { id: 1, target: 'IMG/25_target (1).png', options: [1, 2, 3, 4].map(opt => `IMG/25_1_opt (${opt}).png`) },
@@ -579,10 +579,10 @@ window.LEVEL_MODULES = {
             ];
 
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #e67e22;">👕 Vòng 25: Thử Thách Phối Đồ 👒</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #e67e22;">👕 Vòng 3: Thử Thách Phối Đồ 👒</h3>
                 <div class="d-flex align-items-center justify-content-center mb-4">
-                    <h5 class="text-secondary mb-0">Bé hãy nhìn thời tiết bên trái và chọn 2 trang phục phù hợp nhé!</h5>
-                    <button class="btn-speaker" data-text="Bé hãy nhìn thời tiết bên trái và chọn 2 trang phục phù hợp nhất ở bên phải nhé!" title="Nghe lại">🔊</button>
+                    <h5 class="text-secondary mb-0">Bé hãy nhìn thời tiết và chọn đúng 2 trang phục phù hợp nhé!</h5>
+                    <button class="btn-speaker" data-text="Bé hãy nhìn thời tiết và chọn 2 trang phục phù hợp nhất ở bên phải nhé!" title="Nghe lại">🔊</button>
                 </div>
 
                 <div class="mx-auto" style="max-width: 850px;">
@@ -634,7 +634,7 @@ window.LEVEL_MODULES = {
             };
         }
     },
-    26: {
+    4: {
         instruction: "Bé hãy kéo các trang phục và vật dụng xung quanh vào đúng bức tranh mùa của nó nhé!",
         render: function($container) {
             let allItems = [];
@@ -662,7 +662,7 @@ window.LEVEL_MODULES = {
             ];
 
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #00b894;">🌸 Vòng 26:Mùa Yêu Thương ⛄</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #00b894;">🌸 Vòng 4:Mùa Yêu Thương ⛄</h3>
                 <div class="d-flex align-items-center justify-content-center mb-4">
                     <h5 class="text-secondary mb-0 text-center">Kéo đồ vật vào phù hợp với thời tiết nhé!</h5>
                     <button class="btn-speaker" data-text="Bé hãy kéo các trang phục và vật dụng xung quanh vào đúng bức tranh mùa của nó nhé!" title="Nghe lại">🔊</button>
@@ -745,11 +745,11 @@ window.LEVEL_MODULES = {
             };
         }
     },
-    27: {
+    5: {
         instruction: "Bé hãy tinh mắt tìm và chạm vào 6 điểm không đúng trong bức tranh nhé!",
         render: function($container) {
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #0984e3;">🔍 Vòng 27: Tinh Mắt Tìm Lỗi</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #0984e3;">🔍 Vòng 5: Tinh Mắt Tìm Lỗi</h3>
                 <div class="d-flex align-items-center justify-content-center mb-4">
                     <h5 class="text-secondary mb-0">Bé hãy tìm 6 điểm sai trong bức tranh nhé!</h5>
                     <button class="btn-speaker" data-text="Bé hãy tinh mắt tìm và chạm vào 6 điểm không đúng trong bức tranh nhé!" title="Nghe lại">🔊</button>
@@ -840,8 +840,9 @@ $(document).ready(function() {
 
         $('#game5-intro-screen').fadeOut(500, function() {
             $('#main-game').fadeIn(500);
-            window.gameState.level = 23;
-            window.loadLevelStructure(23);
+            window.gameState.level = 1;
+            window.loadLevelStructure(1);
+             if(window.LEVEL_MODULES[1]) window.speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
         });
     });
 
@@ -866,7 +867,7 @@ $(document).ready(function() {
             window.gameState.roundScores[window.gameState.level] = roundMaxScore > 0 ? result.score : 0;
             
             let currentTotalScore = 0; let roundsPlayed = 0;
-            for(let i = 23; i <= 27; i++) {
+            for(let i = 1; i <= 5; i++) {
                 if(window.gameState.roundScores[i] !== undefined) { currentTotalScore += window.gameState.roundScores[i]; roundsPlayed++; }
             }
             window.gameState.score = currentTotalScore; window.updateUI();
@@ -876,7 +877,7 @@ $(document).ready(function() {
                 window.saveData(); window.loadLevelStructure(window.gameState.level);
                 if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
             }
-            else if (roundsPlayed === 5) { // 5 vòng (23 đến 27)
+            else if (roundsPlayed === 5) { // 5 vòng (1 đến 5)
                 window.showGameEnd(currentTotalScore >= PASS_SCORE, currentTotalScore);
             }
             else {
@@ -907,7 +908,7 @@ $(document).ready(function() {
             $('#grading-overlay').hide();
             let simulatedRoundsPlayed = 0;
             let tempRoundScores = { ...window.gameState.roundScores }; tempRoundScores[window.gameState.level] = result.score;
-            for(let i = 23; i <= 27; i++) if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
+            for(let i = 1; i <= 5; i++) if(tempRoundScores[i] !== undefined) simulatedRoundsPlayed++;
             
             if (simulatedRoundsPlayed === 5 && (!window.gameState.replayQueue || window.gameState.replayQueue.length === 0)) {
                 proceed();
@@ -927,12 +928,12 @@ $(document).ready(function() {
     });
 
     $('#btn-confirm-reset').off('click').on('click', function() {
-        for(let i = 23; i <= 27; i++) {
+        for(let i = 1; i <= 5; i++) {
             delete window.gameState.roundScores[i];
             $(`#level-wrapper-${i}`).remove();
         }
-        window.gameState.level = 23; window.gameState.score = 0; window.gameState.replayQueue = [];
-        window.updateUI(); $('#custom-alert-overlay').hide(); window.loadLevelStructure(23);
+        window.gameState.level = 1; window.gameState.score = 0; window.gameState.replayQueue = [];
+        window.updateUI(); $('#custom-alert-overlay').hide(); window.loadLevelStructure(1); window.updateNavButtons();
     });
 
     $('#btn-cancel-reset').off('click').on('click', function() { $('#custom-alert-overlay').hide(); });
@@ -945,7 +946,7 @@ $(document).ready(function() {
 
     $('#btn-prev').off('click').on('click', function() {
         if ($(this).hasClass('disabled')) return;
-        if (window.gameState.level > 23) {
+        if (window.gameState.level > 1) {
             window.stopAllMedia(); window.gameState.level--; window.saveData(); window.loadLevelStructure(window.gameState.level); window.updateNavButtons();
             if(window.LEVEL_MODULES[window.gameState.level]) window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
         }

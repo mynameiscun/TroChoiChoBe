@@ -109,10 +109,10 @@
 
 <script>
 // =========================================================================
-// BIẾN TOÀN CỤC CỦA GAME 6 (Vòng 1 -> 7, Điểm số, Điểm từng vòng, Hàng đợi replay)
+// BIẾN TOÀN CỤC CỦA GAME 6 (Vòng 1 -> 6, Điểm số, Điểm từng vòng, Hàng đợi replay)
 // =========================================================================
 window.gameState = { level: 1, score: 0, roundScores: {}, replayQueue: [] };
-window.MAX_SCORES = { 1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1 }; // Tối đa 7 điểm
+window.MAX_SCORES = { 1:1, 2:1, 3:1, 4:1, 5:1, 6:1 }; // Tối đa 6 điểm
 const PASS_SCORE = 4; 
 
 // =========================================================================
@@ -278,17 +278,17 @@ function showGameEnd(isPass, totalScore) {
 
     if (isPass) {
         $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
-        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/7 sao ở trò chơi Âm Nhạc.\nBé đã hoàn thành tất cả các trò chơi!`);
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/6 sao ở trò chơi Âm Nhạc.\nBé đã hoàn thành tất cả các trò chơi!`);
         SoundFX.playWin(); 
         $buttons.append(`<button class="btn btn-secondary btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="window.goHome()">🏠 Về Menu</button>`);
         $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="window.replayAll()">🔄 Chơi lại trò này</button>`);
         window.speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Âm Nhạc!`);
     } else {
         $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
-        $('#game-end-message').text(`Bé mới đạt ${totalScore}/7 sao. Cần đạt tối thiểu 4 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/6 sao. Cần đạt tối thiểu 4 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
         SoundFX.playLose();
         window.gameState.replayQueue = [];
-        for (let i = 1; i <= 7; i++)  {
+        for (let i = 1; i <= 6; i++)  {
             if (window.gameState.roundScores[i] !== undefined && window.gameState.roundScores[i] < window.MAX_SCORES[i]) {
                 window.gameState.replayQueue.push(i);
             }
@@ -334,7 +334,7 @@ window.loadLevelStructure = function(level) {
 window.replayAll = function() {
     $('#game-end-overlay').hide();
     window.gameState.level = 1; 
-    for(let i = 1; i <= 7; i++) {
+    for(let i = 1; i <= 6; i++) {
         delete window.gameState.roundScores[i]; 
         $(`#level-wrapper-${i}`).remove(); 
     }
@@ -408,11 +408,6 @@ window.LEVEL_MODULES = {
                     <h5 class="text-secondary mb-0 text-center">Bé hãy bấm vào hình cái loa để phát đoạn nhạc nhé!</h5>
                     <button class="btn-speaker" data-text="Nghe đoán bài hát, bé bấm vào hình cái loa để phát đoạn nhạc nhé!" title="Nghe lại">🔊</button>
                 </div>
-
-                <div class="text-center mb-4">
-                    <img src="IMG/28_main.png" style="width: 150px; height: 150px; object-fit: contain; border-radius: 20px;">
-                </div>
-
                 <div class="music-player-wrapper mx-auto mb-5">
                     <button type="button" class="btn-music-speaker" id="speaker-28">🔊</button>
                     <div class="music-progress-area">
@@ -494,90 +489,10 @@ window.LEVEL_MODULES = {
     },
 
     2: {
-        instruction: "Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!",
-        render: function($container) {
-            $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 2: Nghe Đoán Tên Bài Hát 🎼</h3>
-                <div class="d-flex align-items-center justify-content-center mb-4">
-                    <h5 class="text-secondary mb-0 text-center">Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!</h5>
-                    <button class="btn-speaker" data-text="Bé nghe giai điệu và chọn tên bài hát đúng nhất nhé!" title="Nghe lại">🔊</button>
-                </div>
-
-                <div class="music-player-wrapper mx-auto mb-5">
-                    <button type="button" class="btn-music-speaker" id="speaker-29">🔊</button>
-                    <div class="music-progress-area">
-                        <input type="range" id="progress-29" class="music-track-bar" value="0" min="0" max="100">
-                    </div>
-                    <audio id="audio-file-29" src="AUDIO/29_sound.mp3"></audio>
-                </div>
-
-                <div class="d-flex flex-column gap-3 mx-auto" style="max-width: 480px;">
-                    ${[1, 2, 3].map(opt => {
-                        let labels = { 1: "Cháu yêu bà", 2: "Cả nhà thương nhau", 3: "Bé quét nhà" };
-                        return `
-                        <label style="cursor: pointer; width: 100%; margin:0;">
-                            <input type="radio" name="l29_q" value="${opt}" class="l29-radio-input" style="display:none;">
-                            <div class="music-text-card py-3 px-4 fw-bold d-flex align-items-center">
-                                <button type="button" class="btn-mini-speaker-inline me-3" data-audio="AUDIO/29_ans (${opt}).mp3">🔊</button>
-                                <span>${labels[opt]}</span>
-                            </div>
-                        </label>
-                        `;
-                    }).join('')}
-                </div>
-            `);
-
-            setTimeout(() => { $('#speaker-29').addClass('speaker-attention-active'); }, 2500);
-
-            let audio = document.getElementById('audio-file-29');
-            let $slider = $('#progress-29');
-
-            $('#speaker-29').click(function() {
-                $(this).removeClass('speaker-attention-active');
-                if (audio.paused) { audio.play(); $(this).text('⏸️'); } 
-                else { audio.pause(); $(this).text('🔊'); }
-            });
-
-            audio.ontimeupdate = function() { if (audio.duration) { $slider.val((audio.currentTime / audio.duration) * 100); } };
-            $slider.on('input', function() { if (audio.duration) { audio.currentTime = (this.value / 100) * audio.duration; } });
-            audio.onended = function() { $('#speaker-29').text('🔊'); $slider.val(0); };
-
-            let miniAudio = null;
-            $('.btn-mini-speaker-inline').click(function(e) {
-                e.preventDefault(); 
-                if (miniAudio) miniAudio.pause(); 
-                
-                $('.btn-mini-speaker-inline').removeClass('playing');
-                $(this).addClass('playing');
-
-                miniAudio = new Audio($(this).data('audio'));
-                miniAudio.play();
-                
-                let $btn = $(this);
-                miniAudio.onended = function() { $btn.removeClass('playing'); };
-            });
-        },
-        check: function() {
-            let userSelect = $('input[name="l29_q"]:checked').val();
-            let isCorrect = (userSelect === "2"); 
-
-            $('.music-text-card').css({'border-color': '#eee', 'box-shadow': '0 4px 0 #eee'});
-            if (userSelect) {
-                let $card = $(`input[name="l29_q"]:checked`).next('.music-text-card');
-                $card.css(isCorrect ? {'border-color': '#2ed573', 'box-shadow': '0 4px 0 #2ed573'} : {'border-color': '#ff4757', 'box-shadow': '0 4px 0 #ff4757'});
-            }
-
-            let audio = document.getElementById('audio-file-29');
-            if(audio) { audio.pause(); audio.currentTime = 0; }
-
-            return { score: isCorrect ? 1 : 0, tieuDe: isCorrect ? "Đúng rồi bé ơi!" : "Chưa chính xác!", icon: isCorrect ? "🌟" : "❌", message: isCorrect ? "Tuyệt vời! Đó chính là bài hát Cả nhà thương nhau." : "Chưa đúng rồi, bé nghe lại lần nữa xem!" };
-        }
-    },
-    3: {
         instruction: "Bé hãy nghe đoạn nhạc và đoán xem bài hát nhắc đến ai nhé!",
         render: function($container) {
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 3: Đoán Nhân Vật 👨‍👩‍👧</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 2: Đoán Nhân Vật 👨‍👩‍👧</h3>
                 <div class="d-flex align-items-center justify-content-center mb-5">
                     <h5 class="text-secondary mb-0 text-center">Bé hãy nghe đoạn nhạc và đoán xem bài hát nhắc đến ai nhé!</h5>
                     <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc và đoán nhân vật trong bài hát" title="Nghe lại">🔊</button>
@@ -658,11 +573,11 @@ window.LEVEL_MODULES = {
         }
     },
 
-    4: {
+    3: {
         instruction: "Bé hãy nghe đoạn nhạc rồi chọn câu hát tiếp theo nhé!",
         render: function($container) {
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 4: Hát Tiếp Khúc Ca 🎤</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 3: Hát Tiếp Khúc Ca 🎤</h3>
                <div class="d-flex align-items-center justify-content-center mb-5">
                     <h5 class="text-secondary mb-0 text-center">Bé nghe đoạn nhạc rồi chọn câu hát tiếp theo nhé!</h5>
                     <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc rồi chọn câu hát tiếp theo nhé!" title="Nghe lại">🔊</button>
@@ -735,11 +650,11 @@ window.LEVEL_MODULES = {
             return { score: isCorrect ? 1 : 0, tieuDe: isCorrect ? "Đúng rồi bé ơi!" : "Chưa chính xác!", icon: isCorrect ? "🌟" : "❌", message: isCorrect ? "Tuyệt vời! Bé đã thuộc lời bài hát rồi." : "Câu hát tiếp theo là gì nhỉ? Bé nghe lại lần nữa xem!" };
         }
     },
-    5: {
+    4: {
         instruction: "Bé hãy nghe đoạn nhạc và đoán xem bài hát thuộc chủ đề nào nhé!",
         render: function($container) {
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 5: Đoán Chủ Đề 🌳🚗🐶</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 4: Đoán Chủ Đề 🌳🚗🐶</h3>
                 <div class="d-flex align-items-center justify-content-center mb-5">
                     <h5 class="text-secondary mb-0 text-center">Bé hãy nghe đoạn nhạc và đoán xem bài hát thuộc chủ đề nào nhé!</h5>
                     <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc và đoán chủ đề bài hát nhé" title="Nghe lại">🔊</button>
@@ -825,11 +740,11 @@ window.LEVEL_MODULES = {
         }
     },
 
-    6: {
+    5: {
         instruction: "Bé nghe nhạc không lời và đoán xem đó là bài hát nào nhé!",
         render: function($container) {
             $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 6: Giai Điệu Quen Thuộc 🎹</h3>
+                <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 5: Giai Điệu Quen Thuộc 🎹</h3>
                 <div class="d-flex align-items-center justify-content-center mb-4">
                     <h5 class="text-secondary mb-0 text-center">Bé nghe nhạc không lời và đoán xem đó là bài hát nào nhé!</h5>
                     <button class="btn-speaker" data-text="Bé nghe nhạc không lời và đoán xem đó là bài hát nào nhé!" title="Nghe lại">🔊</button>
@@ -907,7 +822,7 @@ window.LEVEL_MODULES = {
             };
         }
     },
-    7: {
+    6: {
     instruction: "Bé hãy nghe đoạn nhạc, sau đó nối tên bài hát với hình ảnh và chủ đề phù hợp nhé!",
     render: function($container) {
         // CẤU HÌNH DỮ LIỆU 3 CỘT
@@ -928,7 +843,7 @@ window.LEVEL_MODULES = {
         ];
 
         $container.append(`
-            <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 7: Thử Thách Cuối Cùng 🏆</h3>
+            <h3 class="mb-3 fw-bold text-center" style="color: #9b59b6;">🎵 Vòng 6: Thử Thách Cuối Cùng 🏆</h3>
             <div class="d-flex align-items-center justify-content-center mb-4">
                 <h5 class="text-secondary mb-0 text-center">Bé hãy nghe nhạc và nối Tên bài hát &rarr; Hình ảnh &rarr; Chủ đề nhé!</h5>
                 <button class="btn-speaker" data-text="Bé hãy nghe đoạn nhạc, sau đó nối tên bài hát với hình ảnh và chủ đề phù hợp nhé!" title="Nghe lại">🔊</button>
@@ -1206,6 +1121,9 @@ $(document).ready(function() {
             $('#main-game').fadeIn(500);
             window.gameState.level = 1;
             window.loadLevelStructure(1);
+            
+            // THÊM DÒNG NÀY ĐỂ TỰ ĐỘNG ĐỌC ĐỀ VÒNG 1 SAU KHI VÀO GAME
+            if(window.LEVEL_MODULES[1]) window.speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
         });
     });
 

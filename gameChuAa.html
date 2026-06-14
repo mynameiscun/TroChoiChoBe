@@ -63,6 +63,9 @@
                     <button id="btn-prev" class="btn btn-secondary nav-btn disabled">⬅️ Quay lại</button>
                     <button id="btn-next" class="btn btn-primary nav-btn disabled"> Tiếp theo ➡️</button>
                 </div>
+                              <button id="btn-skip-test" class="btn btn-outline-dark" style="border-radius: 50px; padding: 8px 20px; font-weight: bold; border-width: 2px;">
+                ⏭️ Skip
+            </button>
                 <button id="btn-submit" class="btn btn-success cute-btn px-4 py-2" style="font-size: 1.3rem; transform: scale(1.1);">✅ Chấm điểm!</button>
                 <div class="d-flex gap-2">
                     <button id="btn-replay-round" class="btn btn-outline-warning" style="border-radius: 50px; font-weight: bold; border-width: 2px;">🔄 Làm lại vòng</button>
@@ -111,10 +114,10 @@
 // =========================================================================
 // BIẾN TOÀN CỤC CỦA GAME 3 (CHỮ CÁI A, A - Vòng 12 -> 16)
 // =========================================================================
+// MỚI: Đã cập nhật Vòng 4 thành 4 điểm. Tổng điểm tuyệt đối = 34.
 window.gameState = { level: 1, score: 0, roundScores: {}, replayQueue: [] };
-window.MAX_SCORES = { 1:2, 2:10, 3:8, 4:8, 5:10 }; // Tối đa 38 điểm
-// const PASS_SCORE = 25; 
-
+window.MAX_SCORES = { 1:2, 2:10, 3:8, 4:4, 5:10 }; 
+const PASS_SCORE = 20; // Mở lại biến PASS_SCORE để game biết điểm đậu
 // =========================================================================
 // HỆ THỐNG HIỆU ỨNG ÂM THANH MẶC ĐỊNH
 // =========================================================================
@@ -284,14 +287,14 @@ function showGameEnd(isPass, totalScore) {
 
     if (isPass) {
         $('#game-end-title').text("Tuyệt Vời! Xuất Sắc! 🏆").css('color', '#2ed573');
-        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/52 sao ở trò chơi Chữ Cái a, A.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
+        $('#game-end-message').text(`Bé đã xuất sắc đạt ${totalScore}/48 sao ở trò chơi Chữ Cái a, A.\nĐủ điều kiện mở khóa trò chơi tiếp theo!`);
         SoundFX.playWin(); 
         $buttons.append(`<button class="btn btn-warning btn-cute" style="font-size: 1.1rem; padding: 10px 20px;" onclick="replayAll()">🔄 Chơi lại từ đầu</button>`);
         $buttons.append(`<button class="btn btn-success btn-cute" style="transform: scale(1.15); font-weight: 900; background-color: #ff4757; padding: 15px 30px;" onclick="nextGame()">➡️ Qua màn tiếp theo</button>`);
         window.speakInstruction(`Chúc mừng bé đã xuất sắc vượt qua trò chơi Chữ Cái a, A!`);
     } else {
         $('#game-end-title').text("Cố Gắng Lên Nào! 💪").css('color', '#ffa502');
-        $('#game-end-message').text(`Bé mới đạt ${totalScore}/52 sao. Cần đạt tối thiểu 25 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
+        $('#game-end-message').text(`Bé mới đạt ${totalScore}/48 sao. Cần đạt tối thiểu 20 sao để hoàn thành.\nChúng ta cùng làm lại các vòng chưa tốt nhé!`);
         SoundFX.playLose();
         window.gameState.replayQueue = [];
         for (let i = 1; i <= 5; i++) {
@@ -811,74 +814,228 @@ window.LEVEL_MODULES = {
         }
     },
     4: {
-        instruction: "Bé nhìn chữ cái bên trái và chọn các chữ giống nhau trên hàng nhé!",
-        render: function($container) {
-            const questions = [
-                { qId: 1, target: 'IMG/15_target_1.png', options: [2, 1, 5, 4, 6, 3].map(i => `IMG/15_1_${i}.png`) },
-                { qId: 2, target: 'IMG/15_target_2.png', options: [4, 2, 6, 5, 1, 3].map(i => `IMG/15_2_${i}.png`) },
-                { qId: 3, target: 'IMG/15_target_3.png', options: [4, 2, 1, 5, 3, 6].map(i => `IMG/15_3_${i}.png`) },
-                { qId: 4, target: 'IMG/15_target_4.png', options: [1, 2, 3, 4, 5, 6].map(i => `IMG/15_4_${i}.png`) }
-            ];
+    instruction: "Bé hãy tìm và khoanh tròn các chữ a có trong từ nhé!",
+    render: function($container) {
+        // Cấu trúc 3 câu hỏi (3 bức ảnh riêng biệt)
+        const questions = [
+            { qId: 1, bg: '../IMG/15_bg (1).png' }, // Ví dụ: Ảnh con Cua (có chữ a)
+            { qId: 2, bg: '../IMG/15_bg (2).png' }, // Ví dụ: Ảnh cái Ca (có chữ a)
+            { qId: 3, bg: '../IMG/15_bg (3).png' }  // Ví dụ: Ảnh Quả Cam (có chữ a)
+        ];
 
-            $container.append(`
-                <h3 class="mb-3 fw-bold text-center" style="color: #ff9f43;">✨ Vòng 4: Tìm Các Chữ Cái Giống Nhau</h3>
-                <div class="d-flex align-items-center justify-content-center mb-4">
-                    <h5 class="text-secondary mb-0">Nhìn chữ cái bên trái và chọn các chữ giống nhau trên hàng.</h5>
-                    <button class="btn-speaker" data-text="Bé hãy nhìn chữ cái bên trái, sau đó tìm và bấm chọn tất cả các chữ giống nó nằm trên cùng một hàng nhé!" title="Nghe lại">🔊</button>
-                </div>
-                
-                <div class="mx-auto" style="max-width: 850px;">
-                    ${questions.map((q) => `
-                        <div class="l2-question-box d-flex flex-wrap flex-md-nowrap align-items-center py-3 px-3" data-q="${q.qId}" style="border-radius: 20px; margin-bottom: 20px;">
-                            
-                            <div class="text-center mb-3 mb-md-0 l15-target-box">
-                                <img src="${q.target}" style="max-height: 70px; max-width: 100%;">
-                            </div>
-                            
-                            <div class="d-flex flex-wrap justify-content-center gap-2 flex-grow-1">
-                                ${q.options.map((optImg, optIdx) => `
-                                    <label>
-                                        <input type="checkbox" name="l15_q${q.qId}" value="${optIdx + 1}" class="l15-check-input">
-                                        <div class="l15-option-img">
-                                            <img src="${optImg}">
-                                        </div>
-                                    </label>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <p class="text-center mt-3 text-danger fw-bold">⚠️ Chú ý: Mỗi hàng có 2 chữ đúng. Bé có thể bấm lại vào ô để bỏ chọn nếu lỡ bấm nhầm nhé!</p>
-            `);
-        },
-        check: function() {
-            const dapAnChuan = { 1: ["1", "5"], 2: ["3", "5"], 3: ["2", "4"], 4: ["2", "6"] };
-            let totalScore = 0;
+        $container.append(`
+            <h3 class="mb-3 fw-bold text-center" style="color: #ff9f43;">✨ Vòng 4: Tinh Mắt Tìm Chữ "a"</h3>
+            <div class="d-flex align-items-center justify-content-center mb-4">
+                <h5 class="text-secondary mb-0">Bé hãy quẹt tay khoanh tròn các chữ <b>"a"</b> có trong từ nhé!</h5>
+                <button class="btn-speaker" data-text="Bé hãy quan sát các bức ảnh và từ đi kèm, sau đó dùng ngón tay khoanh tròn vào tất cả các chữ a mà bé nhìn thấy nhé!" title="Nghe lại">🔊</button>
+            </div>
+            <p class="text-center mt-3 text-danger fw-bold">⚠️ Mẹo: Chạm vào vòng đã khoanh để xóa đi nếu bé lỡ khoanh nhầm nhé!</p>
 
-            for(let i = 1; i <= 4; i++) {
-                let selected = [];
-                $(`input[name="l15_q${i}"]:checked`).each(function() { selected.push($(this).val()); });
-                
-                let rowScore = 0; let rowCorrectAnswers = dapAnChuan[i];
-                selected.forEach(val => { if (rowCorrectAnswers.includes(val)) { rowScore++; } else { rowScore--; } });
-                if (rowScore < 0) rowScore = 0; 
-                totalScore += rowScore;
+            <div class="mx-auto d-flex flex-column gap-4" style="max-width: 600px;">
+                ${questions.map((q) => `
+                    <div class="l4-question-wrapper" data-q="${q.qId}" style="position: relative; width: 100%; border: 4px solid #ffeaa7; border-radius: 20px; overflow: hidden; touch-action: none; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <img src="${q.bg}" style="width: 100%; height: auto; display: block; pointer-events: none; user-select: none;">
+                        <canvas id="l4-canvas-${q.qId}" class="l4-draw-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: crosshair;"></canvas>
+                    </div>
+                `).join('')}
+            </div>
+        `);
 
-                let $row = $(`.l2-question-box[data-q="${i}"]`);
-                let isPerfect = (selected.length === rowCorrectAnswers.length) && selected.every(val => rowCorrectAnswers.includes(val));
-                
-                if (isPerfect) $row.css("border-color", "#2ed573"); 
-                else $row.css("border-color", "#ff4757"); 
-            }
-
-            return {
-                score: totalScore,
-                tieuDe: totalScore === 8 ? "Mắt Tinh Quá Bé Ơi!" : "Hãy chú ý hơn nhé!",
-                icon: totalScore === 8 ? "👑" : "👀",
-                message: `Bé đã tìm được các chữ cái và ghi được ${totalScore}/8 điểm.\nCộng dồn vào bảng điểm ngay thôi!`
+        setTimeout(() => {
+            // =========================================================================
+            // BẢNG TỌA ĐỘ CHỮ "a" (CẦN KHOANH) TRONG TỪNG BỨC ẢNH
+            // -> Bạn dùng Tool lấy tọa độ để đo và thay thế số liệu vào đây
+            // -> r: là bán kính vòng tròn (tính bằng % chiều rộng ảnh)
+            // =========================================================================
+            const targetsConfig = {
+                1: [
+                    { id: 1, x: 75.3, y: 81.6, r: 8 } // Tọa độ chữ 'a' trong ảnh 1
+                ],
+                2: [
+                    { id: 1, x: 39.8, y: 87.1, r: 8 }, // Tọa độ chữ 'a' thứ 1 trong ảnh 2
+                    { id: 2, x: 65.9, y: 88.1, r: 8 }  // Tọa độ chữ 'a' thứ 2 trong ảnh 2
+                ],
+                3: [
+                    { id: 1, x: 76.1, y: 81.1, r: 8 } // Tọa độ chữ 'a' trong ảnh 3
+                ]
             };
-        }
+
+            // Khởi tạo Canvas cho từng bức ảnh
+            $('.l4-question-wrapper').each(function() {
+                let $wrapper = $(this);
+                let qId = $wrapper.data('q');
+                let canvas = document.getElementById(`l4-canvas-${qId}`);
+                if (!canvas) return;
+                
+                let ctx = canvas.getContext('2d');
+                let targets = targetsConfig[qId] || [];
+                
+                let drawnTargets = []; 
+                let isDrawing = false;
+                let isClick = true; 
+                let startPos = null;
+                let points = [];
+
+                $wrapper.data('drawnTargets', drawnTargets);
+
+                function resizeCanvas() {
+                    canvas.width = $wrapper.width();
+                    canvas.height = $wrapper.height();
+                    redraw(); 
+                }
+
+                function redraw() {
+                    if (!ctx) return;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+
+                    // 1. VẼ CÁC VÒNG ĐÃ CHỐT 
+                    drawnTargets.forEach((t) => {
+                        ctx.beginPath();
+                        let absX = (t.target.x * canvas.width) / 100;
+                        let absY = (t.target.y * canvas.height) / 100;
+                        let radius = (t.target.r * canvas.width) / 100; 
+
+                        // Màu xanh lá chuẩn cho việc khoanh chữ
+                        ctx.strokeStyle = '#2ed573';
+                        ctx.fillStyle = 'rgba(46, 213, 115, 0.2)';
+                        ctx.lineWidth = 4;
+                        
+                        ctx.arc(absX, absY, radius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                    });
+
+                    // 2. VẼ NÉT ĐANG QUẸT
+                    if (isDrawing && points.length > 1) {
+                        ctx.strokeStyle = '#feca57';
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.moveTo(points[0].x, points[1].y);
+                        points.forEach(p => ctx.lineTo(p.x, p.y));
+                        ctx.stroke();
+                    }
+                }
+
+                $(window).on(`resize.l4_${qId}`, function() {
+                    if ($(`#l4-canvas-${qId}`).length > 0) resizeCanvas();
+                    else $(window).off(`resize.l4_${qId}`); 
+                });
+                
+                // Đảm bảo ảnh load xong mới set kích thước Canvas
+                $wrapper.find('img').on('load', resizeCanvas);
+                if ($wrapper.find('img')[0].complete) resizeCanvas();
+
+                function getMousePos(e) {
+                    let rect = canvas.getBoundingClientRect();
+                    let evt = e.originalEvent;
+                    let clientX = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientX : evt.clientX;
+                    let clientY = (evt.touches && evt.touches.length > 0) ? evt.touches[0].clientY : evt.clientY;
+                    return { x: clientX - rect.left, y: clientY - rect.top };
+                }
+
+                $(canvas).on('mousedown touchstart', function(e) {
+                    e.preventDefault();
+                    isDrawing = true; isClick = true; 
+                    points = []; startPos = getMousePos(e); points.push(startPos);
+                });
+
+                $(canvas).on('mousemove touchmove', function(e) {
+                    if (!isDrawing) return; e.preventDefault(); 
+                    let currentPos = getMousePos(e); points.push(currentPos);
+                    if (Math.abs(currentPos.x - startPos.x) > 5 || Math.abs(currentPos.y - startPos.y) > 5) { isClick = false; }
+                    redraw();
+                });
+
+                $(canvas).on('mouseup touchend', function(e) {
+                    if (!isDrawing) return; isDrawing = false;
+                    
+                    if (!isClick && points.length > 5) {
+                        let sumX = 0, sumY = 0;
+                        points.forEach(p => { sumX += p.x; sumY += p.y; });
+                        let centerX = sumX / points.length; 
+                        let centerY = sumY / points.length;
+
+                        let foundTarget = null;
+                        targets.forEach(t => {
+                            let tx = (t.x * canvas.width) / 100; 
+                            let ty = (t.y * canvas.height) / 100;
+                            let dist = Math.sqrt(Math.pow(centerX - tx, 2) + Math.pow(centerY - ty, 2));
+                            
+                            let hitbox = ((t.r * canvas.width) / 100) * 1.5; // Vùng bắt dính
+                            if (dist < hitbox) foundTarget = t;
+                        });
+
+                        if (foundTarget) {
+                            let exists = drawnTargets.find(c => c.target.id === foundTarget.id);
+                            if (!exists) {
+                                drawnTargets.push({ target: foundTarget });
+                                if(window.SoundFX) window.SoundFX.playWin();
+                                $wrapper.data('drawnTargets', drawnTargets);
+                            }
+                        } else {
+                            if(window.SoundFX) window.SoundFX.playLose(); // Quẹt trật ra ngoài thì kêu Bóp
+                        }
+                    } 
+                    else if (isClick) {
+                        // Xóa dấu khoanh
+                        let pos = startPos;
+                        drawnTargets = drawnTargets.filter(t => {
+                            let absX = (t.target.x * canvas.width) / 100; 
+                            let absY = (t.target.y * canvas.height) / 100;
+                            let radius = (t.target.r * canvas.width) / 100;
+                            let dist = Math.sqrt(Math.pow(pos.x - absX, 2) + Math.pow(pos.y - absY, 2));
+                            return dist > radius; 
+                        });
+                        $wrapper.data('drawnTargets', drawnTargets);
+                    }
+                    
+                    points = []; redraw(); 
+                });
+            });
+        }, 300);
     },
+    check: function() {
+        let totalScore = 0;
+        let totalTargets = 0; // Tổng số lượng chữ a cần khoanh trong tất cả các ảnh
+        let isPerfect = true;
+
+        $('.l4-question-wrapper').each(function() {
+            let qId = $(this).data('q');
+            let drawnTargets = $(this).data('drawnTargets') || [];
+            
+            // Tính số lượng chữ a yêu cầu ở câu này (dựa vào số lượng object trong targetsConfig)
+            // Vì targetsConfig được khai báo local trong render, ta có thể đếm gián tiếp qua drawnTargets hoặc fix cứng
+            let expectedCount = 0;
+            if (qId === 1) expectedCount = 1;
+            if (qId === 2) expectedCount = 2; // Ví dụ câu 2 có 2 chữ a
+            if (qId === 3) expectedCount = 1;
+
+            totalTargets += expectedCount;
+            let currentScore = drawnTargets.length;
+            totalScore += currentScore;
+
+            if (currentScore === expectedCount) {
+                $(this).css({"border-color": "#2ed573"}); // Khoanh đủ -> Viền xanh
+            } else {
+                $(this).css({"border-color": "#ff4757"}); // Khoanh thiếu -> Viền đỏ
+                isPerfect = false;
+            }
+            
+            // Hủy sự kiện resize để tránh lag
+            $(window).off(`resize.l4_${qId}`);
+        });
+
+        // Điểm max sẽ tự động tương ứng với số lượng chữ a bạn khai báo
+        return {
+            score: totalScore,
+            tieuDe: isPerfect ? "Tuyệt Vời Quá Bé Ơi!" : "Hãy chú ý hơn nhé!",
+            icon: isPerfect ? "👑" : "👀",
+            message: `Bé đã khoanh đúng ${totalScore}/${totalTargets} chữ "a" trong các từ.\nCộng dồn vào bảng điểm ngay thôi!`
+        };
+    }
+},
     5: {
         instruction: "Bé hãy giúp bạn cá tìm được hồ nước bằng cách nối đường chữ a, A trong mê cung nhé!",
         render: function($container) {
@@ -1019,6 +1176,47 @@ window.LEVEL_MODULES = {
 };
 
 $(document).ready(function() {
+    // === NÚT SKIP (DÀNH CHO DEV TEST) TỐI ƯU CHO GAME ĐỘC LẬP ===
+    $('#btn-skip-test').off('click').on('click', function() {
+        if(typeof window.stopAllMedia === 'function') window.stopAllMedia();
+        
+        // 1. Tự động lấy danh sách các vòng có trong game hiện tại (Dùng để thay thế getGameContext)
+        let availableLevels = Object.keys(window.LEVEL_MODULES).map(Number).sort((a, b) => a - b);
+        let currentIndex = availableLevels.indexOf(window.gameState.level);
+
+        // 2. Nếu chưa phải vòng cuối cùng của file này
+        if (currentIndex !== -1 && currentIndex < availableLevels.length - 1) {
+            
+            // Cộng full điểm ảo cho vòng này để qua bài suôn sẻ
+            let maxPoint = window.MAX_SCORES[window.gameState.level] || 5;
+            window.gameState.roundScores[window.gameState.level] = maxPoint;
+            
+            // Tính toán lại tổng điểm hiển thị trên góc phải
+            let total = 0;
+            for(let key in window.gameState.roundScores) {
+                total += window.gameState.roundScores[key];
+            }
+            window.gameState.score = total;
+            if(typeof window.updateUI === 'function') window.updateUI();
+
+            // Nhảy sang vòng kế tiếp
+            window.gameState.level = availableLevels[currentIndex + 1];
+            if(typeof window.saveData === 'function') window.saveData();
+            
+            // Ẩn vòng cũ, load vòng mới
+            $('.level-wrapper').hide();
+            if(typeof window.loadLevelStructure === 'function') window.loadLevelStructure(window.gameState.level);
+            if(typeof window.updateNavButtons === 'function') window.updateNavButtons();
+            
+            // Tự động đọc đề vòng mới
+            if(window.LEVEL_MODULES[window.gameState.level] && typeof window.speakInstruction === 'function') {
+                window.speakInstruction(window.LEVEL_MODULES[window.gameState.level].instruction, null, null, true);
+            }
+        } else {
+            // Đã là vòng cuối cùng, tự động kích hoạt nút Chấm Điểm (màu xanh) để kết thúc game luôn
+            $('#btn-submit').click();
+        }
+    });
      
     // 1. TỪ WELCOME SCREEN -> RA MÀN HÌNH INTRO GAME 3
     $('#btn-to-start-screen').click(function() {
@@ -1036,7 +1234,7 @@ $(document).ready(function() {
             $('#main-game').fadeIn(500);
             window.gameState.level = 1;
             window.loadLevelStructure(1);
-            if(window.LEVEL_MODULES[1]) window.speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
+             if(window.LEVEL_MODULES[1]) window.speakInstruction(window.LEVEL_MODULES[1].instruction, null, null, true);
         });
     });
 
